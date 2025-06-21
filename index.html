@@ -251,18 +251,28 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, collection, addDoc, updateDoc, deleteDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        const firebaseConfig = {
-  apiKey: "AIzaSyCyD0ImcHbHNSDzwq50hl0XYVPD-vdH_Ao",
-  authDomain: "controle-financeiro-3d360.firebaseapp.com",
-  projectId: "controle-financeiro-3d360",
-  storageBucket: "controle-financeiro-3d360.firebasestorage.app",
-  messagingSenderId: "865218274376",
-  appId: "1:865218274376:web:dacc7dfaa0a41281ef247d"
-};
+
+        // =================================================================
+        // ATENÇÃO: SUBSTITUA O BLOCO ABAIXO PELA CONFIGURAÇÃO DO SEU PROJETO FIREBASE
+        // Para obter, vá em: Configurações do Projeto -> Seus apps -> App da Web
+        // =================================================================
+        const deployFirebaseConfig = {
+          apiKey: "COLE_SUA_API_KEY_AQUI",
+          authDomain: "SEU_AUTH_DOMAIN.firebaseapp.com",
+          projectId: "SEU_PROJECT_ID",
+          storageBucket: "SEU_STORAGE_BUCKET.appspot.com",
+          messagingSenderId: "SEU_MESSAGING_SENDER_ID",
+          appId: "SEU_APP_ID"
+        };
+        // =================================================================
+
+        // Detecta se o site está rodando na pré-visualização (Canvas) ou publicado.
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : deployFirebaseConfig;
+
         try {
-            // Verifica se a configuração foi preenchida
-            if (firebaseConfig.apiKey === "COLE_SUA_API_KEY_AQUI") {
-                throw new Error("Configuração do Firebase não preenchida.");
+            // Verifica se a configuração foi preenchida antes de inicializar
+            if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "COLE_SUA_API_KEY_AQUI") {
+                throw new Error("Configuração do Firebase não preenchida. O script será interrompido.");
             }
 
             const appId = 'controle-financeiro-app';
@@ -589,4 +599,105 @@
                 docPDF.setFontSize(10);
                 docPDF.setFont('helvetica', 'normal');
                 const date = new Date();
-                docPDF.t
+                docPDF.text(`GERADO EM: ${date.toLocaleDateString('pt-BR')} ${date.toLocaleTimeString('pt-BR')}`, 105, startY, { align: 'center' });
+                startY += 12;
+
+                docPDF.setFontSize(12);
+                docPDF.setFont('helvetica', 'bold');
+                docPDF.text("RESUMO GERAL MENSAL", 14, startY);
+                startY += 8;
+
+                docPDF.setFont('helvetica', 'normal');
+                docPDF.text(`TOTAL DE PARCELAS ATIVAS: ${document.getElementById('total-installments').textContent}`, 14, startY);
+                startY += 7;
+                docPDF.text(`TOTAL DE DESPESAS FIXAS: ${document.getElementById('total-fixed-expenses').textContent}`, 14, startY);
+                startY += 7;
+                docPDF.setFont('helvetica', 'bold');
+                docPDF.text(`TOTAL GERAL MENSAL: ${document.getElementById('grand-total').textContent}`, 14, startY);
+                startY += 15;
+                
+                const allDestinos = [...new Set([...localAcquisitions.map(a => a.destino || 'NÃO ESPECIFICADO'), ...localExpenses.map(e => e.destino || 'NÃO ESPECIFICADO')])];
+
+                allDestinos.forEach(destino => {
+                    const acqsByDestino = localAcquisitions.filter(a => (a.destino || 'NÃO ESPECIFICADO') === destino);
+                    const expsByDestino = localExpenses.filter(e => (e.destino || 'NÃO ESPECIFICADO') === destino);
+
+                    if (acqsByDestino.length > 0 || expsByDestino.length > 0) {
+                        docPDF.setFontSize(14);
+                        docPDF.setFont('helvetica', 'bold');
+                        docPDF.text(`DESTINO: ${destino}`, 14, startY);
+                        startY += 10;
+                    }
+
+                    if (acqsByDestino.length > 0) {
+                        const acqHead = [['AQUISIÇÃO', 'VALOR PARCELA', 'VALOR PAGO', 'PAGAS/TOTAL', 'RESTANTE', 'TÉRMINO']];
+                        const acqBody = acqsByDestino.map(acq => {
+                            const paid = acq.paidInstallments || 0;
+                            const total = acq.totalInstallments;
+                            const remaining = total - paid;
+                            const amountPaid = acq.installmentValue * paid;
+                            const endDate = new Date();
+                            endDate.setMonth(endDate.getMonth() + remaining - 1);
+                            return [
+                                acq.name,
+                                formatCurrency(acq.installmentValue),
+                                formatCurrency(amountPaid),
+                                `${paid}/${total}`,
+                                formatCurrency(acq.installmentValue * remaining),
+                                remaining <= 0 ? 'FINALIZADO' : formatDate(endDate)
+                            ];
+                        });
+                        docPDF.autoTable({
+                            head: acqHead, body: acqBody, startY: startY,
+                            headStyles: { fillColor: [41, 128, 185], fontSize: 8 },
+                            bodyStyles: { fontSize: 8 },
+                            theme: 'striped'
+                        });
+                        startY = docPDF.autoTable.previous.finalY;
+                    }
+                    
+                    if (expsByDestino.length > 0) {
+                         if (acqsByDestino.length > 0) startY += 5;
+                        const expHead = [['DESPESA FIXA', 'VALOR MENSAL']];
+                        const expBody = expsByDestino.map(exp => [ exp.name, formatCurrency(exp.value) ]);
+                        docPDF.autoTable({
+                            head: expHead, body: expBody, startY: startY,
+                            headStyles: { fillColor: [39, 174, 96], fontSize: 8 },
+                            bodyStyles: { fontSize: 8 },
+                            theme: 'striped'
+                        });
+                        startY = docPDF.autoTable.previous.finalY;
+                    }
+
+                    const totalParcelasMensaisDestino = acqsByDestino
+                        .filter(acq => acq.paidInstallments < acq.totalInstallments)
+                        .reduce((sum, acq) => sum + acq.installmentValue, 0);
+                    const totalDespesasFixas = expsByDestino.reduce((sum, exp) => sum + exp.value, 0);
+                    
+                    startY += 8;
+                    docPDF.setFontSize(9);
+                    docPDF.setFont('helvetica', 'bold');
+                    docPDF.text(`TOTAL DE PARCELAS MENSAIS (DESTINO): ${formatCurrency(totalParcelasMensaisDestino)}`, 14, startY);
+                    startY += 6;
+                    docPDF.text(`TOTAL EM DESPESAS FIXAS (DESTINO): ${formatCurrency(totalDespesasFixas)}`, 14, startY);
+                    startY += 10;
+                });
+
+                const today = new Date().toISOString().slice(0, 10);
+                docPDF.save(`relatorio-financeiro-${today}.pdf`);
+            });
+        } catch(e) {
+            console.error(e);
+            if (e.message.includes("Configuração do Firebase não preenchida")) {
+                const container = document.getElementById('app-container');
+                container.innerHTML = `
+                    <div class="h-screen w-full flex flex-col items-center justify-center bg-red-900 text-white p-8 rounded-lg -m-8">
+                        <h1 class="text-4xl font-bold mb-4 text-center">ERRO DE CONFIGURAÇÃO</h1>
+                        <p class="text-xl text-center">As chaves do Firebase não foram configuradas neste site.</p>
+                        <p class="mt-4 text-center text-red-200">Por favor, edite o arquivo HTML, substitua o bloco de exemplo 'firebaseConfig' pelas suas credenciais do Firebase e faça o deploy novamente.</p>
+                    </div>`;
+            }
+        }
+    </script>
+</body>
+</html>
