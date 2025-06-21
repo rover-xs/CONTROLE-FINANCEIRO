@@ -257,22 +257,22 @@
         // Para obter, vá em: Configurações do Projeto -> Seus apps -> App da Web
         // =================================================================
         const deployFirebaseConfig = {
-          apiKey: "COLE_SUA_API_KEY_AQUI",
-          authDomain: "SEU_AUTH_DOMAIN.firebaseapp.com",
-          projectId: "SEU_PROJECT_ID",
-          storageBucket: "SEU_STORAGE_BUCKET.appspot.com",
-          messagingSenderId: "SEU_MESSAGING_SENDER_ID",
-          appId: "SEU_APP_ID"
+          apiKey: "AIzaSyCyD0ImcHbHNSDzwq50hl0XYVPD-vdH_Ao",
+  authDomain: "controle-financeiro-3d360.firebaseapp.com",
+  projectId: "controle-financeiro-3d360",
+  storageBucket: "controle-financeiro-3d360.firebasestorage.app",
+  messagingSenderId: "865218274376",
+  appId: "1:865218274376:web:dacc7dfaa0a41281ef247d"
         };
         // =================================================================
 
-        // Detecta se o site está rodando na pré-visualização (Canvas) ou publicado.
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : deployFirebaseConfig;
-
         try {
-            // Verifica se a configuração foi preenchida antes de inicializar
+            // Este bloco seleciona a configuração correta dependendo do ambiente
+            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : deployFirebaseConfig;
+            
+            // Valida se a configuração foi preenchida antes de continuar
             if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "COLE_SUA_API_KEY_AQUI") {
-                throw new Error("Configuração do Firebase não preenchida. O script será interrompido.");
+                throw new Error("Configuração do Firebase não preenchida.");
             }
 
             const appId = 'controle-financeiro-app';
@@ -694,7 +694,7 @@
                     <div class="h-screen w-full flex flex-col items-center justify-center bg-red-900 text-white p-8 rounded-lg -m-8">
                         <h1 class="text-4xl font-bold mb-4 text-center">ERRO DE CONFIGURAÇÃO</h1>
                         <p class="text-xl text-center">As chaves do Firebase não foram configuradas neste site.</p>
-                        <p class="mt-4 text-center text-red-200">Por favor, edite o arquivo HTML, substitua o bloco de exemplo 'firebaseConfig' pelas suas credenciais do Firebase e faça o deploy novamente.</p>
+                        <p class="mt-4 text-center text-red-200">Por favor, edite o arquivo HTML, substitua o bloco de exemplo 'deployFirebaseConfig' pelas suas credenciais do Firebase e faça o deploy novamente.</p>
                     </div>`;
             }
         }
