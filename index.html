@@ -15,37 +15,45 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #1a202c;
+            background-color: #f9fafb; /* Off-white / bg-gray-50 */
+            color: #374151; /* text-gray-700 */
         }
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #2d3748; }
-        ::-webkit-scrollbar-thumb { background: #4a5568; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #718096; }
+        ::-webkit-scrollbar-track { background: #e5e7eb; } 
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; } 
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; } 
+        
         .table-responsive {
             display: block;
             width: 100%;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
-        .app-input {
-            text-transform: uppercase;
-        }
-        .app-input::placeholder {
-            text-transform: uppercase;
-            color: #718096;
+        .form-input::placeholder {
+            text-transform: capitalize;
+            color: #9ca3af;
         }
         .form-input {
-             background-color: #2d3748;
-             border: 1px solid #4a5568;
-             color: #e2e8f0;
+             background-color: #f3f4f6; /* bg-gray-100 */
+             border: 1px solid #e5e7eb; /* bg-gray-200 */
+             color: #1f2937; /* bg-gray-800 */
              border-radius: 0.5rem;
              padding: 0.75rem 1rem;
              transition: all 0.2s ease-in-out;
         }
         .form-input:focus {
             outline: none;
-            border-color: #4299e1;
-            box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.5);
+            border-color: #60a5fa; /* bg-blue-400 */
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.4);
+        }
+        /* Hide arrows from number input */
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
         }
         .btn {
             padding: 0.6rem 1.2rem;
@@ -57,38 +65,55 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
+            border: 1px solid transparent;
         }
         .btn-primary {
-            background-color: #3182ce;
+            background-color: #3b82f6; /* bg-blue-500 */
             color: white;
         }
         .btn-primary:hover {
-            background-color: #2b6cb0;
+            background-color: #2563eb; /* bg-blue-600 */
         }
         .btn-success {
-            background-color: #38a169;
+            background-color: #22c55e; /* bg-green-500 */
             color: white;
         }
         .btn-success:hover {
-            background-color: #2f855a;
+            background-color: #16a34a; /* bg-green-600 */
         }
         .btn-secondary {
-            background-color: #4a5568;
-            color: white;
+            background-color: #e5e7eb; /* bg-gray-200 */
+            color: #4b5563; /* text-gray-600 */
+            border-color: #d1d5db; /* border-gray-300 */
         }
         .btn-secondary:hover {
-            background-color: #2d3748;
+            background-color: #d1d5db; /* bg-gray-300 */
+            border-color: #9ca3af;
+        }
+        .nav-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            color: #6b7280;
+            transition: all 0.2s;
+        }
+        .nav-btn.active {
+            color: #1d4ed8;
+            background-color: #dbeafe;
+        }
+        .nav-btn:not(.active):hover {
+            background-color: #f3f4f6;
         }
     </style>
 </head>
-<body class="text-gray-300">
+<body class="text-slate-800">
     
     <div id="root-container">
         <!-- Auth Screen -->
-        <div id="auth-screen" class="min-h-screen flex flex-col items-center justify-center p-4">
+        <div id="auth-screen" class="min-h-screen flex flex-col items-center justify-center p-4 bg-slate-100">
             <div class="w-full max-w-md">
-                <div id="auth-card" class="bg-gray-800/50 p-8 rounded-2xl shadow-lg border border-gray-700/50 space-y-6">
-                    <!-- Content will be injected by JS -->
+                <div id="auth-card" class="bg-white p-8 rounded-2xl shadow-lg space-y-6">
+                    <!-- Auth form will be injected by JS -->
                 </div>
             </div>
         </div>
@@ -96,166 +121,222 @@
         <!-- Main App Screen (hidden by default) -->
         <div id="app-screen" class="hidden container mx-auto p-4 md:p-6 lg:p-8 max-w-7xl">
             
-            <header class="mb-10 flex flex-wrap justify-center md:justify-between items-center gap-4">
-                <h1 class="text-2xl md:text-3xl font-bold text-white text-center uppercase">Controle Financeiro</h1>
-                <div class="flex gap-4">
-                    <button id="download-pdf-btn" class="btn btn-secondary text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                        Exportar PDF
-                    </button>
-                    <button id="logout-btn" class="btn bg-red-600 text-white hover:bg-red-500 text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" /></svg>
-                        Sair
-                    </button>
-                </div>
+            <header class="mb-6 flex flex-col items-center">
+                <h1 class="text-2xl md:text-3xl font-bold text-slate-700 text-center">Controle Financeiro</h1>
+                <nav id="main-nav" class="mt-4 flex items-center gap-2 p-1 bg-slate-200 rounded-lg">
+                    <button class="nav-btn active" data-tab="main-panel">Painel Principal</button>
+                    <button class="nav-btn" data-tab="daily-expenses-panel">Gastos Diários</button>
+                </nav>
             </header>
 
-            <main class="grid grid-cols-1 lg:grid-cols-3 gap-8 uppercase">
-                <!-- Coluna Principal (Tabelas) -->
-                <div class="lg:col-span-2 space-y-8">
-                    <!-- Seção de Aquisições -->
-                    <div class="bg-gray-800/50 backdrop-blur-sm p-4 sm:p-6 rounded-2xl shadow-lg border border-gray-700/50">
-                        <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
-                            <h2 class="text-xl font-bold text-white">AQUISIÇÕES PARCELADAS</h2>
-                            <button id="toggle-acquisition-form" class="btn btn-primary text-sm">
-                                + Adicionar
-                            </button>
+            <div id="main-panel">
+                <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Coluna Principal (Tabelas) -->
+                    <div class="lg:col-span-2 space-y-8">
+                        <!-- Seção de Aquisições -->
+                        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm">
+                            <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+                                <h2 class="text-xl font-bold text-slate-700">Aquisições Parceladas</h2>
+                                <button id="toggle-acquisition-form" class="btn btn-primary text-sm">
+                                    + Adicionar
+                                </button>
+                            </div>
+
+                            <form id="add-acquisition-form" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-slate-50 rounded-lg">
+                                <input type="text" id="acq-name" placeholder="Nome" class="form-input capitalize-input" required>
+                                <input type="text" id="acq-categoria" placeholder="Categoria" class="form-input capitalize-input" required>
+                                <input type="number" id="acq-installment-value" placeholder="R$ 0,00" step="0.01" class="form-input" required>
+                                <input type="number" id="acq-total-installments" placeholder="Qtd. Parcelas" class="form-input" required>
+                                <button type="submit" class="btn btn-success md:col-span-2">Salvar Aquisição</button>
+                            </form>
+
+                            <div class="table-responsive">
+                                <table class="w-full text-left whitespace-nowrap">
+                                    <thead>
+                                        <tr class="text-xs font-semibold text-slate-500 border-b border-slate-200">
+                                            <th class="p-4">Aquisição</th>
+                                            <th class="p-4">Categoria</th>
+                                            <th class="p-4 text-right">Valor da Parcela</th>
+                                            <th class="p-4 text-center">Progresso</th>
+                                            <th class="p-4 text-right">Restante</th>
+                                            <th class="p-4 text-center">Término</th>
+                                            <th class="p-4 text-center">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="acquisitions-table-body" class="divide-y divide-slate-100">
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
-                        <form id="add-acquisition-form" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-gray-900/50 rounded-lg">
-                            <input type="text" id="acq-name" placeholder="Nome" class="form-input app-input" required>
-                            <input type="text" id="acq-destino" placeholder="Destino" class="form-input app-input" required>
-                            <input type="number" id="acq-installment-value" placeholder="Valor Parcela" step="0.01" class="form-input app-input" required>
-                            <input type="number" id="acq-total-installments" placeholder="Qtd. Parcelas" class="form-input app-input" required>
-                            <button type="submit" class="btn btn-success md:col-span-2">Salvar Aquisição</button>
-                        </form>
+                        <!-- Seção de Despesas Fixas -->
+                        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm">
+                            <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+                                <h2 class="text-xl font-bold text-slate-700">Despesas Fixas</h2>
+                                 <button id="toggle-expense-form" class="btn btn-primary text-sm">
+                                    + Adicionar
+                                </button>
+                            </div>
+                            
+                             <form id="add-expense-form" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 bg-slate-50 rounded-lg">
+                                <input type="text" id="exp-name" placeholder="Nome da Despesa" class="form-input capitalize-input" required>
+                                <input type="text" id="exp-categoria" placeholder="Categoria" class="form-input capitalize-input" required>
+                                <input type="number" id="exp-value" placeholder="R$ 0,00" step="0.01" class="form-input" required>
+                                <button type="submit" class="btn btn-success md:col-span-3">Salvar Despesa</button>
+                            </form>
 
-                        <div class="table-responsive">
-                            <table class="w-full text-left whitespace-nowrap">
-                                <thead>
-                                    <tr class="text-xs font-semibold text-gray-400 border-b border-gray-700">
-                                        <th class="p-4">AQUISIÇÃO</th>
-                                        <th class="p-4">DESTINO</th>
-                                        <th class="p-4 text-right">PARCELA</th>
-                                        <th class="p-4 text-center">PROGRESSO</th>
-                                        <th class="p-4 text-right">RESTANTE</th>
-                                        <th class="p-4 text-center">TÉRMINO</th>
-                                        <th class="p-4 text-center">AÇÕES</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="acquisitions-table-body" class="divide-y divide-gray-700/50">
-                                </tbody>
-                            </table>
+                            <div class="table-responsive">
+                                <table class="w-full text-left whitespace-nowrap">
+                                    <thead>
+                                        <tr class="text-xs font-semibold text-slate-500 border-b border-slate-200">
+                                            <th class="p-4">Despesa</th>
+                                            <th class="p-4">Categoria</th>
+                                            <th class="p-4 text-right">Valor Mensal</th>
+                                            <th class="p-4 text-center">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="fixed-expenses-table-body" class="divide-y divide-slate-100">
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Seção de Despesas Fixas -->
-                    <div class="bg-gray-800/50 backdrop-blur-sm p-4 sm:p-6 rounded-2xl shadow-lg border border-gray-700/50">
-                        <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
-                            <h2 class="text-xl font-bold text-white">DESPESAS FIXAS</h2>
-                             <button id="toggle-expense-form" class="btn btn-primary text-sm">
-                                + Adicionar
-                            </button>
+                    <aside class="lg:col-span-1 space-y-6">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm flex items-center justify-between">
+                            <div>
+                                <h3 class="text-base font-semibold text-blue-500">Parcelas do Mês</h3>
+                                <p id="total-installments" class="text-2xl font-bold text-slate-800 mt-1">R$ 0,00</p>
+                            </div>
+                            <div class="text-blue-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" /></svg>
+                            </div>
                         </div>
-                        
-                         <form id="add-expense-form" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 bg-gray-900/50 rounded-lg">
-                            <input type="text" id="exp-name" placeholder="Nome da Despesa" class="form-input app-input" required>
-                            <input type="text" id="exp-destino" placeholder="Destino" class="form-input app-input" required>
-                            <input type="number" id="exp-value" placeholder="Valor Mensal" step="0.01" class="form-input app-input" required>
-                            <button type="submit" class="btn btn-success md:col-span-3">Salvar Despesa</button>
-                        </form>
-
-                        <div class="table-responsive">
-                            <table class="w-full text-left whitespace-nowrap">
-                                <thead>
-                                    <tr class="text-xs font-semibold text-gray-400 border-b border-gray-700">
-                                        <th class="p-4">DESPESA</th>
-                                        <th class="p-4">DESTINO</th>
-                                        <th class="p-4 text-right">VALOR MENSAL</th>
-                                        <th class="p-4 text-center">AÇÕES</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="fixed-expenses-table-body" class="divide-y divide-gray-700/50">
-                                </tbody>
-                            </table>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm flex items-center justify-between">
+                            <div>
+                                <h3 class="text-base font-semibold text-green-500">Despesas Fixas</h3>
+                                <p id="total-fixed-expenses" class="text-2xl font-bold text-slate-800 mt-1">R$ 0,00</p>
+                            </div>
+                            <div class="text-green-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>
+                            </div>
                         </div>
+                         <div class="bg-gradient-to-r from-blue-400 to-emerald-400 text-white p-6 rounded-2xl shadow-lg flex items-center justify-between">
+                            <div>
+                                <h3 class="text-base font-semibold">Total Mensal</h3>
+                                <p id="grand-total" class="text-3xl font-bold mt-1">R$ 0,00</p>
+                            </div>
+                            <div class="text-white/50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="currentColor" viewBox="0 0 20 20"><path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.5 2.5 0 00-.567-.267C8.07 8.48 8 8.73 8 9v2c0 .27.07.52.2.65V13.5a2.5 2.5 0 00-2.14-2.492 1.5 1.5 0 00-1.56 2.492A2.5 2.5 0 005.5 15.5h9a2.5 2.5 0 002.5-2.5 1.5 1.5 0 00-1.56-2.492A2.5 2.5 0 0013.5 8.5v-1.65a2.5 2.5 0 00-2.14-2.492 1.5 1.5 0 00-1.56 2.492A2.5 2.5 0 0011.5 8.5V11a.5.5 0 01-1 0V9c0-.27-.07-.52-.2-.65a.5.5 0 01.433-.732z" /></svg>
+                            </div>
+                        </div>
+                    </aside>
+                </main>
+            </div>
+            
+            <div id="daily-expenses-panel" class="hidden bg-white p-4 sm:p-6 rounded-2xl shadow-sm">
+                <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-slate-700">Gastos Diários</h2>
+                     <div class="text-right">
+                        <p class="text-sm text-slate-500">Total do Mês</p>
+                        <p id="daily-expenses-total" class="text-2xl font-bold text-slate-800">R$ 0,00</p>
                     </div>
                 </div>
+                <form id="add-daily-expense-form" class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end mb-8 p-4 bg-slate-50 rounded-lg">
+                     <div class="sm:col-span-2">
+                        <label for="daily-categoria" class="block mb-2 text-sm font-medium text-slate-500">Categoria</label>
+                        <select id="daily-categoria" class="form-input w-full" required>
+                            <option value="Alimentação">Alimentação</option>
+                            <option value="Transporte">Transporte</option>
+                            <option value="Saúde">Saúde</option>
+                            <option value="Vestuário">Vestuário</option>
+                            <option value="Higiene / Cuidados Pessoais">Higiene / Cuidados Pessoais</option>
+                            <option value="Esporte / Lazer">Esporte / Lazer</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="daily-descricao" class="block mb-2 text-sm font-medium text-slate-500">Descrição</label>
+                        <input type="text" id="daily-descricao" placeholder="Ex: Almoço, café" class="form-input capitalize-input w-full" required>
+                    </div>
+                    <div>
+                        <label for="daily-valor" class="block mb-2 text-sm font-medium text-slate-500">Valor Gasto</label>
+                        <input type="number" id="daily-valor" placeholder="R$ 15,50" step="0.01" class="form-input w-full" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-full sm:col-start-4">Lançar Gasto</button>
+                </form>
 
-                <aside class="lg:col-span-1 space-y-6">
-                    <div class="bg-gray-800/50 p-6 rounded-2xl shadow-lg border border-gray-700/50 flex items-center justify-between">
-                        <div>
-                            <h3 class="text-base font-semibold text-blue-400">PARCELAS DO MÊS</h3>
-                            <p id="total-installments" class="text-2xl font-bold text-white mt-1">R$ 0,00</p>
-                        </div>
-                        <div class="text-blue-400/50">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                        </div>
-                    </div>
-                    <div class="bg-gray-800/50 p-6 rounded-2xl shadow-lg border border-gray-700/50 flex items-center justify-between">
-                        <div>
-                            <h3 class="text-base font-semibold text-green-400">DESPESAS FIXAS</h3>
-                            <p id="total-fixed-expenses" class="text-2xl font-bold text-white mt-1">R$ 0,00</p>
-                        </div>
-                        <div class="text-green-400/50">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
-                        </div>
-                    </div>
-                     <div class="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-6 rounded-2xl shadow-lg flex items-center justify-between">
-                        <div>
-                            <h3 class="text-base font-semibold">TOTAL MENSAL</h3>
-                            <p id="grand-total" class="text-3xl font-bold mt-1">R$ 0,00</p>
-                        </div>
-                        <div class="text-white/50">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" /></svg>
-                        </div>
-                    </div>
-                </aside>
-            </main>
+                 <div class="table-responsive">
+                    <table class="w-full text-left whitespace-nowrap">
+                        <thead>
+                            <tr class="text-xs font-semibold text-slate-500 border-b border-slate-200">
+                                <th class="p-4">Data</th>
+                                <th class="p-4">Categoria</th>
+                                <th class="p-4">Descrição</th>
+                                <th class="p-4 text-right">Valor</th>
+                                <th class="p-4 text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="daily-expenses-table-body" class="divide-y divide-slate-100">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <footer id="footer-controls" class="mt-10 pt-6 border-t border-slate-200 flex justify-center gap-4">
+                 <button id="download-pdf-btn-footer" class="btn btn-secondary text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                    Exportar PDF
+                </button>
+                <button id="logout-btn-footer" class="btn bg-rose-500 text-white hover:bg-rose-600 text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" /></svg>
+                    Sair
+                </button>
+            </footer>
         </div>
 
         <!-- Modals -->
-        <div id="confirmation-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-            <div class="bg-gray-800 rounded-lg p-6 shadow-xl w-full max-w-sm border border-gray-700">
-                <h3 id="modal-title" class="text-xl font-bold text-white mb-4 uppercase">Confirmar Ação</h3>
-                <p id="modal-body" class="text-gray-300 mb-6 uppercase">Você tem certeza?</p>
+        <div id="confirmation-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div class="bg-white p-6 shadow-xl w-full max-w-sm rounded-lg">
+                <h3 id="modal-title" class="text-xl font-bold text-slate-800 mb-4">Confirmar Ação</h3>
+                <p id="modal-body" class="text-slate-600 mb-6">Você tem certeza?</p>
                 <div class="flex justify-end gap-4">
-                    <button id="modal-cancel-btn" class="btn bg-gray-600 text-white hover:bg-gray-500">Cancelar</button>
-                    <button id="modal-confirm-btn" class="btn bg-red-600 text-white hover:bg-red-500">Confirmar</button>
+                    <button id="modal-cancel-btn" class="btn btn-secondary">Cancelar</button>
+                    <button id="modal-confirm-btn" class="btn bg-rose-500 text-white hover:bg-rose-600">Confirmar</button>
                 </div>
             </div>
         </div>
 
         <div id="edit-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-            <form id="edit-form" class="bg-gray-800 rounded-lg p-6 shadow-xl w-full max-w-md space-y-4 border border-gray-700">
-                <h3 id="edit-modal-title" class="text-xl font-bold text-white uppercase">Editar Item</h3>
+            <form id="edit-form" class="bg-white p-6 shadow-xl w-full max-w-md space-y-4 rounded-lg">
+                <h3 id="edit-modal-title" class="text-xl font-bold text-slate-800">Editar Item</h3>
                 <input type="hidden" id="edit-id"><input type="hidden" id="edit-type">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label for="edit-name" class="block mb-2 text-sm font-medium text-gray-400 uppercase">Nome</label>
-                        <input type="text" id="edit-name" class="form-input app-input w-full" required>
+                        <label for="edit-name" class="block mb-2 text-sm font-medium text-slate-500">Nome</label>
+                        <input type="text" id="edit-name" class="form-input capitalize-input w-full" required>
                     </div>
                      <div>
-                        <label for="edit-destino" class="block mb-2 text-sm font-medium text-gray-400 uppercase">Destino</label>
-                        <input type="text" id="edit-destino" class="form-input app-input w-full" required>
+                        <label for="edit-categoria" class="block mb-2 text-sm font-medium text-slate-500">Categoria</label>
+                        <input type="text" id="edit-categoria" class="form-input capitalize-input w-full" required>
                     </div>
                 </div>
                 <div id="edit-value-container">
-                    <label for="edit-value" class="block mb-2 text-sm font-medium text-gray-400 uppercase">Valor</label>
-                    <input type="number" id="edit-value" step="0.01" class="form-input app-input w-full" required>
+                    <label for="edit-value" class="block mb-2 text-sm font-medium text-slate-500">Valor</label>
+                    <input type="number" id="edit-value" step="0.01" class="form-input w-full" required>
                 </div>
                 <div id="edit-installments-container" class="grid grid-cols-2 gap-4">
                     <div>
-                        <label for="edit-paid-installments" class="block mb-2 text-sm font-medium text-gray-400 uppercase">Parcelas Pagas</label>
-                        <input type="number" id="edit-paid-installments" class="form-input app-input w-full" required>
+                        <label for="edit-paid-installments" class="block mb-2 text-sm font-medium text-slate-500">Parcelas Pagas</label>
+                        <input type="number" id="edit-paid-installments" class="form-input w-full" required>
                     </div>
                     <div>
-                        <label for="edit-total-installments" class="block mb-2 text-sm font-medium text-gray-400 uppercase">Total de Parcelas</label>
-                        <input type="number" id="edit-total-installments" class="form-input app-input w-full" required>
+                        <label for="edit-total-installments" class="block mb-2 text-sm font-medium text-slate-500">Total de Parcelas</label>
+                        <input type="number" id="edit-total-installments" class="form-input w-full" required>
                     </div>
                 </div>
                 <div class="flex justify-end gap-4 pt-4">
-                    <button type="button" id="edit-modal-cancel-btn" class="btn bg-gray-600 text-white hover:bg-gray-500">Cancelar</button>
+                    <button type="button" id="edit-modal-cancel-btn" class="btn btn-secondary">Cancelar</button>
                     <button type="submit" class="btn btn-success">Salvar Alterações</button>
                 </div>
             </form>
@@ -265,537 +346,685 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, collection, addDoc, updateDoc, deleteDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, collection, addDoc, updateDoc, deleteDoc, getDocs, writeBatch, query, orderBy, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // =================================================================
-        // ATENÇÃO: SUBSTITUA O BLOCO ABAIXO PELA CONFIGURAÇÃO DO SEU PROJETO FIREBASE
-        // Para obter, vá em: Configurações do Projeto -> Seus apps -> App da Web
-        // =================================================================
-        const firebaseConfig = {
-          apiKey: "AIzaSyCyD0ImcHbHNSDzwq50hl0XYVPD-vdH_Ao",
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                // =================================================================
+                // ATENÇÃO: SUBSTITUA O BLOCO ABAIXO PELA CONFIGURAÇÃO DO SEU PROJETO FIREBASE
+                // Para obter, vá em: Configurações do Projeto -> Seus apps -> App da Web
+                // =================================================================
+                const firebaseConfig = {
+                  apiKey: "AIzaSyCyD0ImcHbHNSDzwq50hl0XYVPD-vdH_Ao",
   authDomain: "controle-financeiro-3d360.firebaseapp.com",
   projectId: "controle-financeiro-3d360",
   storageBucket: "controle-financeiro-3d360.firebasestorage.app",
   messagingSenderId: "865218274376",
   appId: "1:865218274376:web:dacc7dfaa0a41281ef247d"
-        };
-        // =================================================================
+                };
+                // =================================================================
 
-        try {
-            // Valida se a configuração foi preenchida antes de continuar
-            if (!firebaseConfig.apiKey || firebaseConfig.apiKey.includes("COLE_SUA_API_KEY_AQUI")) {
-                throw new Error("Configuração do Firebase não preenchida.");
-            }
-
-            const appId = 'controle-financeiro-app';
-            
-            const app = initializeApp(firebaseConfig);
-            const db = getFirestore(app);
-            const auth = getAuth(app);
-
-            const authScreen = document.getElementById('auth-screen');
-            const appScreen = document.getElementById('app-screen');
-            const authCard = document.getElementById('auth-card');
-            
-            let userId = null;
-            let localAcquisitions = [];
-            let localExpenses = [];
-            let unsubscribeAcquisitions = () => {};
-            let unsubscribeExpenses = () => {};
-
-            const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-            const formatDate = (date) => {
-                if (!date || !(date instanceof Date)) return 'N/A';
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const year = date.getFullYear();
-                return `${month}/${year}`;
-            };
-            
-            onAuthStateChanged(auth, user => {
-                if (user) {
-                    userId = user.uid;
-                    authScreen.style.display = 'none';
-                    appScreen.style.display = 'block';
-                    setupRealtimeListeners();
-                } else {
-                    userId = null;
-                    authScreen.style.display = 'flex';
-                    appScreen.style.display = 'none';
-                    renderAuthForm('login');
-                    unsubscribeListeners();
+                // Valida se a configuração foi preenchida antes de continuar
+                if (!firebaseConfig.apiKey || firebaseConfig.apiKey.includes("COLE_SUA_API_KEY_AQUI")) {
+                    throw new Error("Configuração do Firebase não preenchida.");
                 }
-            });
 
-            const renderAuthForm = (type) => {
-                if (type === 'login') {
-                    authCard.innerHTML = `
-                        <form id="login-form" class="space-y-6">
-                            <h2 class="text-2xl font-bold text-white text-center uppercase">Login</h2>
-                            <div>
-                                <label for="login-email" class="block mb-2 text-sm font-medium text-gray-400 uppercase">Email</label>
-                                <input type="email" id="login-email" class="form-input w-full" required autocomplete="email">
-                            </div>
-                            <div>
-                                <label for="login-password" class="block mb-2 text-sm font-medium text-gray-400 uppercase">Senha</label>
-                                <input type="password" id="login-password" class="form-input w-full" required autocomplete="current-password">
-                            </div>
-                            <p id="login-error" class="text-red-400 text-sm text-center hidden"></p>
-                            <button type="submit" class="btn btn-primary w-full">Entrar</button>
-                            <p class="text-center text-sm text-gray-400 uppercase">
-                                Não tem uma conta? <a href="#" data-auth-switch="register" class="font-semibold text-blue-400 hover:text-blue-300">Registre-se</a>
-                            </p>
-                        </form>`;
-                } else {
-                     authCard.innerHTML = `
-                        <form id="register-form" class="space-y-6">
-                            <h2 class="text-2xl font-bold text-white text-center uppercase">Criar Conta</h2>
-                            <div>
-                                <label for="register-email" class="block mb-2 text-sm font-medium text-gray-400 uppercase">Email</label>
-                                <input type="email" id="register-email" class="form-input w-full" required autocomplete="email">
-                            </div>
-                            <div>
-                                <label for="register-password" class="block mb-2 text-sm font-medium text-gray-400 uppercase">Senha</label>
-                                <input type="password" id="register-password" class="form-input w-full" required autocomplete="new-password">
-                            </div>
-                             <p id="register-error" class="text-red-400 text-sm text-center hidden"></p>
-                            <button type="submit" class="btn btn-success w-full">Criar Conta</button>
-                             <p class="text-center text-sm text-gray-400 uppercase">
-                                Já tem uma conta? <a href="#" data-auth-switch="login" class="font-semibold text-blue-400 hover:text-blue-300">Faça Login</a>
-                            </p>
-                        </form>`;
-                }
-            }
-
-            authCard.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formId = e.target.id;
+                const appId = 'controle-financeiro-app';
                 
-                if (formId === 'login-form') {
-                    showAuthError('login'); 
-                    const email = e.target['login-email'].value;
-                    const password = e.target['login-password'].value;
-                    try {
-                        await setPersistence(auth, browserLocalPersistence);
-                        await signInWithEmailAndPassword(auth, email, password);
-                    } catch(error) {
-                        console.error("Login error", error.code);
-                        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-                            showAuthError('login', 'EMAIL OU SENHA INVÁLIDOS.');
-                        } else if (error.code === 'auth/operation-not-allowed') {
-                            showAuthError('login', 'ERRO: LOGIN POR EMAIL/SENHA PRECISA SER ATIVADO NO SEU PAINEL FIREBASE.');
-                        } else {
-                            showAuthError('login', 'ERRO AO FAZER LOGIN.');
-                        }
-                    }
-                } else if (formId === 'register-form') {
-                    showAuthError('register');
-                    const email = e.target['register-email'].value;
-                    const password = e.target['register-password'].value;
+                const app = initializeApp(firebaseConfig);
+                const db = getFirestore(app);
+                const auth = getAuth(app);
 
-                    if (password.length < 6) {
-                        showAuthError('register', 'A SENHA DEVE TER PELO MENOS 6 CARACTERES.');
-                        return;
-                    }
+                const authScreen = document.getElementById('auth-screen');
+                const appScreen = document.getElementById('app-screen');
+                const authCard = document.getElementById('auth-card');
+                
+                let userId = null;
+                let localAcquisitions = [];
+                let localExpenses = [];
+                let localDailyExpenses = [];
+                let unsubscribeAcquisitions = () => {};
+                let unsubscribeExpenses = () => {};
+                let unsubscribeDailyExpenses = () => {};
 
-                     try {
-                        await createUserWithEmailAndPassword(auth, email, password);
-                    } catch(error) {
-                        console.error("Register error", error.code);
-                        if (error.code === 'auth/operation-not-allowed') {
-                             showAuthError('register', 'ERRO: CADASTRO POR EMAIL/SENHA PRECISA SER ATIVADO NO SEU PAINEL FIREBASE.');
-                        } else if (error.code === 'auth/email-already-in-use') {
-                            showAuthError('register', 'ESTE EMAIL JÁ ESTÁ EM USO.');
-                        } else if (error.code === 'auth/invalid-email') {
-                             showAuthError('register', 'O FORMATO DO EMAIL É INVÁLIDO.');
-                        }  else if (error.code === 'auth/weak-password') {
-                            showAuthError('register', 'A SENHA É MUITO FRACA.');
-                        } else {
-                            showAuthError('register', 'ERRO AO CRIAR CONTA.');
-                        }
-                    }
-                }
-            });
+                const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+                const formatDate = (date, includeTime = false) => {
+                    if (!date || !(date instanceof Date)) return 'N/A';
+                    return new Intl.DateTimeFormat('pt-BR', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: includeTime ? '2-digit' : undefined,
+                        minute: includeTime ? '2-digit' : undefined
+                    }).format(date);
+                };
 
-            authCard.addEventListener('click', (e) => {
-                if (e.target.matches('[data-auth-switch]')) {
-                    e.preventDefault();
-                    const type = e.target.dataset.authSwitch;
-                    renderAuthForm(type);
-                }
-            });
+                const toTitleCase = (str) => {
+                    if(!str) return '';
+                    return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                };
+                
+                const showDeleteModal = (title, body, onConfirm) => {
+                    const modal = document.getElementById('confirmation-modal');
+                    modal.querySelector('#modal-title').textContent = title;
+                    modal.querySelector('#modal-body').textContent = body;
+                    modal.classList.remove('hidden');
+                    
+                    const confirmBtn = document.getElementById('modal-confirm-btn');
+                    const cancelBtn = document.getElementById('modal-cancel-btn');
 
-            const showAuthError = (form, message) => {
-                const errorEl = document.getElementById(`${form}-error`);
-                if(errorEl){
-                    if (message) {
-                        errorEl.textContent = message;
-                        errorEl.classList.remove('hidden');
+                    const confirmHandler = () => {
+                        onConfirm();
+                        hideModal();
+                    };
+
+                    const hideModal = () => {
+                        modal.classList.add('hidden');
+                        confirmBtn.removeEventListener('click', confirmHandler);
+                        cancelBtn.removeEventListener('click', hideModal);
+                    };
+
+                    confirmBtn.addEventListener('click', confirmHandler, { once: true });
+                    cancelBtn.addEventListener('click', hideModal, { once: true });
+                };
+
+                onAuthStateChanged(auth, user => {
+                    if (user) {
+                        userId = user.uid;
+                        authScreen.style.display = 'none';
+                        appScreen.style.display = 'block';
+                        setupRealtimeListeners();
                     } else {
-                        errorEl.classList.add('hidden');
+                        userId = null;
+                        authScreen.style.display = 'flex';
+                        appScreen.style.display = 'none';
+                        renderAuthForm('login');
+                        unsubscribeListeners();
+                    }
+                });
+
+                const renderAuthForm = (type) => {
+                    if (type === 'login') {
+                        authCard.innerHTML = `
+                            <form id="login-form" class="space-y-6">
+                                <h2 class="text-2xl font-bold text-slate-700 text-center">Login</h2>
+                                <div>
+                                    <label for="login-email" class="block mb-2 text-sm font-medium text-slate-500">Email</label>
+                                    <input type="email" id="login-email" class="form-input w-full" required autocomplete="email">
+                                </div>
+                                <div>
+                                    <label for="login-password" class="block mb-2 text-sm font-medium text-slate-500">Senha</label>
+                                    <input type="password" id="login-password" class="form-input w-full" required autocomplete="current-password">
+                                </div>
+                                <p id="login-error" class="text-red-500 text-sm text-center hidden"></p>
+                                <button type="submit" class="btn btn-primary w-full">Entrar</button>
+                                <p class="text-center text-sm text-slate-500">
+                                    Não tem uma conta? <a href="#" data-auth-switch="register" class="font-semibold text-blue-500 hover:text-blue-600">Registre-se</a>
+                                </p>
+                            </form>`;
+                    } else {
+                         authCard.innerHTML = `
+                            <form id="register-form" class="space-y-6">
+                                <h2 class="text-2xl font-bold text-slate-700 text-center">Criar Conta</h2>
+                                <div>
+                                    <label for="register-email" class="block mb-2 text-sm font-medium text-slate-500">Email</label>
+                                    <input type="email" id="register-email" class="form-input w-full" required autocomplete="email">
+                                </div>
+                                <div>
+                                    <label for="register-password" class="block mb-2 text-sm font-medium text-slate-500">Senha</label>
+                                    <input type="password" id="register-password" class="form-input w-full" required autocomplete="new-password">
+                                </div>
+                                 <p id="register-error" class="text-red-500 text-sm text-center hidden"></p>
+                                <button type="submit" class="btn btn-success w-full">Criar Conta</button>
+                                 <p class="text-center text-sm text-slate-500">
+                                    Já tem uma conta? <a href="#" data-auth-switch="login" class="font-semibold text-blue-500 hover:text-blue-600">Faça Login</a>
+                                </p>
+                            </form>`;
                     }
                 }
-            }
-            
-            document.getElementById('logout-btn').addEventListener('click', () => {
-                signOut(auth);
-            });
-            
-            function unsubscribeListeners() {
-                if(typeof unsubscribeAcquisitions === 'function') unsubscribeAcquisitions();
-                if(typeof unsubscribeExpenses === 'function') unsubscribeExpenses();
-            }
 
-            async function addSampleData() {
-                const batch = writeBatch(db);
-                const now = new Date();
-
-                const sampleAcquisitions = [
-                    { name: 'FINANCIAMENTO VEÍCULO', destino: 'BANCO XYZ', installmentValue: 1850.75, totalInstallments: 48, paidInstallments: 12 },
-                    { name: 'ENTRADA APARTAMENTO', destino: 'CONSTRUTORA ABC', installmentValue: 2500.00, totalInstallments: 36, paidInstallments: 5 },
-                ];
-
-                const sampleExpenses = [
-                    { name: 'ALUGUEL', destino: 'IMOBILIÁRIA', value: 2200.00 },
-                    { name: 'INTERNET', destino: 'PROVEDOR Z', value: 129.90 },
-                ];
-
-                sampleAcquisitions.forEach(item => {
-                    const docRef = doc(collection(db, 'artifacts', appId, 'users', userId, 'acquisitions'));
-                    batch.set(docRef, { ...item, createdAt: now });
-                });
-
-                sampleExpenses.forEach(item => {
-                    const docRef = doc(collection(db, 'artifacts', appId, 'users', userId, 'fixedExpenses'));
-                    batch.set(docRef, { ...item, createdAt: now });
-                });
-
-                try {
-                    await batch.commit();
-                } catch (error) {
-                    console.error("Error adding sample data: ", error);
-                }
-            }
-
-            async function setupRealtimeListeners() {
-                if (!userId) return;
-
-                const acquisitionsCol = collection(db, 'artifacts', appId, 'users', userId, 'acquisitions');
-                const expensesCol = collection(db, 'artifacts', appId, 'users', userId, 'fixedExpenses');
-
-                const initialAcqSnapshot = await getDocs(acquisitionsCol);
-                const initialExpSnapshot = await getDocs(expensesCol);
-
-                if (initialAcqSnapshot.empty && initialExpSnapshot.empty) {
-                    await addSampleData();
-                }
-
-                unsubscribeAcquisitions = onSnapshot(acquisitionsCol, (snapshot) => {
-                    localAcquisitions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    renderAcquisitions(localAcquisitions);
-                    updateTotals();
-                });
-                
-                unsubscribeExpenses = onSnapshot(expensesCol, (snapshot) => {
-                    localExpenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    renderFixedExpenses(localExpenses);
-                    updateTotals();
-                });
-            }
-
-            const renderAcquisitions = (acquisitions) => {
-                const body = document.getElementById('acquisitions-table-body');
-                body.innerHTML = '';
-                if (acquisitions.length === 0) {
-                     body.innerHTML = `<tr><td colspan="7" class="text-center p-6 text-gray-500">NENHUMA AQUISIÇÃO ADICIONADA.</td></tr>`;
-                     return;
-                }
-                acquisitions.forEach(acq => {
-                    const paid = acq.paidInstallments || 0;
-                    const total = acq.totalInstallments;
-                    const remaining = total - paid;
-                    const isPaidOff = remaining <= 0;
-                    const isDecreaseDisabled = paid <= 0;
-                    const endDate = new Date();
-                    endDate.setMonth(endDate.getMonth() + remaining - 1);
-
-                    const row = document.createElement('tr');
-                    row.className = `transition-colors duration-200 text-sm ${isPaidOff ? 'text-gray-600' : 'hover:bg-gray-700/50'}`;
+                authCard.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const formId = e.target.id;
                     
-                    row.innerHTML = `
-                        <td class="p-4 font-semibold ${isPaidOff ? 'line-through' : ''}">${acq.name}</td>
-                        <td class="p-4 font-medium text-gray-400">${acq.destino || 'N/A'}</td>
-                        <td class="p-4 text-right font-mono">${formatCurrency(acq.installmentValue)}</td>
-                        <td class="p-4 text-center"><span class="font-mono text-xs">${paid}/${total}</span></td>
-                        <td class="p-4 text-right font-mono text-red-400">${formatCurrency(acq.installmentValue * remaining)}</td>
-                        <td class="p-4 text-center font-mono text-xs">${isPaidOff ? 'FINALIZADO' : formatDate(endDate)}</td>
-                        <td class="p-4 text-center">
-                            <div class="flex justify-center items-center gap-1.5">
-                                <button class="decrease-btn text-amber-400 hover:text-amber-300 p-1.5 rounded-md transition ${isDecreaseDisabled ? 'opacity-20 cursor-not-allowed' : 'hover:bg-gray-700'}" data-id="${acq.id}" ${isDecreaseDisabled ? 'disabled' : ''} title="Reduzir Parcela"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"></path></svg></button>
-                                <button class="increase-btn text-green-400 hover:text-green-300 p-1.5 rounded-md transition ${isPaidOff ? 'opacity-20 cursor-not-allowed' : 'hover:bg-gray-700'}" data-id="${acq.id}" ${isPaidOff ? 'disabled' : ''} title="Pagar Parcela"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg></button>
-                                <button class="edit-btn text-blue-400 hover:text-blue-300 p-1.5 rounded-md transition hover:bg-gray-700" data-id="${acq.id}" data-type="acquisition" title="Editar"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg></button>
-                                <button class="delete-btn text-red-500 hover:text-red-400 p-1.5 rounded-md transition hover:bg-gray-700" data-id="${acq.id}" data-type="acquisition" title="Excluir"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg></button>
-                            </div>
-                        </td>
-                    `;
-                    body.appendChild(row);
-                });
-            };
-
-            const renderFixedExpenses = (expenses) => {
-                const body = document.getElementById('fixed-expenses-table-body');
-                body.innerHTML = '';
-                 if (expenses.length === 0) {
-                     body.innerHTML = `<tr><td colspan="4" class="text-center p-6 text-gray-500">NENHUMA DESPESA FIXA ADICIONADA.</td></tr>`;
-                     return;
-                }
-                expenses.forEach(exp => {
-                    const row = document.createElement('tr');
-                    row.className = 'hover:bg-gray-700/50 text-sm';
-                    row.innerHTML = `
-                        <td class="p-4 font-semibold">${exp.name}</td>
-                        <td class="p-4 font-medium text-gray-400">${exp.destino || 'N/A'}</td>
-                        <td class="p-4 text-right font-mono">${formatCurrency(exp.value)}</td>
-                        <td class="p-4 text-center">
-                            <div class="flex justify-center items-center gap-1.5">
-                               <button class="edit-btn text-blue-400 hover:text-blue-300 p-1.5 rounded-md transition hover:bg-gray-700" data-id="${exp.id}" data-type="expense" title="Editar"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg></button>
-                               <button class="delete-btn text-red-500 hover:text-red-400 p-1.5 rounded-md transition hover:bg-gray-700" data-id="${exp.id}" data-type="expense" title="Excluir"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg></button>
-                            </div>
-                        </td>
-                    `;
-                    body.appendChild(row);
-                });
-            };
-
-            const updateTotals = () => {
-                const monthlyInstallments = localAcquisitions.filter(acq => acq.paidInstallments < acq.totalInstallments).reduce((sum, acq) => sum + acq.installmentValue, 0);
-                const monthlyExpenses = localExpenses.reduce((sum, exp) => sum + exp.value, 0);
-                document.getElementById('total-installments').textContent = formatCurrency(monthlyInstallments);
-                document.getElementById('total-fixed-expenses').textContent = formatCurrency(monthlyExpenses);
-                document.getElementById('grand-total').textContent = formatCurrency(monthlyInstallments + monthlyExpenses);
-            };
-            
-            document.getElementById('toggle-acquisition-form').addEventListener('click', () => document.getElementById('add-acquisition-form').classList.toggle('hidden'));
-            document.getElementById('toggle-expense-form').addEventListener('click', () => document.getElementById('add-expense-form').classList.toggle('hidden'));
-            
-            document.getElementById('add-acquisition-form').addEventListener('submit', async (e) => {
-                e.preventDefault(); if (!userId) return;
-                const form = e.target;
-                const newAcquisition = {
-                    name: form.querySelector('#acq-name').value.toUpperCase(),
-                    destino: form.querySelector('#acq-destino').value.toUpperCase(),
-                    installmentValue: parseFloat(form.querySelector('#acq-installment-value').value),
-                    totalInstallments: parseInt(form.querySelector('#acq-total-installments').value),
-                    paidInstallments: 0, createdAt: new Date(),
-                };
-                await addDoc(collection(db, 'artifacts', appId, 'users', userId, 'acquisitions'), newAcquisition);
-                form.reset(); form.classList.add('hidden');
-            });
-
-            document.getElementById('add-expense-form').addEventListener('submit', async (e) => {
-                e.preventDefault(); if (!userId) return;
-                const form = e.target;
-                const newExpense = {
-                    name: form.querySelector('#exp-name').value.toUpperCase(),
-                    destino: form.querySelector('#exp-destino').value.toUpperCase(),
-                    value: parseFloat(form.querySelector('#exp-value').value),
-                    createdAt: new Date(),
-                };
-                await addDoc(collection(db, 'artifacts', appId, 'users', userId, 'fixedExpenses'), newExpense);
-                form.reset(); form.classList.add('hidden');
-            });
-
-            document.querySelector('#app-screen').addEventListener('click', async (e) => {
-                const button = e.target.closest('button');
-                if (!button || !userId) return;
-                
-                if (button.closest('.lg\\:col-span-2')) {
-                    const { id, type } = button.dataset;
-                    const acq = localAcquisitions.find(a => a.id === id);
-                    
-                    if (button.classList.contains('increase-btn')) {
-                        if (acq && acq.paidInstallments < acq.totalInstallments) {
-                            await updateDoc(doc(db, 'artifacts', appId, 'users', userId, 'acquisitions', id), { paidInstallments: acq.paidInstallments + 1 });
+                    if (formId === 'login-form') {
+                        showAuthError('login'); 
+                        const email = e.target['login-email'].value;
+                        const password = e.target['login-password'].value;
+                        try {
+                            await setPersistence(auth, browserLocalPersistence);
+                            await signInWithEmailAndPassword(auth, email, password);
+                        } catch(error) {
+                            console.error("Login error", error.code);
+                            if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                                showAuthError('login', 'Email ou senha inválidos.');
+                            } else if (error.code === 'auth/operation-not-allowed') {
+                                showAuthError('login', 'Erro: Login por Email/Senha precisa ser ativado no seu painel Firebase.');
+                            } else {
+                                showAuthError('login', 'Erro ao fazer login.');
+                            }
                         }
-                    } else if (button.classList.contains('decrease-btn')) {
-                        if (acq && acq.paidInstallments > 0) {
-                            await updateDoc(doc(db, 'artifacts', appId, 'users', userId, 'acquisitions', id), { paidInstallments: acq.paidInstallments - 1 });
+                    } else if (formId === 'register-form') {
+                        showAuthError('register');
+                        const email = e.target['register-email'].value;
+                        const password = e.target['register-password'].value;
+
+                        if (password.length < 6) {
+                            showAuthError('register', 'A senha deve ter pelo menos 6 caracteres.');
+                            return;
                         }
-                    } else if (button.classList.contains('edit-btn')) {
-                        const item = (type === 'acquisition' ? localAcquisitions : localExpenses).find(i => i.id === id);
-                        showEditModal(item, type);
-                    } else if (button.classList.contains('delete-btn')) {
-                        const collectionName = type === 'acquisition' ? 'acquisitions' : 'fixedExpenses';
-                        const item = (type === 'acquisition' ? localAcquisitions : localExpenses).find(i => i.id === id);
-                        showDeleteModal(`EXCLUIR ${item.name}`, 'ESTA AÇÃO NÃO PODE SER DESFEITA.', async () => {
-                            await deleteDoc(doc(db, 'artifacts', appId, 'users',userId, collectionName, id));
-                        });
+
+                         try {
+                            await createUserWithEmailAndPassword(auth, email, password);
+                        } catch(error) {
+                            console.error("Register error", error.code);
+                            if (error.code === 'auth/operation-not-allowed') {
+                                 showAuthError('register', 'Erro: Cadastro por Email/Senha precisa ser ativado no seu painel Firebase.');
+                            } else if (error.code === 'auth/email-already-in-use') {
+                                showAuthError('register', 'Este email já está em uso.');
+                            } else if (error.code === 'auth/invalid-email') {
+                                 showAuthError('register', 'O formato do email é inválido.');
+                            }  else if (error.code === 'auth/weak-password') {
+                                showAuthError('register', 'A senha é muito fraca.');
+                            } else {
+                                showAuthError('register', 'Erro ao criar conta.');
+                            }
+                        }
+                    }
+                });
+
+                authCard.addEventListener('click', (e) => {
+                    if (e.target.matches('[data-auth-switch]')) {
+                        e.preventDefault();
+                        const type = e.target.dataset.authSwitch;
+                        renderAuthForm(type);
+                    }
+                });
+
+                const showAuthError = (form, message) => {
+                    const errorEl = document.getElementById(`${form}-error`);
+                    if(errorEl){
+                        if (message) {
+                            errorEl.textContent = message;
+                            errorEl.classList.remove('hidden');
+                        } else {
+                            errorEl.classList.add('hidden');
+                        }
                     }
                 }
-            });
-
-            const editModal = document.getElementById('edit-modal');
-            const editForm = document.getElementById('edit-form');
-            function showEditModal(item, type) {
-                editForm.reset();
-                editForm.querySelector('#edit-id').value = item.id;
-                editForm.querySelector('#edit-type').value = type;
-                editForm.querySelector('#edit-name').value = item.name;
-                editForm.querySelector('#edit-destino').value = item.destino || '';
-
-                const valueContainer = document.getElementById('edit-value-container');
-                const installmentsContainer = document.getElementById('edit-installments-container');
-
-                if (type === 'acquisition') {
-                    valueContainer.querySelector('label').textContent = "Valor da Parcela";
-                    valueContainer.querySelector('input').value = item.installmentValue;
-                    installmentsContainer.classList.remove('hidden');
-                    installmentsContainer.querySelector('#edit-paid-installments').value = item.paidInstallments;
-                    installmentsContainer.querySelector('#edit-total-installments').value = item.totalInstallments;
-                } else {
-                    valueContainer.querySelector('label').textContent = "Valor Mensal";
-                    valueContainer.querySelector('input').value = item.value;
-                    installmentsContainer.classList.add('hidden');
+                
+                document.getElementById('logout-btn-footer').addEventListener('click', () => {
+                    signOut(auth);
+                });
+                
+                function unsubscribeListeners() {
+                    if(typeof unsubscribeAcquisitions === 'function') unsubscribeAcquisitions();
+                    if(typeof unsubscribeExpenses === 'function') unsubscribeExpenses();
+                    if(typeof unsubscribeDailyExpenses === 'function') unsubscribeDailyExpenses();
                 }
-                editModal.classList.remove('hidden');
-            }
+                
+                document.getElementById('main-nav').addEventListener('click', (e) => {
+                    if(e.target.matches('button')) {
+                        const tab = e.target.dataset.tab;
+                        
+                        document.querySelectorAll('#main-nav button').forEach(btn => btn.classList.remove('active'));
+                        e.target.classList.add('active');
 
-            function hideEditModal() { editModal.classList.add('hidden'); }
+                        document.getElementById('main-panel').style.display = 'none';
+                        document.getElementById('daily-expenses-panel').style.display = 'none';
+                        document.getElementById(tab).style.display = 'block';
+                    }
+                });
+                
+                document.body.addEventListener('input', (e) => {
+                    if (e.target.matches('.capitalize-input')) {
+                        const start = e.target.selectionStart;
+                        const end = e.target.selectionEnd;
+                        e.target.value = toTitleCase(e.target.value);
+                        e.target.setSelectionRange(start, end);
+                    }
+                });
 
-            document.getElementById('edit-modal-cancel-btn').addEventListener('click', hideEditModal);
-            
-            editForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const id = editForm.querySelector('#edit-id').value;
-                const type = editForm.querySelector('#edit-type').value;
-                let updatedData = { 
-                    name: editForm.querySelector('#edit-name').value.toUpperCase(),
-                    destino: editForm.querySelector('#edit-destino').value.toUpperCase()
+
+                async function setupRealtimeListeners() {
+                    if (!userId) return;
+
+                    const acquisitionsCol = collection(db, 'artifacts', appId, 'users', userId, 'acquisitions');
+                    const expensesCol = collection(db, 'artifacts', appId, 'users', userId, 'fixedExpenses');
+                    const dailyExpensesCol = collection(db, 'artifacts', appId, 'users', userId, 'dailyExpenses');
+
+                    unsubscribeAcquisitions = onSnapshot(acquisitionsCol, (snapshot) => {
+                        localAcquisitions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        renderAcquisitions(localAcquisitions);
+                        updateTotals();
+                    });
+                    
+                    unsubscribeExpenses = onSnapshot(expensesCol, (snapshot) => {
+                        localExpenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        renderFixedExpenses(localExpenses);
+                        updateTotals();
+                    });
+                    
+                    unsubscribeDailyExpenses = onSnapshot(dailyExpensesCol, (snapshot) => {
+                        localDailyExpenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        renderDailyExpenses(localDailyExpenses);
+                    });
+                }
+
+                const renderAcquisitions = (acquisitions) => {
+                    const body = document.getElementById('acquisitions-table-body');
+                    body.innerHTML = '';
+                    if (acquisitions.length === 0) {
+                         body.innerHTML = `<tr><td colspan="7" class="text-center p-6 text-slate-400">Nenhuma aquisição adicionada.</td></tr>`;
+                         return;
+                    }
+                    acquisitions.forEach(acq => {
+                        const paid = acq.paidInstallments || 0;
+                        const total = acq.totalInstallments;
+                        const remaining = total - paid;
+                        const isPaidOff = remaining <= 0;
+                        const isDecreaseDisabled = paid <= 0;
+                        const endDate = new Date();
+                        endDate.setMonth(endDate.getMonth() + remaining - 1);
+                        const progressPercentage = total > 0 ? (paid / total) * 100 : 0;
+
+                        const row = document.createElement('tr');
+                        row.className = `transition-colors duration-200 text-sm ${isPaidOff ? 'text-slate-400' : 'hover:bg-slate-50'}`;
+                        
+                        row.innerHTML = `
+                            <td class="p-4 font-semibold ${isPaidOff ? 'line-through' : ''}">${acq.name}</td>
+                            <td class="p-4 font-medium text-slate-500">${acq.categoria || 'N/A'}</td>
+                            <td class="p-4 text-right font-mono">${formatCurrency(acq.installmentValue)}</td>
+                            <td class="p-4 text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <span class="font-mono text-xs">${paid}/${total}</span>
+                                    <div class="w-16 bg-slate-200 rounded-full h-2">
+                                        <div class="bg-green-400 h-2 rounded-full" style="width: ${progressPercentage}%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-4 text-right font-mono text-rose-500">${formatCurrency(acq.installmentValue * remaining)}</td>
+                            <td class="p-4 text-center font-mono text-xs">${isPaidOff ? 'FINALIZADO' : formatDate(endDate, false)}</td>
+                            <td class="p-4 text-center">
+                                <div class="flex justify-center items-center gap-1.5">
+                                    <button class="decrease-btn text-amber-500 hover:text-amber-600 p-1.5 rounded-md transition ${isDecreaseDisabled ? 'opacity-20 cursor-not-allowed' : 'hover:bg-slate-100'}" data-id="${acq.id}" data-type="acquisition" ${isDecreaseDisabled ? 'disabled' : ''} title="Reduzir Parcela"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"></path></svg></button>
+                                    <button class="increase-btn text-green-500 hover:text-green-600 p-1.5 rounded-md transition ${isPaidOff ? 'opacity-20 cursor-not-allowed' : 'hover:bg-slate-100'}" data-id="${acq.id}" data-type="acquisition" ${isPaidOff ? 'disabled' : ''} title="Pagar Parcela"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg></button>
+                                    <button class="edit-btn text-blue-500 hover:text-blue-600 p-1.5 rounded-md transition hover:bg-slate-100" data-id="${acq.id}" data-type="acquisition" title="Editar"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg></button>
+                                    <button class="delete-btn text-rose-500 hover:text-rose-600 p-1.5 rounded-md transition hover:bg-slate-100" data-id="${acq.id}" data-type="acquisition" title="Excluir"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg></button>
+                                </div>
+                            </td>
+                        `;
+                        body.appendChild(row);
+                    });
                 };
-                const collectionName = type === 'acquisition' ? 'acquisitions' : 'fixedExpenses';
-                if (type === 'acquisition') {
-                    updatedData.installmentValue = parseFloat(editForm.querySelector('#edit-value').value);
-                    updatedData.paidInstallments = parseInt(editForm.querySelector('#edit-paid-installments').value);
-                    updatedData.totalInstallments = parseInt(editForm.querySelector('#edit-total-installments').value);
-                } else {
-                    updatedData.value = parseFloat(editForm.querySelector('#edit-value').value);
+
+                const renderFixedExpenses = (expenses) => {
+                    const body = document.getElementById('fixed-expenses-table-body');
+                    body.innerHTML = '';
+                     if (expenses.length === 0) {
+                         body.innerHTML = `<tr><td colspan="4" class="text-center p-6 text-slate-400">Nenhuma despesa fixa adicionada.</td></tr>`;
+                         return;
+                    }
+                    expenses.forEach(exp => {
+                        const row = document.createElement('tr');
+                        row.className = 'hover:bg-slate-50 text-sm';
+                        row.innerHTML = `
+                            <td class="p-4 font-semibold">${exp.name}</td>
+                            <td class="p-4 font-medium text-slate-500">${exp.categoria || 'N/A'}</td>
+                            <td class="p-4 text-right font-mono">${formatCurrency(exp.value)}</td>
+                            <td class="p-4 text-center">
+                                <div class="flex justify-center items-center gap-1.5">
+                                   <button class="edit-btn text-blue-500 hover:text-blue-600 p-1.5 rounded-md transition hover:bg-slate-100" data-id="${exp.id}" data-type="expense" title="Editar"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg></button>
+                                   <button class="delete-btn text-rose-500 hover:text-rose-600 p-1.5 rounded-md transition hover:bg-slate-100" data-id="${exp.id}" data-type="expense" title="Excluir"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg></button>
+                                </div>
+                            </td>
+                        `;
+                        body.appendChild(row);
+                    });
+                };
+
+                const renderDailyExpenses = (allExpenses) => {
+                    const body = document.getElementById('daily-expenses-table-body');
+                    body.innerHTML = '';
+                    
+                    const now = new Date();
+                    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+
+                    const monthExpenses = allExpenses.filter(exp => {
+                        const expDate = exp.createdAt?.toDate();
+                        return expDate >= startOfMonth && expDate <= endOfMonth;
+                    });
+                    
+                    if (monthExpenses.length === 0) {
+                         body.innerHTML = `<tr><td colspan="5" class="text-center p-6 text-slate-400">Nenhum gasto lançado este mês.</td></tr>`;
+                    } else {
+                         monthExpenses.forEach(exp => {
+                            const row = document.createElement('tr');
+                            row.className = 'hover:bg-slate-50 text-sm';
+                            row.innerHTML = `
+                                <td class="p-4 font-medium text-slate-500">${formatDate(exp.createdAt?.toDate())}</td>
+                                <td class="p-4 font-medium text-slate-500">${exp.categoria}</td>
+                                <td class="p-4 font-semibold">${exp.descricao}</td>
+                                <td class="p-4 text-right font-mono">${formatCurrency(exp.valor)}</td>
+                                <td class="p-4 text-center">
+                                    <button class="delete-btn text-rose-500 hover:text-rose-600 p-1.5 rounded-md transition hover:bg-slate-100" data-id="${exp.id}" data-type="dailyExpense" title="Excluir"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg></button>
+                                </td>
+                            `;
+                            body.appendChild(row);
+                        });
+                    }
+                    
+                    const monthTotal = monthExpenses.reduce((sum, exp) => sum + exp.valor, 0);
+                    document.getElementById('daily-expenses-total').textContent = formatCurrency(monthTotal);
+                };
+
+                const updateTotals = () => {
+                    const monthlyInstallments = localAcquisitions.filter(acq => acq.paidInstallments < acq.totalInstallments).reduce((sum, acq) => sum + acq.installmentValue, 0);
+                    const monthlyExpenses = localExpenses.reduce((sum, exp) => sum + exp.value, 0);
+                    document.getElementById('total-installments').textContent = formatCurrency(monthlyInstallments);
+                    document.getElementById('total-fixed-expenses').textContent = formatCurrency(monthlyExpenses);
+                    document.getElementById('grand-total').textContent = formatCurrency(monthlyInstallments + monthlyExpenses);
+                };
+                
+                document.getElementById('toggle-acquisition-form').addEventListener('click', () => document.getElementById('add-acquisition-form').classList.toggle('hidden'));
+                document.getElementById('toggle-expense-form').addEventListener('click', () => document.getElementById('add-expense-form').classList.toggle('hidden'));
+                
+                document.getElementById('add-acquisition-form').addEventListener('submit', async (e) => {
+                    e.preventDefault(); if (!userId) return;
+                    const form = e.target;
+                    const newAcquisition = {
+                        name: form.querySelector('#acq-name').value,
+                        categoria: form.querySelector('#acq-categoria').value,
+                        installmentValue: parseFloat(form.querySelector('#acq-installment-value').value),
+                        totalInstallments: parseInt(form.querySelector('#acq-total-installments').value),
+                        paidInstallments: 0, createdAt: new Date(),
+                    };
+                    await addDoc(collection(db, 'artifacts', appId, 'users', userId, 'acquisitions'), newAcquisition);
+                    form.reset(); form.classList.add('hidden');
+                });
+
+                document.getElementById('add-expense-form').addEventListener('submit', async (e) => {
+                    e.preventDefault(); if (!userId) return;
+                    const form = e.target;
+                    const newExpense = {
+                        name: form.querySelector('#exp-name').value,
+                        categoria: form.querySelector('#exp-categoria').value,
+                        value: parseFloat(form.querySelector('#exp-value').value),
+                        createdAt: new Date(),
+                    };
+                    await addDoc(collection(db, 'artifacts', appId, 'users', userId, 'fixedExpenses'), newExpense);
+                    form.reset(); form.classList.add('hidden');
+                });
+
+                document.getElementById('add-daily-expense-form').addEventListener('submit', async (e) => {
+                    e.preventDefault(); if (!userId) return;
+                    const form = e.target;
+                    const newDailyExpense = {
+                        descricao: form.querySelector('#daily-descricao').value,
+                        categoria: form.querySelector('#daily-categoria').value,
+                        valor: parseFloat(form.querySelector('#daily-valor').value),
+                        createdAt: new Date(),
+                    };
+                    await addDoc(collection(db, 'artifacts', appId, 'users', userId, 'dailyExpenses'), newDailyExpense);
+                    form.reset();
+                });
+
+                document.querySelector('#app-screen').addEventListener('click', async (e) => {
+                    const button = e.target.closest('button');
+                    if (!button || !userId) return;
+                    
+                    if (button.closest('.lg\\:col-span-2') || button.closest('#daily-expenses-panel')) {
+                        const { id, type } = button.dataset;
+                        
+                        if (!id || !type) return;
+
+                        if (type === 'acquisition') {
+                            const acq = localAcquisitions.find(a => a.id === id);
+                            if (button.classList.contains('increase-btn')) {
+                                if (acq && acq.paidInstallments < acq.totalInstallments) {
+                                    await updateDoc(doc(db, 'artifacts', appId, 'users', userId, 'acquisitions', id), { paidInstallments: acq.paidInstallments + 1 });
+                                }
+                            } else if (button.classList.contains('decrease-btn')) {
+                                if (acq && acq.paidInstallments > 0) {
+                                    await updateDoc(doc(db, 'artifacts', appId, 'users', userId, 'acquisitions', id), { paidInstallments: acq.paidInstallments - 1 });
+                                }
+                            }
+                        }
+                        
+                        if (button.classList.contains('edit-btn')) {
+                            const collection = type === 'acquisition' ? localAcquisitions : localExpenses;
+                            const item = collection.find(i => i.id === id);
+                            if(item) showEditModal(item, type);
+                        } else if (button.classList.contains('delete-btn')) {
+                            const collectionNameMap = {
+                                acquisition: 'acquisitions',
+                                expense: 'fixedExpenses',
+                                dailyExpense: 'dailyExpenses'
+                            };
+                            const collectionDataMap = {
+                                acquisition: localAcquisitions,
+                                expense: localExpenses,
+                                dailyExpense: localDailyExpenses
+                            };
+
+                            const collectionName = collectionNameMap[type];
+                            const item = collectionDataMap[type]?.find(i => i.id === id);
+
+                            if(item && collectionName){
+                                showDeleteModal(`Excluir ${item.name || item.descricao}`, 'Esta ação não pode ser desfeita.', async () => {
+                                    await deleteDoc(doc(db, 'artifacts', appId, 'users',userId, collectionName, id));
+                                });
+                            }
+                        }
+                    }
+                });
+
+                const editModal = document.getElementById('edit-modal');
+                const editForm = document.getElementById('edit-form');
+                function showEditModal(item, type) {
+                    editForm.reset();
+                    editForm.querySelector('#edit-id').value = item.id;
+                    editForm.querySelector('#edit-type').value = type;
+                    editForm.querySelector('#edit-name').value = item.name;
+                    editForm.querySelector('#edit-categoria').value = item.categoria || '';
+
+                    const valueContainer = document.getElementById('edit-value-container');
+                    const installmentsContainer = document.getElementById('edit-installments-container');
+
+                    if (type === 'acquisition') {
+                        valueContainer.querySelector('label').textContent = "Valor da Parcela";
+                        valueContainer.querySelector('input').value = item.installmentValue;
+                        installmentsContainer.classList.remove('hidden');
+                        installmentsContainer.querySelector('#edit-paid-installments').value = item.paidInstallments;
+                        installmentsContainer.querySelector('#edit-total-installments').value = item.totalInstallments;
+                    } else {
+                        valueContainer.querySelector('label').textContent = "Valor Mensal";
+                        valueContainer.querySelector('input').value = item.value;
+                        installmentsContainer.classList.add('hidden');
+                    }
+                    editModal.classList.remove('hidden');
                 }
-                await updateDoc(doc(db, 'artifacts', appId, 'users', userId, collectionName, id), updatedData);
-                hideEditModal();
-            });
 
-            // --- PDF Generation ---
-            document.getElementById('download-pdf-btn').addEventListener('click', () => {
-                const { jsPDF } = window.jspdf;
-                const docPDF = new jsPDF();
-                let startY = 15;
+                function hideEditModal() { editModal.classList.add('hidden'); }
+
+                document.getElementById('edit-modal-cancel-btn').addEventListener('click', hideEditModal);
                 
-                docPDF.setFont('helvetica', 'bold');
-                docPDF.setFontSize(18);
-                docPDF.text("RELATÓRIO FINANCEIRO", 105, startY, { align: 'center' });
-                startY += 8;
-
-                docPDF.setFontSize(10);
-                docPDF.setFont('helvetica', 'normal');
-                const date = new Date();
-                docPDF.text(`GERADO EM: ${date.toLocaleDateString('pt-BR')} ${date.toLocaleTimeString('pt-BR')}`, 105, startY, { align: 'center' });
-                startY += 12;
-
-                docPDF.setFontSize(12);
-                docPDF.setFont('helvetica', 'bold');
-                docPDF.text("RESUMO GERAL MENSAL", 14, startY);
-                startY += 8;
-
-                docPDF.setFont('helvetica', 'normal');
-                docPDF.text(`TOTAL DE PARCELAS ATIVAS: ${document.getElementById('total-installments').textContent}`, 14, startY);
-                startY += 7;
-                docPDF.text(`TOTAL DE DESPESAS FIXAS: ${document.getElementById('total-fixed-expenses').textContent}`, 14, startY);
-                startY += 7;
-                docPDF.setFont('helvetica', 'bold');
-                docPDF.text(`TOTAL GERAL MENSAL: ${document.getElementById('grand-total').textContent}`, 14, startY);
-                startY += 15;
+                editForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const id = editForm.querySelector('#edit-id').value;
+                    const type = editForm.querySelector('#edit-type').value;
+                    let updatedData = { 
+                        name: toTitleCase(editForm.querySelector('#edit-name').value),
+                        categoria: toTitleCase(editForm.querySelector('#edit-categoria').value)
+                    };
+                    const collectionName = type === 'acquisition' ? 'acquisitions' : 'fixedExpenses';
+                    if (type === 'acquisition') {
+                        updatedData.installmentValue = parseFloat(editForm.querySelector('#edit-value').value);
+                        updatedData.paidInstallments = parseInt(editForm.querySelector('#edit-paid-installments').value);
+                        updatedData.totalInstallments = parseInt(editForm.querySelector('#edit-total-installments').value);
+                    } else {
+                        updatedData.value = parseFloat(editForm.querySelector('#edit-value').value);
+                    }
+                    await updateDoc(doc(db, 'artifacts', appId, 'users', userId, collectionName, id), updatedData);
+                    hideEditModal();
+                });
                 
-                const allDestinos = [...new Set([...localAcquisitions.map(a => a.destino || 'NÃO ESPECIFICADO'), ...localExpenses.map(e => e.destino || 'NÃO ESPECIFICADO')])];
-
-                allDestinos.forEach(destino => {
-                    const acqsByDestino = localAcquisitions.filter(a => (a.destino || 'NÃO ESPECIFICADO') === destino);
-                    const expsByDestino = localExpenses.filter(e => (e.destino || 'NÃO ESPECIFICADO') === destino);
-
-                    if (acqsByDestino.length > 0 || expsByDestino.length > 0) {
-                        docPDF.setFontSize(14);
-                        docPDF.setFont('helvetica', 'bold');
-                        docPDF.text(`DESTINO: ${destino}`, 14, startY);
-                        startY += 10;
+                document.getElementById('download-pdf-btn-footer').addEventListener('click', () => {
+                    const mainPanelActive = document.getElementById('main-panel').style.display !== 'none';
+                    if (mainPanelActive) {
+                        exportMainPdf();
+                    } else {
+                        exportDailyPdf();
                     }
+                });
 
-                    if (acqsByDestino.length > 0) {
-                        const acqHead = [['AQUISIÇÃO', 'VALOR PARCELA', 'VALOR PAGO', 'PAGAS/TOTAL', 'RESTANTE', 'TÉRMINO']];
-                        const acqBody = acqsByDestino.map(acq => {
-                            const paid = acq.paidInstallments || 0;
-                            const total = acq.totalInstallments;
-                            const remaining = total - paid;
-                            const amountPaid = acq.installmentValue * paid;
-                            const endDate = new Date();
-                            endDate.setMonth(endDate.getMonth() + remaining - 1);
-                            return [
-                                acq.name,
-                                formatCurrency(acq.installmentValue),
-                                formatCurrency(amountPaid),
-                                `${paid}/${total}`,
-                                formatCurrency(acq.installmentValue * remaining),
-                                remaining <= 0 ? 'FINALIZADO' : formatDate(endDate)
-                            ];
-                        });
-                        docPDF.autoTable({
-                            head: acqHead, body: acqBody, startY: startY,
-                            headStyles: { fillColor: [41, 128, 185], fontSize: 8 },
-                            bodyStyles: { fontSize: 8 },
-                            theme: 'striped'
-                        });
-                        startY = docPDF.autoTable.previous.finalY;
-                    }
+                const exportMainPdf = () => {
+                    const { jsPDF } = window.jspdf;
+                    const docPDF = new jsPDF();
+                    let startY = 15;
                     
-                    if (expsByDestino.length > 0) {
-                         if (acqsByDestino.length > 0) startY += 5;
-                        const expHead = [['DESPESA FIXA', 'VALOR MENSAL']];
-                        const expBody = expsByDestino.map(exp => [ exp.name, formatCurrency(exp.value) ]);
-                        docPDF.autoTable({
-                            head: expHead, body: expBody, startY: startY,
-                            headStyles: { fillColor: [39, 174, 96], fontSize: 8 },
-                            bodyStyles: { fontSize: 8 },
-                            theme: 'striped'
-                        });
-                        startY = docPDF.autoTable.previous.finalY;
-                    }
-
-                    const totalParcelasMensaisDestino = acqsByDestino
-                        .filter(acq => acq.paidInstallments < acq.totalInstallments)
-                        .reduce((sum, acq) => sum + acq.installmentValue, 0);
-                    const totalDespesasFixas = expsByDestino.reduce((sum, exp) => sum + exp.value, 0);
-                    
-                    startY += 8;
-                    docPDF.setFontSize(9);
                     docPDF.setFont('helvetica', 'bold');
-                    docPDF.text(`TOTAL DE PARCELAS MENSAIS (DESTINO): ${formatCurrency(totalParcelasMensaisDestino)}`, 14, startY);
-                    startY += 6;
-                    docPDF.text(`TOTAL EM DESPESAS FIXAS (DESTINO): ${formatCurrency(totalDespesasFixas)}`, 14, startY);
-                    startY += 10;
-                });
+                    docPDF.setFontSize(18);
+                    docPDF.text("RELATÓRIO FINANCEIRO", 105, startY, { align: 'center' });
+                    startY += 8;
 
-                const today = new Date().toISOString().slice(0, 10);
-                docPDF.save(`relatorio-financeiro-${today}.pdf`);
-            });
-        } catch(e) {
-            console.error(e);
-            if (e.message.includes("Configuração do Firebase não preenchida")) {
+                    docPDF.setFontSize(10);
+                    docPDF.setFont('helvetica', 'normal');
+                    const date = new Date();
+                    docPDF.text(`GERADO EM: ${date.toLocaleDateString('pt-BR')} ${date.toLocaleTimeString('pt-BR')}`, 105, startY, { align: 'center' });
+                    startY += 12;
+
+                    docPDF.setFontSize(12);
+                    docPDF.setFont('helvetica', 'bold');
+                    docPDF.text("RESUMO GERAL MENSAL", 14, startY);
+                    startY += 8;
+
+                    docPDF.setFont('helvetica', 'normal');
+                    docPDF.text(`TOTAL DE PARCELAS ATIVAS: ${document.getElementById('total-installments').textContent}`, 14, startY);
+                    startY += 7;
+                    docPDF.text(`TOTAL DE DESPESAS FIXAS: ${document.getElementById('total-fixed-expenses').textContent}`, 14, startY);
+                    startY += 7;
+                    docPDF.setFont('helvetica', 'bold');
+                    docPDF.text(`TOTAL GERAL MENSAL: ${document.getElementById('grand-total').textContent}`, 14, startY);
+                    startY += 15;
+                    
+                    const allCategorias = [...new Set([...localAcquisitions.map(a => a.categoria || 'NÃO ESPECIFICADO'), ...localExpenses.map(e => e.categoria || 'NÃO ESPECIFICADO')])];
+
+                    allCategorias.forEach(categoria => {
+                        const acqsByCategoria = localAcquisitions.filter(a => (a.categoria || 'NÃO ESPECIFICADO') === categoria);
+                        const expsByCategoria = localExpenses.filter(e => (e.categoria || 'NÃO ESPECIFICADO') === categoria);
+
+                        if (acqsByCategoria.length > 0 || expsByCategoria.length > 0) {
+                            docPDF.setFontSize(14);
+                            docPDF.setFont('helvetica', 'bold');
+                            docPDF.text(`CATEGORIA: ${categoria}`, 14, startY);
+                            startY += 10;
+                        }
+
+                        if (acqsByCategoria.length > 0) {
+                            const acqHead = [['AQUISIÇÃO', 'VALOR PARCELA', 'VALOR PAGO', 'PAGAS/TOTAL', 'RESTANTE', 'TÉRMINO']];
+                            const acqBody = acqsByCategoria.map(acq => {
+                                const paid = acq.paidInstallments || 0;
+                                const total = acq.totalInstallments;
+                                const remaining = total - paid;
+                                const amountPaid = acq.installmentValue * paid;
+                                const endDate = new Date();
+                                endDate.setMonth(endDate.getMonth() + remaining - 1);
+                                return [
+                                    acq.name,
+                                    formatCurrency(acq.installmentValue),
+                                    formatCurrency(amountPaid),
+                                    `${paid}/${total}`,
+                                    formatCurrency(acq.installmentValue * remaining),
+                                    remaining <= 0 ? 'FINALIZADO' : formatDate(endDate)
+                                ];
+                            });
+                            docPDF.autoTable({
+                                head: acqHead, body: acqBody, startY: startY,
+                                headStyles: { fillColor: [41, 128, 185], fontSize: 8 },
+                                bodyStyles: { fontSize: 8 },
+                                theme: 'striped'
+                            });
+                            startY = docPDF.autoTable.previous.finalY + 10;
+                        }
+                        
+                        if (expsByCategoria.length > 0) {
+                            const expHead = [['DESPESA FIXA', 'VALOR MENSAL']];
+                            const expBody = expsByCategoria.map(exp => [ exp.name, formatCurrency(exp.value) ]);
+                            docPDF.autoTable({
+                                head: expHead, body: expBody, startY: startY,
+                                headStyles: { fillColor: [39, 174, 96], fontSize: 8 },
+                                bodyStyles: { fontSize: 8 },
+                                theme: 'striped'
+                            });
+                            startY = docPDF.autoTable.previous.finalY + 10;
+                        }
+                    });
+
+                    const today = new Date().toISOString().slice(0, 10);
+                    docPDF.save(`relatorio-financeiro-principal-${today}.pdf`);
+                }
+
+                const exportDailyPdf = () => {
+                     const { jsPDF } = window.jspdf;
+                    const docPDF = new jsPDF();
+                    let startY = 15;
+                    
+                    docPDF.setFont('helvetica', 'bold');
+                    docPDF.setFontSize(18);
+                    docPDF.text("RELATÓRIO DE GASTOS DIÁRIOS", 105, startY, { align: 'center' });
+                    startY += 8;
+
+                    docPDF.setFontSize(10);
+                    docPDF.setFont('helvetica', 'normal');
+                    const date = new Date();
+                    docPDF.text(`GERADO EM: ${date.toLocaleDateString('pt-BR')} ${date.toLocaleTimeString('pt-BR')}`, 105, startY, { align: 'center' });
+                    startY += 12;
+
+                    docPDF.setFontSize(12);
+                    docPDF.setFont('helvetica', 'bold');
+                    docPDF.text(`TOTAL GASTO ESTE MÊS: ${document.getElementById('daily-expenses-total').textContent}`, 14, startY);
+                    startY += 15;
+                    
+                    const dailyHead = [['Data', 'Categoria', 'Descrição', 'Valor']];
+                    const dailyBody = localDailyExpenses
+                        .filter(exp => {
+                           const expDate = exp.createdAt?.toDate();
+                           const now = new Date();
+                           return expDate.getMonth() === now.getMonth() && expDate.getFullYear() === now.getFullYear();
+                        })
+                        .map(exp => [
+                            formatDate(exp.createdAt?.toDate()),
+                            exp.categoria,
+                            exp.descricao,
+                            formatCurrency(exp.valor)
+                        ]);
+
+                    docPDF.autoTable({
+                        head: dailyHead, body: dailyBody, startY: startY,
+                        headStyles: { fillColor: [100, 116, 139], fontSize: 8 },
+                        bodyStyles: { fontSize: 8 },
+                        theme: 'striped'
+                    });
+
+                    const today = new Date().toISOString().slice(0, 10);
+                    docPDF.save(`relatorio-gastos-diarios-${today}.pdf`);
+                }
+            
+            } catch(e) {
+                console.error(e);
                 const container = document.getElementById('root-container');
-                container.innerHTML = `
-                    <div class="min-h-screen w-full flex flex-col items-center justify-center bg-red-900 text-white p-8 -m-8">
-                        <h1 class="text-4xl font-bold mb-4 text-center">ERRO DE CONFIGURAÇÃO</h1>
-                        <p class="text-xl text-center">As chaves do Firebase não foram configuradas neste site.</p>
-                        <p class="mt-4 text-center text-red-200">Por favor, edite o arquivo HTML, substitua o bloco de exemplo 'deployFirebaseConfig' pelas suas credenciais do Firebase e faça o deploy novamente.</p>
-                    </div>`;
+                if (container && e.message.includes("Configuração do Firebase não preenchida")) {
+                    container.innerHTML = `
+                        <div class="min-h-screen w-full flex flex-col items-center justify-center bg-red-900 text-white p-8">
+                            <h1 class="text-4xl font-bold mb-4 text-center">ERRO DE CONFIGURAÇÃO</h1>
+                            <p class="text-xl text-center">As chaves do Firebase não foram configuradas neste site.</p>
+                            <p class="mt-4 text-center text-red-200">Por favor, edite o arquivo HTML, substitua o bloco de exemplo 'firebaseConfig' pelas suas credenciais do Firebase e faça o deploy novamente.</p>
+                        </div>`;
+                }
             }
-        }
+        });
     </script>
 </body>
 </html>
