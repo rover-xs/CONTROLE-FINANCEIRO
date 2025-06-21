@@ -27,11 +27,10 @@
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
-        input[type="text"],
-        input[type="number"] {
+        .app-input {
             text-transform: uppercase;
         }
-        ::placeholder {
+        .app-input::placeholder {
             text-transform: uppercase;
             color: #718096;
         }
@@ -56,6 +55,7 @@
             text-transform: uppercase;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
         }
         .btn-primary {
@@ -81,182 +81,197 @@
         }
     </style>
 </head>
-<body class="text-gray-300 uppercase">
-
-    <div id="app-container" class="container mx-auto p-4 md:p-6 lg:p-8 max-w-7xl">
-        
-        <header class="mb-10 flex flex-wrap justify-center md:justify-between items-center gap-4">
-            <h1 class="text-2xl md:text-3xl font-bold text-white text-center">CONTROLE FINANCEIRO</h1>
-            <button id="download-pdf-btn" class="btn btn-secondary text-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-                Exportar PDF
-            </button>
-        </header>
-
-        <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Coluna Principal (Tabelas) -->
-            <div class="lg:col-span-2 space-y-8">
-                <!-- Seção de Aquisições -->
-                <div class="bg-gray-800/50 backdrop-blur-sm p-4 sm:p-6 rounded-2xl shadow-lg border border-gray-700/50">
-                    <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
-                        <h2 class="text-xl font-bold text-white">AQUISIÇÕES PARCELADAS</h2>
-                        <button id="toggle-acquisition-form" class="btn btn-primary text-sm">
-                            + Adicionar
-                        </button>
-                    </div>
-
-                    <form id="add-acquisition-form" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-gray-900/50 rounded-lg">
-                        <input type="text" id="acq-name" placeholder="Nome" class="form-input" required>
-                        <input type="text" id="acq-destino" placeholder="Destino" class="form-input" required>
-                        <input type="number" id="acq-installment-value" placeholder="Valor Parcela" step="0.01" class="form-input" required>
-                        <input type="number" id="acq-total-installments" placeholder="Qtd. Parcelas" class="form-input" required>
-                        <button type="submit" class="btn btn-success md:col-span-2">Salvar Aquisição</button>
-                    </form>
-
-                    <div class="table-responsive">
-                        <table class="w-full text-left whitespace-nowrap">
-                            <thead>
-                                <tr class="text-xs font-semibold text-gray-400 border-b border-gray-700">
-                                    <th class="p-4">AQUISIÇÃO</th>
-                                    <th class="p-4">DESTINO</th>
-                                    <th class="p-4 text-right">PARCELA</th>
-                                    <th class="p-4 text-center">PROGRESSO</th>
-                                    <th class="p-4 text-right">RESTANTE</th>
-                                    <th class="p-4 text-center">TÉRMINO</th>
-                                    <th class="p-4 text-center">AÇÕES</th>
-                                </tr>
-                            </thead>
-                            <tbody id="acquisitions-table-body" class="divide-y divide-gray-700/50">
-                            </tbody>
-                        </table>
-                    </div>
+<body class="text-gray-300">
+    
+    <div id="root-container">
+        <!-- Auth Screen -->
+        <div id="auth-screen" class="min-h-screen flex flex-col items-center justify-center p-4">
+            <div class="w-full max-w-md">
+                <div id="auth-card" class="bg-gray-800/50 p-8 rounded-2xl shadow-lg border border-gray-700/50 space-y-6">
+                    <!-- Content will be injected by JS -->
                 </div>
-
-                <!-- Seção de Despesas Fixas -->
-                <div class="bg-gray-800/50 backdrop-blur-sm p-4 sm:p-6 rounded-2xl shadow-lg border border-gray-700/50">
-                    <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
-                        <h2 class="text-xl font-bold text-white">DESPESAS FIXAS</h2>
-                         <button id="toggle-expense-form" class="btn btn-primary text-sm">
-                            + Adicionar
-                        </button>
-                    </div>
-                    
-                     <form id="add-expense-form" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 bg-gray-900/50 rounded-lg">
-                        <input type="text" id="exp-name" placeholder="Nome da Despesa" class="form-input" required>
-                        <input type="text" id="exp-destino" placeholder="Destino" class="form-input" required>
-                        <input type="number" id="exp-value" placeholder="Valor Mensal" step="0.01" class="form-input" required>
-                        <button type="submit" class="btn btn-success md:col-span-3">Salvar Despesa</button>
-                    </form>
-
-                    <div class="table-responsive">
-                        <table class="w-full text-left whitespace-nowrap">
-                            <thead>
-                                <tr class="text-xs font-semibold text-gray-400 border-b border-gray-700">
-                                    <th class="p-4">DESPESA</th>
-                                    <th class="p-4">DESTINO</th>
-                                    <th class="p-4 text-right">VALOR MENSAL</th>
-                                    <th class="p-4 text-center">AÇÕES</th>
-                                </tr>
-                            </thead>
-                            <tbody id="fixed-expenses-table-body" class="divide-y divide-gray-700/50">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <aside class="lg:col-span-1 space-y-6">
-                <div class="bg-gray-800/50 p-6 rounded-2xl shadow-lg border border-gray-700/50 flex items-center justify-between">
-                    <div>
-                        <h3 class="text-base font-semibold text-blue-400">PARCELAS DO MÊS</h3>
-                        <p id="total-installments" class="text-2xl font-bold text-white mt-1">R$ 0,00</p>
-                    </div>
-                    <div class="text-blue-400/50">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                    </div>
-                </div>
-                <div class="bg-gray-800/50 p-6 rounded-2xl shadow-lg border border-gray-700/50 flex items-center justify-between">
-                    <div>
-                        <h3 class="text-base font-semibold text-green-400">DESPESAS FIXAS</h3>
-                        <p id="total-fixed-expenses" class="text-2xl font-bold text-white mt-1">R$ 0,00</p>
-                    </div>
-                    <div class="text-green-400/50">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
-                    </div>
-                </div>
-                 <div class="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-6 rounded-2xl shadow-lg flex items-center justify-between">
-                    <div>
-                        <h3 class="text-base font-semibold">TOTAL MENSAL</h3>
-                        <p id="grand-total" class="text-3xl font-bold mt-1">R$ 0,00</p>
-                    </div>
-                    <div class="text-white/50">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" /></svg>
-                    </div>
-                </div>
-            </aside>
-        </main>
-        
-    </div>
-
-    <!-- Modals -->
-    <div id="confirmation-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-        <div class="bg-gray-800 rounded-lg p-6 shadow-xl w-full max-w-sm border border-gray-700">
-            <h3 id="modal-title" class="text-xl font-bold text-white mb-4">CONFIRMAR AÇÃO</h3>
-            <p id="modal-body" class="text-gray-300 mb-6">VOCÊ TEM CERTEZA?</p>
-            <div class="flex justify-end gap-4">
-                <button id="modal-cancel-btn" class="btn bg-gray-600 text-white hover:bg-gray-500">CANCELAR</button>
-                <button id="modal-confirm-btn" class="btn bg-red-600 text-white hover:bg-red-500">CONFIRMAR</button>
             </div>
         </div>
-    </div>
 
-    <div id="edit-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-        <form id="edit-form" class="bg-gray-800 rounded-lg p-6 shadow-xl w-full max-w-md space-y-4 border border-gray-700">
-            <h3 id="edit-modal-title" class="text-xl font-bold text-white">EDITAR ITEM</h3>
-            <input type="hidden" id="edit-id"><input type="hidden" id="edit-type">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label for="edit-name" class="block mb-2 text-sm font-medium text-gray-400">NOME</label>
-                    <input type="text" id="edit-name" class="form-input w-full" required>
+        <!-- Main App Screen (hidden by default) -->
+        <div id="app-screen" class="hidden container mx-auto p-4 md:p-6 lg:p-8 max-w-7xl">
+            
+            <header class="mb-10 flex flex-wrap justify-center md:justify-between items-center gap-4">
+                <h1 class="text-2xl md:text-3xl font-bold text-white text-center uppercase">Controle Financeiro</h1>
+                <div class="flex gap-4">
+                    <button id="download-pdf-btn" class="btn btn-secondary text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                        Exportar PDF
+                    </button>
+                    <button id="logout-btn" class="btn bg-red-600 text-white hover:bg-red-500 text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" /></svg>
+                        Sair
+                    </button>
                 </div>
-                 <div>
-                    <label for="edit-destino" class="block mb-2 text-sm font-medium text-gray-400">DESTINO</label>
-                    <input type="text" id="edit-destino" class="form-input w-full" required>
-                </div>
-            </div>
-            <div id="edit-value-container">
-                <label for="edit-value" class="block mb-2 text-sm font-medium text-gray-400">VALOR</label>
-                <input type="number" id="edit-value" step="0.01" class="form-input w-full" required>
-            </div>
-            <div id="edit-installments-container" class="grid grid-cols-2 gap-4">
-                <div>
-                    <label for="edit-paid-installments" class="block mb-2 text-sm font-medium text-gray-400">PARCELAS PAGAS</label>
-                    <input type="number" id="edit-paid-installments" class="form-input w-full" required>
-                </div>
-                <div>
-                    <label for="edit-total-installments" class="block mb-2 text-sm font-medium text-gray-400">TOTAL DE PARCELAS</label>
-                    <input type="number" id="edit-total-installments" class="form-input w-full" required>
-                </div>
-            </div>
-            <div class="flex justify-end gap-4 pt-4">
-                <button type="button" id="edit-modal-cancel-btn" class="btn bg-gray-600 text-white hover:bg-gray-500">CANCELAR</button>
-                <button type="submit" class="btn btn-success">SALVAR ALTERAÇÕES</button>
-            </div>
-        </form>
-    </div>
+            </header>
 
+            <main class="grid grid-cols-1 lg:grid-cols-3 gap-8 uppercase">
+                <!-- Coluna Principal (Tabelas) -->
+                <div class="lg:col-span-2 space-y-8">
+                    <!-- Seção de Aquisições -->
+                    <div class="bg-gray-800/50 backdrop-blur-sm p-4 sm:p-6 rounded-2xl shadow-lg border border-gray-700/50">
+                        <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+                            <h2 class="text-xl font-bold text-white">AQUISIÇÕES PARCELADAS</h2>
+                            <button id="toggle-acquisition-form" class="btn btn-primary text-sm">
+                                + Adicionar
+                            </button>
+                        </div>
+
+                        <form id="add-acquisition-form" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-gray-900/50 rounded-lg">
+                            <input type="text" id="acq-name" placeholder="Nome" class="form-input app-input" required>
+                            <input type="text" id="acq-destino" placeholder="Destino" class="form-input app-input" required>
+                            <input type="number" id="acq-installment-value" placeholder="Valor Parcela" step="0.01" class="form-input app-input" required>
+                            <input type="number" id="acq-total-installments" placeholder="Qtd. Parcelas" class="form-input app-input" required>
+                            <button type="submit" class="btn btn-success md:col-span-2">Salvar Aquisição</button>
+                        </form>
+
+                        <div class="table-responsive">
+                            <table class="w-full text-left whitespace-nowrap">
+                                <thead>
+                                    <tr class="text-xs font-semibold text-gray-400 border-b border-gray-700">
+                                        <th class="p-4">AQUISIÇÃO</th>
+                                        <th class="p-4">DESTINO</th>
+                                        <th class="p-4 text-right">PARCELA</th>
+                                        <th class="p-4 text-center">PROGRESSO</th>
+                                        <th class="p-4 text-right">RESTANTE</th>
+                                        <th class="p-4 text-center">TÉRMINO</th>
+                                        <th class="p-4 text-center">AÇÕES</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="acquisitions-table-body" class="divide-y divide-gray-700/50">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Seção de Despesas Fixas -->
+                    <div class="bg-gray-800/50 backdrop-blur-sm p-4 sm:p-6 rounded-2xl shadow-lg border border-gray-700/50">
+                        <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+                            <h2 class="text-xl font-bold text-white">DESPESAS FIXAS</h2>
+                             <button id="toggle-expense-form" class="btn btn-primary text-sm">
+                                + Adicionar
+                            </button>
+                        </div>
+                        
+                         <form id="add-expense-form" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 bg-gray-900/50 rounded-lg">
+                            <input type="text" id="exp-name" placeholder="Nome da Despesa" class="form-input app-input" required>
+                            <input type="text" id="exp-destino" placeholder="Destino" class="form-input app-input" required>
+                            <input type="number" id="exp-value" placeholder="Valor Mensal" step="0.01" class="form-input app-input" required>
+                            <button type="submit" class="btn btn-success md:col-span-3">Salvar Despesa</button>
+                        </form>
+
+                        <div class="table-responsive">
+                            <table class="w-full text-left whitespace-nowrap">
+                                <thead>
+                                    <tr class="text-xs font-semibold text-gray-400 border-b border-gray-700">
+                                        <th class="p-4">DESPESA</th>
+                                        <th class="p-4">DESTINO</th>
+                                        <th class="p-4 text-right">VALOR MENSAL</th>
+                                        <th class="p-4 text-center">AÇÕES</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fixed-expenses-table-body" class="divide-y divide-gray-700/50">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="lg:col-span-1 space-y-6">
+                    <div class="bg-gray-800/50 p-6 rounded-2xl shadow-lg border border-gray-700/50 flex items-center justify-between">
+                        <div>
+                            <h3 class="text-base font-semibold text-blue-400">PARCELAS DO MÊS</h3>
+                            <p id="total-installments" class="text-2xl font-bold text-white mt-1">R$ 0,00</p>
+                        </div>
+                        <div class="text-blue-400/50">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        </div>
+                    </div>
+                    <div class="bg-gray-800/50 p-6 rounded-2xl shadow-lg border border-gray-700/50 flex items-center justify-between">
+                        <div>
+                            <h3 class="text-base font-semibold text-green-400">DESPESAS FIXAS</h3>
+                            <p id="total-fixed-expenses" class="text-2xl font-bold text-white mt-1">R$ 0,00</p>
+                        </div>
+                        <div class="text-green-400/50">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+                        </div>
+                    </div>
+                     <div class="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-6 rounded-2xl shadow-lg flex items-center justify-between">
+                        <div>
+                            <h3 class="text-base font-semibold">TOTAL MENSAL</h3>
+                            <p id="grand-total" class="text-3xl font-bold mt-1">R$ 0,00</p>
+                        </div>
+                        <div class="text-white/50">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" /></svg>
+                        </div>
+                    </div>
+                </aside>
+            </main>
+        </div>
+
+        <!-- Modals -->
+        <div id="confirmation-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+            <div class="bg-gray-800 rounded-lg p-6 shadow-xl w-full max-w-sm border border-gray-700">
+                <h3 id="modal-title" class="text-xl font-bold text-white mb-4 uppercase">Confirmar Ação</h3>
+                <p id="modal-body" class="text-gray-300 mb-6 uppercase">Você tem certeza?</p>
+                <div class="flex justify-end gap-4">
+                    <button id="modal-cancel-btn" class="btn bg-gray-600 text-white hover:bg-gray-500">Cancelar</button>
+                    <button id="modal-confirm-btn" class="btn bg-red-600 text-white hover:bg-red-500">Confirmar</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="edit-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+            <form id="edit-form" class="bg-gray-800 rounded-lg p-6 shadow-xl w-full max-w-md space-y-4 border border-gray-700">
+                <h3 id="edit-modal-title" class="text-xl font-bold text-white uppercase">Editar Item</h3>
+                <input type="hidden" id="edit-id"><input type="hidden" id="edit-type">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="edit-name" class="block mb-2 text-sm font-medium text-gray-400 uppercase">Nome</label>
+                        <input type="text" id="edit-name" class="form-input app-input w-full" required>
+                    </div>
+                     <div>
+                        <label for="edit-destino" class="block mb-2 text-sm font-medium text-gray-400 uppercase">Destino</label>
+                        <input type="text" id="edit-destino" class="form-input app-input w-full" required>
+                    </div>
+                </div>
+                <div id="edit-value-container">
+                    <label for="edit-value" class="block mb-2 text-sm font-medium text-gray-400 uppercase">Valor</label>
+                    <input type="number" id="edit-value" step="0.01" class="form-input app-input w-full" required>
+                </div>
+                <div id="edit-installments-container" class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="edit-paid-installments" class="block mb-2 text-sm font-medium text-gray-400 uppercase">Parcelas Pagas</label>
+                        <input type="number" id="edit-paid-installments" class="form-input app-input w-full" required>
+                    </div>
+                    <div>
+                        <label for="edit-total-installments" class="block mb-2 text-sm font-medium text-gray-400 uppercase">Total de Parcelas</label>
+                        <input type="number" id="edit-total-installments" class="form-input app-input w-full" required>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-4 pt-4">
+                    <button type="button" id="edit-modal-cancel-btn" class="btn bg-gray-600 text-white hover:bg-gray-500">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, collection, addDoc, updateDoc, deleteDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // =================================================================
         // ATENÇÃO: SUBSTITUA O BLOCO ABAIXO PELA CONFIGURAÇÃO DO SEU PROJETO FIREBASE
         // Para obter, vá em: Configurações do Projeto -> Seus apps -> App da Web
         // =================================================================
-        const deployFirebaseConfig = {
+        const firebaseConfig = {
           apiKey: "AIzaSyCyD0ImcHbHNSDzwq50hl0XYVPD-vdH_Ao",
   authDomain: "controle-financeiro-3d360.firebaseapp.com",
   projectId: "controle-financeiro-3d360",
@@ -267,11 +282,8 @@
         // =================================================================
 
         try {
-            // Este bloco seleciona a configuração correta dependendo do ambiente
-            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : deployFirebaseConfig;
-            
             // Valida se a configuração foi preenchida antes de continuar
-            if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "COLE_SUA_API_KEY_AQUI") {
+            if (!firebaseConfig.apiKey || firebaseConfig.apiKey.includes("COLE_SUA_API_KEY_AQUI")) {
                 throw new Error("Configuração do Firebase não preenchida.");
             }
 
@@ -280,6 +292,10 @@
             const app = initializeApp(firebaseConfig);
             const db = getFirestore(app);
             const auth = getAuth(app);
+
+            const authScreen = document.getElementById('auth-screen');
+            const appScreen = document.getElementById('app-screen');
+            const authCard = document.getElementById('auth-card');
             
             let userId = null;
             let localAcquisitions = [];
@@ -294,47 +310,139 @@
                 const year = date.getFullYear();
                 return `${month}/${year}`;
             };
-
-            const showDeleteModal = (title, body, onConfirm) => {
-                document.getElementById('modal-title').textContent = title;
-                document.getElementById('modal-body').textContent = body;
-                const modal = document.getElementById('confirmation-modal');
-                modal.classList.remove('hidden');
-                const confirmBtn = document.getElementById('modal-confirm-btn');
-                const cancelBtn = document.getElementById('modal-cancel-btn');
-                const hideModal = () => {
-                    modal.classList.add('hidden');
-                    confirmBtn.removeEventListener('click', confirmHandler);
-                    cancelBtn.removeEventListener('click', hideModal);
-                };
-                const confirmHandler = () => { onConfirm(); hideModal(); };
-                confirmBtn.addEventListener('click', confirmHandler, { once: true });
-                cancelBtn.addEventListener('click', hideModal, { once: true });
-            };
             
             onAuthStateChanged(auth, user => {
                 if (user) {
                     userId = user.uid;
+                    authScreen.style.display = 'none';
+                    appScreen.style.display = 'block';
                     setupRealtimeListeners();
                 } else {
                     userId = null;
+                    authScreen.style.display = 'flex';
+                    appScreen.style.display = 'none';
+                    renderAuthForm('login');
                     unsubscribeListeners();
-                    authenticateUser();
                 }
             });
 
-            async function authenticateUser() {
-                try {
-                     await setPersistence(auth, browserLocalPersistence);
-                     await signInAnonymously(auth);
-                } catch (error) { 
-                    console.error("Authentication Error:", error);
+            const renderAuthForm = (type) => {
+                if (type === 'login') {
+                    authCard.innerHTML = `
+                        <form id="login-form" class="space-y-6">
+                            <h2 class="text-2xl font-bold text-white text-center uppercase">Login</h2>
+                            <div>
+                                <label for="login-email" class="block mb-2 text-sm font-medium text-gray-400 uppercase">Email</label>
+                                <input type="email" id="login-email" class="form-input w-full" required autocomplete="email">
+                            </div>
+                            <div>
+                                <label for="login-password" class="block mb-2 text-sm font-medium text-gray-400 uppercase">Senha</label>
+                                <input type="password" id="login-password" class="form-input w-full" required autocomplete="current-password">
+                            </div>
+                            <p id="login-error" class="text-red-400 text-sm text-center hidden"></p>
+                            <button type="submit" class="btn btn-primary w-full">Entrar</button>
+                            <p class="text-center text-sm text-gray-400 uppercase">
+                                Não tem uma conta? <a href="#" data-auth-switch="register" class="font-semibold text-blue-400 hover:text-blue-300">Registre-se</a>
+                            </p>
+                        </form>`;
+                } else {
+                     authCard.innerHTML = `
+                        <form id="register-form" class="space-y-6">
+                            <h2 class="text-2xl font-bold text-white text-center uppercase">Criar Conta</h2>
+                            <div>
+                                <label for="register-email" class="block mb-2 text-sm font-medium text-gray-400 uppercase">Email</label>
+                                <input type="email" id="register-email" class="form-input w-full" required autocomplete="email">
+                            </div>
+                            <div>
+                                <label for="register-password" class="block mb-2 text-sm font-medium text-gray-400 uppercase">Senha</label>
+                                <input type="password" id="register-password" class="form-input w-full" required autocomplete="new-password">
+                            </div>
+                             <p id="register-error" class="text-red-400 text-sm text-center hidden"></p>
+                            <button type="submit" class="btn btn-success w-full">Criar Conta</button>
+                             <p class="text-center text-sm text-gray-400 uppercase">
+                                Já tem uma conta? <a href="#" data-auth-switch="login" class="font-semibold text-blue-400 hover:text-blue-300">Faça Login</a>
+                            </p>
+                        </form>`;
+                }
+            }
+
+            authCard.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formId = e.target.id;
+                
+                if (formId === 'login-form') {
+                    showAuthError('login'); 
+                    const email = e.target['login-email'].value;
+                    const password = e.target['login-password'].value;
+                    try {
+                        await setPersistence(auth, browserLocalPersistence);
+                        await signInWithEmailAndPassword(auth, email, password);
+                    } catch(error) {
+                        console.error("Login error", error.code);
+                        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                            showAuthError('login', 'EMAIL OU SENHA INVÁLIDOS.');
+                        } else if (error.code === 'auth/operation-not-allowed') {
+                            showAuthError('login', 'ERRO: LOGIN POR EMAIL/SENHA PRECISA SER ATIVADO NO SEU PAINEL FIREBASE.');
+                        } else {
+                            showAuthError('login', 'ERRO AO FAZER LOGIN.');
+                        }
+                    }
+                } else if (formId === 'register-form') {
+                    showAuthError('register');
+                    const email = e.target['register-email'].value;
+                    const password = e.target['register-password'].value;
+
+                    if (password.length < 6) {
+                        showAuthError('register', 'A SENHA DEVE TER PELO MENOS 6 CARACTERES.');
+                        return;
+                    }
+
+                     try {
+                        await createUserWithEmailAndPassword(auth, email, password);
+                    } catch(error) {
+                        console.error("Register error", error.code);
+                        if (error.code === 'auth/operation-not-allowed') {
+                             showAuthError('register', 'ERRO: CADASTRO POR EMAIL/SENHA PRECISA SER ATIVADO NO SEU PAINEL FIREBASE.');
+                        } else if (error.code === 'auth/email-already-in-use') {
+                            showAuthError('register', 'ESTE EMAIL JÁ ESTÁ EM USO.');
+                        } else if (error.code === 'auth/invalid-email') {
+                             showAuthError('register', 'O FORMATO DO EMAIL É INVÁLIDO.');
+                        }  else if (error.code === 'auth/weak-password') {
+                            showAuthError('register', 'A SENHA É MUITO FRACA.');
+                        } else {
+                            showAuthError('register', 'ERRO AO CRIAR CONTA.');
+                        }
+                    }
+                }
+            });
+
+            authCard.addEventListener('click', (e) => {
+                if (e.target.matches('[data-auth-switch]')) {
+                    e.preventDefault();
+                    const type = e.target.dataset.authSwitch;
+                    renderAuthForm(type);
+                }
+            });
+
+            const showAuthError = (form, message) => {
+                const errorEl = document.getElementById(`${form}-error`);
+                if(errorEl){
+                    if (message) {
+                        errorEl.textContent = message;
+                        errorEl.classList.remove('hidden');
+                    } else {
+                        errorEl.classList.add('hidden');
+                    }
                 }
             }
             
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                signOut(auth);
+            });
+            
             function unsubscribeListeners() {
-                unsubscribeAcquisitions();
-                unsubscribeExpenses();
+                if(typeof unsubscribeAcquisitions === 'function') unsubscribeAcquisitions();
+                if(typeof unsubscribeExpenses === 'function') unsubscribeExpenses();
             }
 
             async function addSampleData() {
@@ -342,21 +450,13 @@
                 const now = new Date();
 
                 const sampleAcquisitions = [
-                    { name: 'FINANCIAMENTO VEÍCULO', destino: 'RIVAN', installmentValue: 1850.75, totalInstallments: 48, paidInstallments: 12 },
-                    { name: 'ENTRADA APARTAMENTO', destino: 'RIVAN', installmentValue: 2500.00, totalInstallments: 36, paidInstallments: 5 },
-                    { name: 'REFORMA ESCRITÓRIO', destino: 'RIVAN', installmentValue: 850.00, totalInstallments: 12, paidInstallments: 6 },
-                    { name: 'COMPRA DE NOTEBOOK', destino: 'RIVAN', installmentValue: 450.00, totalInstallments: 10, paidInstallments: 2 },
-                    { name: 'MÓVEIS PLANEJADOS', destino: 'RIVAN', installmentValue: 1200.00, totalInstallments: 24, paidInstallments: 1 },
-                    { name: 'VIAGEM DE NEGÓCIOS', destino: 'RIVAN', installmentValue: 300.00, totalInstallments: 6, paidInstallments: 3 },
-                    { name: 'CURSO DE ESPECIALIZAÇÃO', destino: 'RIVAN', installmentValue: 750.50, totalInstallments: 18, paidInstallments: 9 },
+                    { name: 'FINANCIAMENTO VEÍCULO', destino: 'BANCO XYZ', installmentValue: 1850.75, totalInstallments: 48, paidInstallments: 12 },
+                    { name: 'ENTRADA APARTAMENTO', destino: 'CONSTRUTORA ABC', installmentValue: 2500.00, totalInstallments: 36, paidInstallments: 5 },
                 ];
 
                 const sampleExpenses = [
-                    { name: 'PLANO DE SAÚDE PET', destino: 'ROVER', value: 129.90 },
-                    { name: 'RAÇÃO PREMIUM 15KG', destino: 'ROVER', value: 289.00 },
-                    { name: 'VACINA ANUAL V10', destino: 'ROVER', value: 150.00 },
-                    { name: 'BANHO E TOSA MENSAL', destino: 'ROVER', value: 95.00 },
-                    { name: 'CONSULTA VETERINÁRIA', destino: 'ROVER', value: 200.00 },
+                    { name: 'ALUGUEL', destino: 'IMOBILIÁRIA', value: 2200.00 },
+                    { name: 'INTERNET', destino: 'PROVEDOR Z', value: 129.90 },
                 ];
 
                 sampleAcquisitions.forEach(item => {
@@ -504,30 +604,32 @@
                 form.reset(); form.classList.add('hidden');
             });
 
-            document.querySelector('.lg\\:col-span-2').addEventListener('click', async (e) => {
-                if (!userId) return;
+            document.querySelector('#app-screen').addEventListener('click', async (e) => {
                 const button = e.target.closest('button');
-                if (!button) return;
-                const { id, type } = button.dataset;
-                const acq = localAcquisitions.find(a => a.id === id);
+                if (!button || !userId) return;
                 
-                if (button.classList.contains('increase-btn')) {
-                    if (acq && acq.paidInstallments < acq.totalInstallments) {
-                        await updateDoc(doc(db, 'artifacts', appId, 'users', userId, 'acquisitions', id), { paidInstallments: acq.paidInstallments + 1 });
+                if (button.closest('.lg\\:col-span-2')) {
+                    const { id, type } = button.dataset;
+                    const acq = localAcquisitions.find(a => a.id === id);
+                    
+                    if (button.classList.contains('increase-btn')) {
+                        if (acq && acq.paidInstallments < acq.totalInstallments) {
+                            await updateDoc(doc(db, 'artifacts', appId, 'users', userId, 'acquisitions', id), { paidInstallments: acq.paidInstallments + 1 });
+                        }
+                    } else if (button.classList.contains('decrease-btn')) {
+                        if (acq && acq.paidInstallments > 0) {
+                            await updateDoc(doc(db, 'artifacts', appId, 'users', userId, 'acquisitions', id), { paidInstallments: acq.paidInstallments - 1 });
+                        }
+                    } else if (button.classList.contains('edit-btn')) {
+                        const item = (type === 'acquisition' ? localAcquisitions : localExpenses).find(i => i.id === id);
+                        showEditModal(item, type);
+                    } else if (button.classList.contains('delete-btn')) {
+                        const collectionName = type === 'acquisition' ? 'acquisitions' : 'fixedExpenses';
+                        const item = (type === 'acquisition' ? localAcquisitions : localExpenses).find(i => i.id === id);
+                        showDeleteModal(`EXCLUIR ${item.name}`, 'ESTA AÇÃO NÃO PODE SER DESFEITA.', async () => {
+                            await deleteDoc(doc(db, 'artifacts', appId, 'users',userId, collectionName, id));
+                        });
                     }
-                } else if (button.classList.contains('decrease-btn')) {
-                    if (acq && acq.paidInstallments > 0) {
-                        await updateDoc(doc(db, 'artifacts', appId, 'users', userId, 'acquisitions', id), { paidInstallments: acq.paidInstallments - 1 });
-                    }
-                } else if (button.classList.contains('edit-btn')) {
-                    const item = (type === 'acquisition' ? localAcquisitions : localExpenses).find(i => i.id === id);
-                    showEditModal(item, type);
-                } else if (button.classList.contains('delete-btn')) {
-                    const collectionName = type === 'acquisition' ? 'acquisitions' : 'fixedExpenses';
-                    const item = (type === 'acquisition' ? localAcquisitions : localExpenses).find(i => i.id === id);
-                    showDeleteModal(`EXCLUIR ${item.name}`, 'ESTA AÇÃO NÃO PODE SER DESFEITA.', async () => {
-                        await deleteDoc(doc(db, 'artifacts', appId, 'users',userId, collectionName, id));
-                    });
                 }
             });
 
@@ -583,10 +685,6 @@
 
             // --- PDF Generation ---
             document.getElementById('download-pdf-btn').addEventListener('click', () => {
-                if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF === 'undefined') {
-                    alert('A biblioteca de PDF não pôde ser carregada. Verifique sua conexão ou desative bloqueadores de anúncios e tente novamente.');
-                    return;
-                }
                 const { jsPDF } = window.jspdf;
                 const docPDF = new jsPDF();
                 let startY = 15;
@@ -689,9 +787,9 @@
         } catch(e) {
             console.error(e);
             if (e.message.includes("Configuração do Firebase não preenchida")) {
-                const container = document.getElementById('app-container');
+                const container = document.getElementById('root-container');
                 container.innerHTML = `
-                    <div class="h-screen w-full flex flex-col items-center justify-center bg-red-900 text-white p-8 rounded-lg -m-8">
+                    <div class="min-h-screen w-full flex flex-col items-center justify-center bg-red-900 text-white p-8 -m-8">
                         <h1 class="text-4xl font-bold mb-4 text-center">ERRO DE CONFIGURAÇÃO</h1>
                         <p class="text-xl text-center">As chaves do Firebase não foram configuradas neste site.</p>
                         <p class="mt-4 text-center text-red-200">Por favor, edite o arquivo HTML, substitua o bloco de exemplo 'deployFirebaseConfig' pelas suas credenciais do Firebase e faça o deploy novamente.</p>
