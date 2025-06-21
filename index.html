@@ -910,6 +910,25 @@
                     startY += 15;
                     
                     const allCategorias = [...new Set([...localAcquisitions.map(a => a.categoria || 'NÃO ESPECIFICADO'), ...localExpenses.map(e => e.categoria || 'NÃO ESPECIFICADO')])];
+                    
+                    docPDF.setFontSize(12);
+                    docPDF.setFont('helvetica', 'bold');
+                    docPDF.text("RESUMO MENSAL POR CATEGORIA", 14, startY);
+                    startY += 10;
+                    docPDF.setFont('helvetica', 'normal');
+
+                    allCategorias.forEach(categoria => {
+                        const acqsByCategoria = localAcquisitions.filter(a => (a.categoria || 'NÃO ESPECIFICADO') === categoria && a.paidInstallments < a.totalInstallments);
+                        const expsByCategoria = localExpenses.filter(e => (e.categoria || 'NÃO ESPECIFICADO') === categoria);
+
+                        const totalParcelas = acqsByCategoria.reduce((sum, acq) => sum + acq.installmentValue, 0);
+                        const totalDespesas = expsByCategoria.reduce((sum, exp) => sum + exp.value, 0);
+                        const totalCategoria = totalParcelas + totalDespesas;
+                        
+                        docPDF.text(`${categoria.toUpperCase()}: ${formatCurrency(totalCategoria)}`, 14, startY);
+                        startY += 7;
+                    });
+                    startY += 10;
 
                     allCategorias.forEach(categoria => {
                         const acqsByCategoria = localAcquisitions.filter(a => (a.categoria || 'NÃO ESPECIFICADO') === categoria);
@@ -918,7 +937,7 @@
                         if (acqsByCategoria.length > 0 || expsByCategoria.length > 0) {
                             docPDF.setFontSize(14);
                             docPDF.setFont('helvetica', 'bold');
-                            docPDF.text(`CATEGORIA: ${categoria}`, 14, startY);
+                            docPDF.text(`DETALHES DA CATEGORIA: ${categoria}`, 14, startY);
                             startY += 10;
                         }
 
