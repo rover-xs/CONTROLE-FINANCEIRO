@@ -252,8 +252,7 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, collection, addDoc, updateDoc, deleteDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const { jsPDF } = window.jspdf;
-
+        // Firebase config is now provided by the environment
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-finance-app';
         
@@ -353,7 +352,6 @@
 
             try {
                 await batch.commit();
-                console.log("Sample data added successfully.");
             } catch (error) {
                 console.error("Error adding sample data: ", error);
             }
@@ -566,6 +564,11 @@
 
         // --- PDF Generation ---
         document.getElementById('download-pdf-btn').addEventListener('click', () => {
+            if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF === 'undefined') {
+                alert('A biblioteca de PDF não pôde ser carregada. Verifique sua conexão ou desative bloqueadores de anúncios e tente novamente.');
+                return;
+            }
+            const { jsPDF } = window.jspdf;
             const docPDF = new jsPDF();
             let startY = 15;
             
@@ -636,8 +639,8 @@
                 
                 if (expsByDestino.length > 0) {
                      if (acqsByDestino.length > 0) startY += 5;
-                    const expHead = [['DESPESA FIXA', 'VALOR ']];
-                    const expBody = expsByDestino.map(expMENSAL => [ exp.name, formatCurrency(exp.value) ]);
+                    const expHead = [['DESPESA FIXA', 'VALOR MENSAL']];
+                    const expBody = expsByDestino.map(exp => [ exp.name, formatCurrency(exp.value) ]);
                     docPDF.autoTable({
                         head: expHead, body: expBody, startY: startY,
                         headStyles: { fillColor: [39, 174, 96], fontSize: 8 },
