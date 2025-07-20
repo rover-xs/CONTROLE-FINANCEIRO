@@ -244,8 +244,8 @@
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-xl font-bold text-primary">Controle Financeiro</h1>
-                    <p class="text-sm text-secondary">Controle suas finanças</p>
-                    <p id="display-user-id" class="text-xs text-gray-500 mt-1"></p> <!-- Made visible by default -->
+                    <!-- Removido: <p class="text-sm text-secondary">Controle suas finanças</p> -->
+                    <!-- Removido: <p id="display-user-id" class="text-xs text-gray-500 mt-1"></p> -->
                 </div>
                 <button id="logout-btn" class="p-2 rounded-xl bg-red-50 text-red-400 hover:bg-red-100 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -879,8 +879,8 @@
                     if (user) {
                         userId = user.uid;
                         isAuthReady = true;
-                        displayUserId.textContent = `ID do Utilizador: ${userId}`; // Display User ID
-                        displayUserId.classList.remove('hidden'); // Make it visible
+                        // displayUserId.textContent = `ID do Utilizador: ${userId}`; // Display User ID
+                        // displayUserId.classList.remove('hidden'); // Make it visible
                         console.log("Utilizador autenticado:", userId);
                         authLoadingMessage.classList.add('hidden');
                         showApp();
@@ -1811,7 +1811,7 @@ service cloud.firestore {
                 }
             } else {
                 console.error('Por favor, preencha todos os campos da receita mensal corretamente para editar.');
-                showAppMessage("Por favor, preencha todos os campos da receita mensal corretamente para editar.", "error");
+                showAppMessage("Por favor, preencha todos os campos da receita mensal corretamente.", "error");
             }
         }
         
@@ -2287,4 +2287,3 @@ service cloud.firestore {
     </script>
 </body>
 </html>
-]
