@@ -203,6 +203,19 @@
     </style>
 </head>
 <body class="bg-gray-50">
+    <!-- Chosen Palette: Warm Neutrals with Earthy Accents -->
+    <!-- Application Structure Plan: The application is structured as a single-page application (SPA) with a dashboard and dedicated sections for daily, fixed, installment, and monthly income expenses. This structure was chosen to provide a clear overview of financial data (dashboard) while allowing users to drill down into specific categories of transactions for detailed management. The bottom navigation facilitates quick switching between these views, promoting intuitive exploration and task-oriented interaction. -->
+    <!-- Visualization & Content Choices:
+    - Dashboard Summary Cards: Report Info -> Key Metrics -> Display as large, easily digestible numbers with relevant icons. Interaction: Quick glance. Justification: Provides immediate high-level overview. Library/Method: HTML/Tailwind.
+    - Income vs. Expenses Chart: Report Info -> Financial Performance -> Bar Chart. Interaction: Hover for detailed values. Justification: Compares two key financial aspects visually. Library/Method: Chart.js (Canvas).
+    - Gastos por Categoria (Expenses by Category): Report Info -> Spending Breakdown -> Doughnut Chart. Interaction: Hover for percentage/value. Justification: Shows proportion of spending across categories. Library/Method: Chart.js (Canvas).
+    - Despesas Parceladas (Installment Expenses): Report Info -> Debt/Commitments -> Bar Chart with progress bar in list. Interaction: Hover for remaining value, click to mark paid, edit/delete. Justification: Visualizes ongoing financial commitments and their progress. Library/Method: Chart.js (Canvas) for chart, HTML/Tailwind/JS for list.
+    - Despesas Fixas (Fixed Expenses): Report Info -> Recurring Costs -> Bar Chart. Interaction: Hover for value, edit/delete. Justification: Highlights predictable monthly outflows. Library/Method: Chart.js (Canvas) for chart, HTML/Tailwind/JS for list.
+    - Gastos Diários do Mês (Daily Spending for the Month): Report Info -> Spending Trends -> Line Chart. Interaction: Hover for daily totals, add/edit/delete daily expenses. Justification: Shows spending patterns over time. Library/Method: Chart.js (Canvas) for chart, HTML/Tailwind/JS for list.
+    - Daily, Fixed, Installment, Income Panels: Report Info -> Transaction Details -> Lists with forms for adding/editing/deleting. Interaction: CRUD operations. Justification: Allows detailed management of individual financial entries. Library/Method: HTML/Tailwind/JS.
+    - Modals (Edit/Confirm): Report Info -> User Interaction -> Overlay forms/confirmation. Interaction: Form submission, confirmation. Justification: Provides focused interaction for editing/deleting without navigating away. Library/Method: HTML/Tailwind/JS.
+    - Authentication Screen: Report Info -> Access Control -> Simple login/loading screen. Interaction: Automatic sign-in (anonymous). Justification: Manages user access and data isolation. Library/Method: HTML/Tailwind/JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <!-- Auth Screen -->
     <div id="auth-screen" class="min-h-screen flex items-center justify-center p-4">
         <div class="w-full max-w-md">
@@ -405,7 +418,7 @@
                                    class="form-input w-full px-4 py-3 rounded-xl" required oninput="capitalizeFirstLetter(this)">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-secondary mb-2">Categoria</label>
+                            <label class="block text-sm font-medium text-secondary mb-2">Categoria</labe l>
                             <input type="text" id="fixed-category" placeholder="Ex: Moradia, Serviços..." 
                                    class="form-input w-full px-4 py-3 rounded-xl" required oninput="capitalizeFirstLetter(this)">
                         </div>
@@ -590,7 +603,7 @@
                     <input type="text" id="edit-fixed-name" class="form-input w-full px-4 py-3 rounded-xl" required oninput="capitalizeFirstLetter(this)">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-secondary mb-2">Categoria</label>
+                    <label class="block text-sm font-medium text-secondary mb-2">Categoria</labe l>
                     <input type="text" id="edit-fixed-category" class="form-input w-full px-4 py-3 rounded-xl" required oninput="capitalizeFirstLetter(this)">
                 </div>
                 <div>
@@ -698,18 +711,39 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Variáveis globais fornecidas pelo ambiente Canvas
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // =====================================================================================================
+        // ATENÇÃO: CONFIGURAÇÃO DO FIREBASE
+        // Para que esta aplicação funcione, você PRECISA substituir os valores de 'YOUR_...' abaixo
+        // pelas credenciais do seu próprio projeto Firebase.
+        //
+        // 1. Vá para a Consola Firebase (console.firebase.google.com).
+        // 2. Selecione o seu projeto (ou crie um novo).
+        // 3. No painel do projeto, clique no ícone `</>` (Web) para adicionar uma aplicação web.
+        // 4. Siga os passos e copie o objeto `firebaseConfig` que será fornecido.
+        // 5. Cole os seus valores abaixo, substituindo os marcadores de posição.
+        //
+        // PARA PRODUÇÃO (Vercel, etc.): É ALTAMENTE RECOMENDADO usar variáveis de ambiente
+        // em vez de hardcoding das suas credenciais aqui por motivos de segurança.
+        // Consulte a documentação do Firebase e do Vercel sobre como configurar variáveis de ambiente.
+        // =====================================================================================================
+        const firebaseConfig = {
+          apiKey: "AIzaSyDIexIl-HuaiZxoMbJA6hkA666B4GazXVs",
+          authDomain: "finances-d9fc0.firebaseapp.com",
+          projectId: "finances-d9fc0",
+          storageBucket: "finances-d9fc0.firebasestorage.app",
+          messagingSenderId: "503065345421",
+          appId: "1:503065345421:web:834f1884c0a2606f8e11c4"
+        };
+        const appId = firebaseConfig.appId; // Obtido da configuração do Firebase
+        const initialAuthToken = null; // Mantenha como null se não estiver a usar um token de autenticação personalizado
 
         let app;
         let db;
         let auth;
         let userId = null;
-        let isAuthReady = false; // Flag to indicate if auth state has been checked
+        let isAuthReady = false; // Flag para indicar se o estado de autenticação foi verificado
 
-        // App State
+        // Estado da Aplicação
         let currentPanel = 'dashboard';
         let editingExpenseId = null;
         let editingFixedId = null;
@@ -717,16 +751,16 @@
         let editingMonthlyIncomeId = null;
         let confirmCallback = null;
         
-        // Data Storage - Now populated from Firestore
+        // Armazenamento de Dados - Agora preenchido a partir do Firestore
         let dailyExpenses = [];
         let fixedExpenses = [];
         let installments = [];
         let monthlyIncomes = [];
         
-        // Chart instances
+        // Instâncias de Gráficos
         let categoryChart, installmentChart, fixedChart, dailyChart, incomeVsExpensesChart;
         
-        // DOM Elements
+        // Elementos DOM
         const authScreen = document.getElementById('auth-screen');
         const appScreen = document.getElementById('app-screen');
         const authStatusMessage = document.getElementById('auth-status-message');
@@ -734,7 +768,7 @@
         const displayUserId = document.getElementById('display-user-id');
         const bottomNav = document.querySelector('.bottom-nav');
 
-        // Initialize app on DOMContentLoaded
+        // Inicializar a aplicação no DOMContentLoaded
         document.addEventListener('DOMContentLoaded', function() {
             initializeFirebase();
             setupEventListeners();
@@ -742,10 +776,10 @@
         });
 
         /**
-         * Capitalizes the first letter of an input element's value.
-         * @param {HTMLInputElement} inputElement - The input element to capitalize.
+         * Capitaliza a primeira letra do valor de um elemento de input.
+         * @param {HTMLInputElement} inputElement - O elemento de input a capitalizar.
          */
-        window.capitalizeFirstLetter = function(inputElement) { // Made global
+        window.capitalizeFirstLetter = function(inputElement) {
             const value = inputElement.value;
             if (value.length > 0) {
                 inputElement.value = value.charAt(0).toUpperCase() + value.slice(1);
@@ -753,30 +787,30 @@
         }
 
         /**
-         * Formats a numeric input field as currency with comma as decimal separator.
-         * Handles real-time input (oninput) and final formatting (onblur).
-         * Stores the numeric value (with dot) in a data attribute for internal use.
-         * @param {HTMLInputElement} inputElement - The input element to format.
+         * Formata um campo de input numérico como moeda com vírgula como separador decimal.
+         * Lida com input em tempo real (oninput) e formatação final (onblur).
+         * Armazena o valor numérico (com ponto) num atributo de dados para uso interno.
+         * @param {HTMLInputElement} inputElement - O elemento de input a formatar.
          */
-        window.formatCurrencyInput = function(inputElement) { // Made global
+        window.formatCurrencyInput = function(inputElement) {
             let value = inputElement.value;
 
-            // If the value is empty, clear the numeric data and return
+            // Se o valor estiver vazio, limpa os dados numéricos e retorna
             if (value === '') {
                 inputElement.dataset.numericValue = '';
                 return;
             }
 
-            // Remove all non-numeric characters except comma
+            // Remove todos os caracteres não numéricos, exceto a vírgula
             value = value.replace(/[^0-9,]/g, '');
 
-            // Handle multiple commas: keep only the first one
+            // Lida com múltiplas vírgulas: mantém apenas a primeira
             const parts = value.split(',');
             if (parts.length > 2) {
                 value = parts[0] + ',' + parts.slice(1).join('');
             }
 
-            // Ensure at most two decimal places after the comma
+            // Garante no máximo duas casas decimais após a vírgula
             if (value.includes(',')) {
                 const decimalPart = value.split(',')[1];
                 if (decimalPart && decimalPart.length > 2) {
@@ -784,41 +818,49 @@
                 }
             }
 
-            // If the event is 'blur', ensure two decimal places
+            // Se o evento for 'blur', garante duas casas decimais
             if (event && event.type === 'blur') {
                 const numericVal = parseFloat(value.replace(',', '.'));
                 if (!isNaN(numericVal)) {
                     value = numericVal.toFixed(2).replace('.', ',');
                 } else {
-                    value = ''; // Clear if not a valid number on blur
+                    value = ''; // Limpa se não for um número válido no blur
                 }
             }
 
-            // Update the input field with the formatted value
+            // Atualiza o campo de input com o valor formatado
             inputElement.value = value;
 
-            // For internal use (parsing to float), convert comma to dot
+            // Para uso interno (parsing para float), converte vírgula para ponto
             let parsedValue = parseFloat(value.replace(',', '.'));
             if (isNaN(parsedValue)) {
-                parsedValue = 0; // Default to 0 if not a valid number
+                parsedValue = 0; // Padrão para 0 se não for um número válido
             }
-            // Store the actual numeric value (with dot) in a data attribute for easy retrieval
+            // Armazena o valor numérico real (com ponto) num atributo de dados para fácil recuperação
             inputElement.dataset.numericValue = parsedValue;
         }
         
         /**
-         * Initializes Firebase and sets up authentication listener.
+         * Inicializa o Firebase e configura o listener de autenticação.
          */
         async function initializeFirebase() {
             authLoadingMessage.classList.remove('hidden');
-            authStatusMessage.textContent = ''; // Clear previous messages
+            authStatusMessage.textContent = ''; // Limpa mensagens anteriores
 
             try {
-                if (Object.keys(firebaseConfig).length === 0) {
-                    console.error("A configuração do Firebase está vazia. Por favor, certifique-se de que __firebase_config está corretamente fornecido.");
-                    authStatusMessage.textContent = "Erro: Configuração do Firebase em falta.";
+                // Verifica se a configuração do Firebase está disponível
+                if (!firebaseConfig || Object.keys(firebaseConfig).length === 0 || firebaseConfig.apiKey === "YOUR_API_KEY") {
+                    console.error("A configuração do Firebase está vazia ou não foi fornecida corretamente.");
+                    authStatusMessage.innerHTML = `
+                        <p class="text-red-600 font-semibold mb-2">Erro de Configuração do Firebase!</p>
+                        <p>Por favor, abra o ficheiro HTML e substitua os marcadores de posição
+                        (ex: <code class="bg-red-100 px-1 rounded">YOUR_API_KEY</code>)
+                        pelas suas credenciais reais do Firebase.</p>
+                        <p class="mt-2">Consulte o guia de configuração do Firebase para mais detalhes.</p>
+                    `;
                     authLoadingMessage.classList.add('hidden');
-                    return;
+                    showAuth(); // Garante que o ecrã de autenticação é mostrado imediatamente
+                    return; // Interrompe a inicialização se a configuração estiver em falta
                 }
 
                 app = initializeApp(firebaseConfig);
@@ -827,45 +869,32 @@
 
                 console.log("Firebase App ID:", appId);
                 console.log("Firebase Config:", firebaseConfig);
-                console.log("Initial Auth Token:", initialAuthToken ? "Present" : "Not Present");
+                console.log("Initial Auth Token:", initialAuthToken ? "Presente" : "Não Presente");
 
 
                 onAuthStateChanged(auth, async (user) => {
                     if (user) {
                         userId = user.uid;
                         isAuthReady = true;
-                        // displayUserId.textContent = `ID do Utilizador: ${userId}`; // Removed as per user request
-                        displayUserId.classList.add('hidden'); // Ensure it's hidden
+                        displayUserId.classList.add('hidden'); // Garante que está oculto
                         console.log("Utilizador autenticado:", userId);
                         authLoadingMessage.classList.add('hidden');
                         showApp();
-                        // Start listening to Firestore collections
-                        // IMPORTANTE: Para que estas operações funcionem,
-                        // as Regras de Segurança do Firestore devem permitir o acesso.
-                        // Certifique-se de que as suas regras de segurança do Firestore permitem a leitura e escrita para utilizadores autenticados.
-                        // Exemplo de regras para dados privados do utilizador (substitua 'appId' e 'userId' pelos seus valores):
-                        // rules_version = '2';
-                        // service cloud.firestore {
-                        //   match /databases/{database}/documents {
-                        //     match /artifacts/{appId}/users/{userId}/{document=**} {
-                        //       allow read, write: if request.auth != null && request.auth.uid == userId;
-                        //     }
-                        //   }
-                        // }
+                        // Começa a ouvir as coleções do Firestore
                         listenForDailyExpenses();
                         listenForFixedExpenses();
                         listenForInstallments();
                         listenForMonthlyIncomes();
                     } else {
                         userId = null;
-                        isAuthReady = true; // Auth state checked, even if not logged in
+                        isAuthReady = true; // O estado de autenticação foi verificado, mesmo que não esteja logado
                         console.log("Utilizador não autenticado.");
                         authLoadingMessage.classList.add('hidden');
                         showAuth();
                     }
                 });
 
-                // Attempt to sign in using the provided custom token or anonymously
+                // Tenta iniciar sessão usando o token personalizado fornecido ou anonimamente
                 if (initialAuthToken) {
                     console.log("A tentar iniciar sessão com token personalizado...");
                     await signInWithCustomToken(auth, initialAuthToken);
@@ -877,17 +906,34 @@
                 console.error("Erro de login:", error);
                 let errorMessage = `Erro de login: ${error.message}.`;
                 if (error.code === 'auth/operation-not-allowed') {
-                    errorMessage += " Isto geralmente significa que o método de autenticação (por exemplo, Anónimo, Token Personalizado) não está ativado nas configurações do seu projeto Firebase. Por favor, verifique a consola do Firebase.";
+                    errorMessage += " Isto geralmente significa que o método de autenticação (por exemplo, Anónimo, Token Personalizado) não está ativado nas configurações do seu projeto Firebase. Por favor, verifique a consola do Firebase (Autenticação > Métodos de Início de Sessão).";
+                } else if (error.code === 'auth/configuration-not-found') {
+                    errorMessage += " Isto indica que a configuração do Firebase (apiKey, authDomain, projectId, etc.) no seu código pode estar incorreta ou o método de autenticação anónimo não está ativado no seu projeto Firebase. Por favor, verifique as suas credenciais e as definições de autenticação na Consola Firebase (Autenticação > Métodos de Início de Sessão > Anónimo).";
+                } else if (error.code === 'permission-denied') {
+                    errorMessage = `
+                        <p class="text-red-600 font-semibold mb-2">Erro de Permissão do Firestore!</p>
+                        <p>Não foi possível aceder aos dados. Por favor, verifique as suas Regras de Segurança do Firestore na Consola Firebase.</p>
+                        <p class="mt-2">Certifique-se de que as suas regras permitem a leitura e escrita para utilizadores autenticados nos caminhos de dados da sua aplicação. Por exemplo:</p>
+                        <pre class="bg-gray-100 p-2 rounded text-xs mt-2 overflow-auto"><code>rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /artifacts/{appId}/users/{userId}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}</code></pre>
+                        <p class="mt-2">Substitua 'appId' pelo ID da sua aplicação Firebase e 'userId' pelo UID do utilizador autenticado.</p>
+                    `;
                 }
-                authStatusMessage.textContent = errorMessage;
+                authStatusMessage.innerHTML = errorMessage; // Use innerHTML para renderizar a tag <pre>
                 authLoadingMessage.classList.add('hidden');
-                showAuth(); // Ensure auth screen is shown on error
+                showAuth(); // Garante que o ecrã de autenticação é mostrado em caso de erro
             }
         }
         
         /**
-         * Displays the authentication screen and hides the app screen.
-         * Also ensures the bottom navigation is hidden.
+         * Exibe o ecrã de autenticação e oculta o ecrã da aplicação.
+         * Também garante que a navegação inferior está oculta.
          */
         function showAuth() {
             authScreen.classList.remove('hidden');
@@ -896,22 +942,21 @@
         }
         
         /**
-         * Displays the main application screen and hides the authentication screen.
-         * Updates the user's name in the header, refreshes the dashboard, and renders charts.
-         * Also ensures the bottom navigation is visible.
+         * Exibe o ecrã principal da aplicação e oculta o ecrã de autenticação.
+         * Atualiza o nome do utilizador no cabeçalho, atualiza o dashboard e renderiza os gráficos.
+         * Também garante que a navegação inferior está visível.
          */
         function showApp() {
             authScreen.classList.add('hidden');
             appScreen.classList.remove('hidden');
             bottomNav.classList.remove('hidden');
-            // document.getElementById('user-name').textContent = 'Usuário'; // Removed as per user request
             updateDashboard();
             renderCharts();
-            switchPanel(currentPanel); // Ensure the correct panel is shown on app load
+            switchPanel(currentPanel); // Garante que o painel correto é mostrado ao carregar a aplicação
         }
         
         /**
-         * Sets the default date for the daily expense form to today's date.
+         * Define a data padrão para o formulário de despesas diárias para a data de hoje.
          */
         function setTodayDate() {
             const today = new Date().toISOString().split('T')[0];
@@ -919,13 +964,13 @@
         }
         
         /**
-         * Sets up all event listeners for forms, buttons, and modal interactions.
+         * Configura todos os event listeners para formulários, botões e interações de modal.
          */
         function setupEventListeners() {
-            // Logout button click
+            // Clique no botão de logout
             document.getElementById('logout-btn').addEventListener('click', handleLogout);
             
-            // Navigation buttons click
+            // Clique nos botões de navegação
             document.querySelectorAll('.nav-item').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const panel = e.currentTarget.dataset.panel;
@@ -933,25 +978,25 @@
                 });
             });
             
-            // Expense forms submission
+            // Envio de formulários de despesas
             document.getElementById('daily-form').addEventListener('submit', handleDailyExpense);
             document.getElementById('fixed-form').addEventListener('submit', handleFixedExpense);
             document.getElementById('installments-form').addEventListener('submit', handleInstallment);
             document.getElementById('income-form').addEventListener('submit', handleMonthlyIncome);
             
-            // Edit form submissions
+            // Envio de formulários de edição
             document.getElementById('edit-form').addEventListener('submit', handleEditExpense);
             document.getElementById('edit-fixed-form').addEventListener('submit', handleEditFixedExpense);
             document.getElementById('edit-installment-form').addEventListener('submit', handleEditInstallment);
             document.getElementById('edit-monthly-income-form').addEventListener('submit', handleEditMonthlyIncome);
             
-            // Modal cancel buttons
+            // Botões de cancelamento de modal
             document.getElementById('cancel-edit').addEventListener('click', closeEditModal);
             document.getElementById('cancel-edit-fixed').addEventListener('click', closeEditFixedModal);
             document.getElementById('cancel-edit-installment').addEventListener('click', closeEditInstallmentModal);
             document.getElementById('cancel-edit-monthly-income').addEventListener('click', closeEditMonthlyIncomeModal);
             
-            // Modal background clicks to close
+            // Cliques no fundo do modal para fechar
             document.getElementById('edit-modal').addEventListener('click', (e) => {
                 if (e.target.id === 'edit-modal') closeEditModal();
             });
@@ -965,7 +1010,7 @@
                 if (e.target.id === 'edit-monthly-income-modal') closeEditMonthlyIncomeModal();
             });
 
-            // Confirmation modal buttons
+            // Botões do modal de confirmação
             document.getElementById('confirm-cancel').addEventListener('click', hideConfirmModal);
             document.getElementById('confirm-delete').addEventListener('click', () => {
                 if (confirmCallback) {
@@ -979,14 +1024,14 @@
         }
         
         /**
-         * Handles the logout process.
-         * Signs out from Firebase and shows the authentication screen.
+         * Lida com o processo de logout.
+         * Termina a sessão do Firebase e exibe o ecrã de autenticação.
          */
         async function handleLogout() {
             try {
                 await auth.signOut();
                 console.log("Sessão terminada com sucesso.");
-                // Clear local data when logging out
+                // Limpa os dados locais ao fazer logout
                 dailyExpenses = [];
                 fixedExpenses = [];
                 installments = [];
@@ -999,9 +1044,9 @@
         }
         
         /**
-         * Switches between different panels (Dashboard, Daily, Fixed, Installments, Income).
-         * Hides all panels and shows the selected one, updating navigation active state.
-         * @param {string} panelId - The ID of the panel to show (e.g., 'dashboard', 'daily', 'income').
+         * Alterna entre diferentes painéis (Dashboard, Diários, Fixas, Parceladas, Receitas).
+         * Oculta todos os painéis e mostra o selecionado, atualizando o estado ativo da navegação.
+         * @param {string} panelId - O ID do painel a mostrar (ex: 'dashboard', 'daily', 'income').
          */
         function switchPanel(panelId) {
             const panels = ['dashboard-panel', 'daily-panel', 'fixed-panel', 'installments-panel', 'income-panel'];
@@ -1017,7 +1062,7 @@
             
             currentPanel = panelId;
             
-            // Re-render lists and charts when switching panels to ensure fresh data
+            // Renderiza novamente as listas e gráficos ao trocar de painel para garantir dados atualizados
             if (panelId === 'daily') renderDailyExpenses();
             if (panelId === 'fixed') renderFixedExpenses();
             if (panelId === 'installments') renderInstallments();
@@ -1029,81 +1074,101 @@
         }
 
         /**
-         * Listens for real-time updates to daily expenses from Firestore.
+         * Ouve atualizações em tempo real das despesas diárias do Firestore.
          */
         function listenForDailyExpenses() {
             if (!isAuthReady || !userId) return;
             const q = query(collection(db, `artifacts/${appId}/users/${userId}/dailyExpenses`));
             onSnapshot(q, (snapshot) => {
                 dailyExpenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                console.log("Daily Expenses updated:", dailyExpenses);
+                console.log("Despesas Diárias atualizadas:", dailyExpenses);
                 renderDailyExpenses();
                 updateDashboard();
                 renderCharts();
             }, (error) => {
                 console.error("Erro ao ouvir despesas diárias:", error);
-                authStatusMessage.textContent = `Erro ao carregar despesas diárias: ${error.message}`;
+                // Atualiza a mensagem de status da autenticação para o usuário
+                authStatusMessage.innerHTML = `
+                    <p class="text-red-600 font-semibold mb-2">Erro de Permissão!</p>
+                    <p>Não foi possível carregar as despesas diárias. Por favor, verifique as suas Regras de Segurança do Firestore.</p>
+                    <p class="mt-2">Certifique-se de que tem permissão para ler e escrever em: <code>artifacts/${appId}/users/${userId}/dailyExpenses</code></p>
+                `;
             });
         }
 
         /**
-         * Listens for real-time updates to fixed expenses from Firestore.
+         * Ouve atualizações em tempo real das despesas fixas do Firestore.
          */
         function listenForFixedExpenses() {
             if (!isAuthReady || !userId) return;
             const q = query(collection(db, `artifacts/${appId}/users/${userId}/fixedExpenses`));
             onSnapshot(q, (snapshot) => {
                 fixedExpenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                console.log("Fixed Expenses updated:", fixedExpenses);
+                console.log("Despesas Fixas atualizadas:", fixedExpenses);
                 renderFixedExpenses();
                 updateDashboard();
                 renderCharts();
             }, (error) => {
                 console.error("Erro ao ouvir despesas fixas:", error);
-                authStatusMessage.textContent = `Erro ao carregar despesas fixas: ${error.message}`;
+                // Atualiza a mensagem de status da autenticação para o usuário
+                authStatusMessage.innerHTML = `
+                    <p class="text-red-600 font-semibold mb-2">Erro de Permissão!</p>
+                    <p>Não foi possível carregar as despesas fixas. Por favor, verifique as suas Regras de Segurança do Firestore.</p>
+                    <p class="mt-2">Certifique-se de que tem permissão para ler e escrever em: <code>artifacts/${appId}/users/${userId}/fixedExpenses</code></p>
+                `;
             });
         }
 
         /**
-         * Listens for real-time updates to installments from Firestore.
+         * Ouve atualizações em tempo real dos parcelamentos do Firestore.
          */
         function listenForInstallments() {
             if (!isAuthReady || !userId) return;
             const q = query(collection(db, `artifacts/${appId}/users/${userId}/installments`));
             onSnapshot(q, (snapshot) => {
                 installments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                console.log("Installments updated:", installments);
+                console.log("Parcelamentos atualizados:", installments);
                 renderInstallments();
                 updateDashboard();
                 renderCharts();
             }, (error) => {
                 console.error("Erro ao ouvir parcelamentos:", error);
-                authStatusMessage.textContent = `Erro ao carregar parcelamentos: ${error.message}`;
+                // Atualiza a mensagem de status da autenticação para o usuário
+                authStatusMessage.innerHTML = `
+                    <p class="text-red-600 font-semibold mb-2">Erro de Permissão!</p>
+                    <p>Não foi possível carregar os parcelamentos. Por favor, verifique as suas Regras de Segurança do Firestore.</p>
+                    <p class="mt-2">Certifique-se de que tem permissão para ler e escrever em: <code>artifacts/${appId}/users/${userId}/installments</code></p>
+                `;
             });
         }
 
         /**
-         * Listens for real-time updates to monthly incomes from Firestore.
+         * Ouve atualizações em tempo real das receitas mensais do Firestore.
          */
         function listenForMonthlyIncomes() {
             if (!isAuthReady || !userId) return;
             const q = query(collection(db, `artifacts/${appId}/users/${userId}/monthlyIncomes`));
             onSnapshot(q, (snapshot) => {
                 monthlyIncomes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                console.log("Monthly Incomes updated:", monthlyIncomes);
+                console.log("Receitas Mensais atualizadas:", monthlyIncomes);
                 renderMonthlyIncomes();
                 updateDashboard();
                 renderCharts();
             }, (error) => {
                 console.error("Erro ao ouvir receitas mensais:", error);
-                authStatusMessage.textContent = `Erro ao carregar receitas mensais: ${error.message}`;
+                // Atualiza a mensagem de status da autenticação para o usuário
+                authStatusMessage.innerHTML = `
+                    <p class="text-red-600 font-semibold mb-2">Erro de Permissão!</p>
+                    <p>Não foi possível carregar as receitas mensais. Por favor, verifique as suas Regras de Segurança do Firestore.</p>
+                    <p class="mt-2">Certifique-se de que tem permissão para ler e escrever em: <code>artifacts/${appId}/users/${userId}/monthlyIncomes</code></p>
+                `;
             });
         }
         
         /**
-         * Handles the submission of the daily expense form.
-         * Adds a new daily expense to Firestore.
-         * @param {Event} e - The submit event object.
+         * Lida com o envio do formulário de despesas diárias.
+         * Adiciona uma nova despesa diária ao Firestore.
+         * @param {Event} e - O objeto do evento de envio.
          */
         async function handleDailyExpense(e) {
             e.preventDefault();
@@ -1138,8 +1203,8 @@
         }
         
         /**
-         * Renders the list of daily expenses.
-         * Clears the existing list and appends new expense items.
+         * Renderiza a lista de despesas diárias.
+         * Limpa a lista existente e anexa novos itens de despesa.
          */
         function renderDailyExpenses() {
             const dailyList = document.getElementById('daily-list');
@@ -1175,10 +1240,10 @@
         }
         
         /**
-         * Confirms deletion of a daily expense.
-         * @param {string} id - The ID of the expense to delete.
+         * Confirma a exclusão de uma despesa diária.
+         * @param {string} id - O ID da despesa a excluir.
          */
-        window.confirmDeleteDailyExpense = function(id) { // Made global
+        window.confirmDeleteDailyExpense = function(id) {
             showConfirmModal('Tem certeza que deseja excluir este gasto diário?', async () => {
                 if (!userId) return;
                 try {
@@ -1191,11 +1256,11 @@
         }
         
         /**
-         * Opens the edit modal for a daily expense.
-         * Populates the form with the expense's current data.
-         * @param {string} id - The ID of the expense to edit.
+         * Abre o modal de edição para uma despesa diária.
+         * Preenche o formulário com os dados atuais da despesa.
+         * @param {string} id - O ID da despesa a editar.
          */
-        window.openEditModal = function(id) { // Made global
+        window.openEditModal = function(id) {
             editingExpenseId = id;
             const expense = dailyExpenses.find(exp => exp.id === id);
             if (expense) {
@@ -1209,7 +1274,7 @@
         }
         
         /**
-         * Closes the daily expense edit modal.
+         * Fecha o modal de edição de despesas diárias.
          */
         function closeEditModal() {
             document.getElementById('edit-modal').classList.add('hidden');
@@ -1217,9 +1282,9 @@
         }
         
         /**
-         * Handles the submission of the daily expense edit form.
-         * Updates the expense in Firestore.
-         * @param {Event} e - The submit event object.
+         * Lida com o envio do formulário de edição de despesas diárias.
+         * Atualiza a despesa no Firestore.
+         * @param {Event} e - O objeto do evento de envio.
          */
         async function handleEditExpense(e) {
             e.preventDefault();
@@ -1249,9 +1314,9 @@
         }
 
         /**
-         * Handles the submission of the fixed expense form.
-         * Adds a new fixed expense to Firestore.
-         * @param {Event} e - The submit event object.
+         * Lida com o envio do formulário de despesas fixas.
+         * Adiciona uma nova despesa fixa ao Firestore.
+         * @param {Event} e - O objeto do evento de envio.
          */
         async function handleFixedExpense(e) {
             e.preventDefault();
@@ -1283,8 +1348,8 @@
         }
         
         /**
-         * Renders the list of fixed expenses.
-         * Clears the existing list and appends new fixed expense items.
+         * Renderiza a lista de despesas fixas.
+         * Limpa a lista existente e anexa novos itens de despesa fixa.
          */
         function renderFixedExpenses() {
             const fixedList = document.getElementById('fixed-list');
@@ -1318,10 +1383,10 @@
         }
         
         /**
-         * Confirms deletion of a fixed expense.
-         * @param {string} id - The ID of the fixed expense to delete.
+         * Confirma a exclusão de uma despesa fixa.
+         * @param {string} id - O ID da despesa fixa a excluir.
          */
-        window.confirmDeleteFixedExpense = function(id) { // Made global
+        window.confirmDeleteFixedExpense = function(id) {
             showConfirmModal('Tem certeza que deseja excluir esta despesa fixa?', async () => {
                 if (!userId) return;
                 try {
@@ -1334,11 +1399,11 @@
         }
 
         /**
-         * Opens the edit modal for a fixed expense.
-         * Populates the form with the expense's current data.
-         * @param {string} id - The ID of the fixed expense to edit.
+         * Abre o modal de edição para uma despesa fixa.
+         * Preenche o formulário com os dados atuais da despesa.
+         * @param {string} id - O ID da despesa fixa a editar.
          */
-        window.openEditFixedModal = function(id) { // Made global
+        window.openEditFixedModal = function(id) {
             editingFixedId = id;
             const expense = fixedExpenses.find(exp => exp.id === id);
             if (expense) {
@@ -1351,7 +1416,7 @@
         }
 
         /**
-         * Closes the fixed expense edit modal.
+         * Fecha o modal de edição de despesas fixas.
          */
         function closeEditFixedModal() {
             document.getElementById('edit-fixed-modal').classList.add('hidden');
@@ -1359,9 +1424,9 @@
         }
 
         /**
-         * Handles the submission of the fixed expense edit form.
-         * Updates the fixed expense in Firestore.
-         * @param {Event} e - The submit event object.
+         * Lida com o envio do formulário de edição de despesas fixas.
+         * Atualiza a despesa fixa no Firestore.
+         * @param {Event} e - O objeto do evento de envio.
          */
         async function handleEditFixedExpense(e) {
             e.preventDefault();
@@ -1389,9 +1454,9 @@
         }
         
         /**
-         * Handles the submission of the installment form.
-         * Adds a new installment to Firestore.
-         * @param {Event} e - The submit event object.
+         * Lida com o envio do formulário de parcelamento.
+         * Adiciona um novo parcelamento ao Firestore.
+         * @param {Event} e - O objeto do evento de envio.
          */
         async function handleInstallment(e) {
             e.preventDefault();
@@ -1426,8 +1491,8 @@
         }
         
         /**
-         * Renders the list of installments.
-         * Clears the existing list and appends new installment items.
+         * Renderiza a lista de parcelamentos.
+         * Limpa a lista existente e anexa novos itens de parcelamento.
          */
         function renderInstallments() {
             const installmentsList = document.getElementById('installments-list');
@@ -1476,10 +1541,10 @@
         }
         
         /**
-         * Marks one installment as paid for a given installment ID.
-         * @param {string} id - The ID of the installment to update.
+         * Marca uma parcela como paga para um determinado ID de parcelamento.
+         * @param {string} id - O ID do parcelamento a atualizar.
          */
-        window.markInstallmentPaid = async function(id) { // Made global
+        window.markInstallmentPaid = async function(id) {
             if (!userId) return;
             const installment = installments.find(inst => inst.id === id);
             if (installment && installment.paid < installment.total) {
@@ -1495,10 +1560,10 @@
         }
         
         /**
-         * Confirms deletion of an installment.
-         * @param {string} id - The ID of the installment to delete.
+         * Confirma a exclusão de um parcelamento.
+         * @param {string} id - O ID do parcelamento a excluir.
          */
-        window.confirmDeleteInstallment = function(id) { // Made global
+        window.confirmDeleteInstallment = function(id) {
             showConfirmModal('Tem certeza que deseja excluir este parcelamento?', async () => {
                 if (!userId) return;
                 try {
@@ -1511,11 +1576,11 @@
         }
 
         /**
-         * Opens the edit modal for an installment.
-         * Populates the form with the installment's current data.
-         * @param {string} id - The ID of the installment to edit.
+         * Abre o modal de edição para um parcelamento.
+         * Preenche o formulário com os dados atuais do parcelamento.
+         * @param {string} id - O ID do parcelamento a editar.
          */
-        window.openEditInstallmentModal = function(id) { // Made global
+        window.openEditInstallmentModal = function(id) {
             editingInstallmentId = id;
             const installment = installments.find(inst => inst.id === id);
             if (installment) {
@@ -1530,7 +1595,7 @@
         }
 
         /**
-         * Closes the installment edit modal.
+         * Fecha o modal de edição de parcelamento.
          */
         function closeEditInstallmentModal() {
             document.getElementById('edit-installment-modal').classList.add('hidden');
@@ -1538,9 +1603,9 @@
         }
 
         /**
-         * Handles the submission of the installment edit form.
-         * Updates the installment in Firestore.
-         * @param {Event} e - The submit event object.
+         * Lida com o envio do formulário de edição de parcelamento.
+         * Atualiza o parcelamento no Firestore.
+         * @param {Event} e - O objeto do evento de envio.
          */
         async function handleEditInstallment(e) {
             e.preventDefault();
@@ -1578,9 +1643,9 @@
         }
 
         /**
-         * Handles the submission of the monthly income form.
-         * Adds a new monthly income to Firestore.
-         * @param {Event} e - The submit event object.
+         * Lida com o envio do formulário de receita mensal.
+         * Adiciona uma nova receita mensal ao Firestore.
+         * @param {Event} e - O objeto do evento de envio.
          */
         async function handleMonthlyIncome(e) {
             e.preventDefault();
@@ -1610,8 +1675,8 @@
         }
 
         /**
-         * Renders the list of monthly incomes.
-         * Clears the existing list and appends new income items.
+         * Renderiza a lista de receitas mensais.
+         * Limpa a lista existente e anexa novos itens de receita.
          */
         function renderMonthlyIncomes() {
             const incomeList = document.getElementById('income-list');
@@ -1644,10 +1709,10 @@
         }
 
         /**
-         * Confirms deletion of a monthly income.
-         * @param {string} id - The ID of the income to delete.
+         * Confirma a exclusão de uma receita mensal.
+         * @param {string} id - O ID da receita a excluir.
          */
-        window.confirmDeleteMonthlyIncome = function(id) { // Made global
+        window.confirmDeleteMonthlyIncome = function(id) {
             showConfirmModal('Tem certeza que deseja excluir esta receita mensal?', async () => {
                 if (!userId) return;
                 try {
@@ -1660,11 +1725,11 @@
         }
 
         /**
-         * Opens the edit modal for a monthly income.
-         * Populates the form with the income's current data.
-         * @param {string} id - The ID of the income to edit.
+         * Abre o modal de edição para uma receita mensal.
+         * Preenche o formulário com os dados atuais da receita.
+         * @param {string} id - O ID da receita a editar.
          */
-        window.openEditMonthlyIncomeModal = function(id) { // Made global
+        window.openEditMonthlyIncomeModal = function(id) {
             editingMonthlyIncomeId = id;
             const income = monthlyIncomes.find(inc => inc.id === id);
             if (income) {
@@ -1676,7 +1741,7 @@
         }
 
         /**
-         * Closes the monthly income edit modal.
+         * Fecha o modal de edição de receita mensal.
          */
         function closeEditMonthlyIncomeModal() {
             document.getElementById('edit-monthly-income-modal').classList.add('hidden');
@@ -1684,9 +1749,9 @@
         }
 
         /**
-         * Handles the submission of the monthly income edit form.
-         * Updates the income in Firestore.
-         * @param {Event} e - The submit event object.
+         * Lida com o envio do formulário de edição de receita mensal.
+         * Atualiza a receita no Firestore.
+         * @param {Event} e - O objeto do evento de envio.
          */
         async function handleEditMonthlyIncome(e) {
             e.preventDefault();
@@ -1712,7 +1777,7 @@
         }
         
         /**
-         * Updates the dashboard summary cards (Total Monthly Expenses, Daily Expenses, Total Monthly Income, Monthly Balance).
+         * Atualiza os cartões de resumo do dashboard (Total de Despesas Mensais, Despesas Diárias, Total de Receita Mensal, Saldo Mensal).
          */
         function updateDashboard() {
             const now = new Date();
@@ -1731,7 +1796,7 @@
                 totalMonthlyExpenses += expense.value;
             });
             installments.forEach(installment => {
-                // Only count the value of the installment for the current month if it's still being paid
+                // Apenas conta o valor da parcela para o mês atual se ainda estiver a ser paga
                 if (installment.paid < installment.total) { 
                     totalMonthlyExpenses += installment.value;
                 }
@@ -1765,8 +1830,8 @@
         }
 
         /**
-         * Renders all charts (Category, Installment, Fixed, Daily, Income vs. Expenses).
-         * Destroys existing chart instances before creating new ones to prevent memory leaks.
+         * Renderiza todos os gráficos (Categoria, Parcelamento, Fixas, Diárias, Receita vs. Despesas).
+         * Destrói as instâncias de gráficos existentes antes de criar novas para evitar fugas de memória.
          */
         function renderCharts() {
             if (categoryChart) categoryChart.destroy();
@@ -1783,7 +1848,7 @@
         }
 
         /**
-         * Renders the "Receita vs. Despesas" (Income vs. Expenses) bar chart.
+         * Renderiza o gráfico de barras "Receita vs. Despesas".
          */
         function renderIncomeVsExpensesChart() {
             const ctx = document.getElementById('incomeVsExpensesChart').getContext('2d');
@@ -1871,7 +1936,7 @@
         }
 
         /**
-         * Renders the "Gastos por Categoria" (Expenses by Category) doughnut chart.
+         * Renderiza o gráfico de donut "Gastos por Categoria".
          */
         function renderCategoryChart() {
             const ctx = document.getElementById('categoryChart').getContext('2d');
@@ -1940,7 +2005,7 @@
         }
 
         /**
-         * Renders the "Despesas Parceladas" (Installment Expenses) bar chart.
+         * Renderiza o gráfico de barras "Despesas Parceladas".
          */
         function renderInstallmentChart() {
             const ctx = document.getElementById('installmentChart').getContext('2d');
@@ -2008,7 +2073,7 @@
         }
 
         /**
-         * Renders the "Despesas Fixas" (Fixed Expenses) bar chart.
+         * Renderiza o gráfico de barras "Despesas Fixas".
          */
         function renderFixedChart() {
             const ctx = document.getElementById('fixedChart').getContext('2d');
@@ -2076,7 +2141,7 @@
         }
 
         /**
-         * Renders the "Gastos Diários do Mês" (Daily Expenses of the Month) line chart.
+         * Renderiza o gráfico de linha "Gastos Diários do Mês".
          */
         function renderDailyChart() {
             const ctx = document.getElementById('dailyChart').getContext('2d');
@@ -2154,12 +2219,6 @@
                                     family: 'Inter',
                                     size: 14
                                 }
-                            },
-                            ticks: {
-                                color: '#8b7355',
-                                font: {
-                                    family: 'Inter'
-                                }
                             }
                         }
                     }
@@ -2168,9 +2227,9 @@
         }
 
         /**
-         * Displays a custom confirmation modal.
-         * @param {string} message - The message to display in the modal.
-         * @param {function} callback - The function to execute if the user confirms.
+         * Exibe um modal de confirmação personalizado.
+         * @param {string} message - A mensagem a exibir no modal.
+         * @param {function} callback - A função a executar se o utilizador confirmar.
          */
         function showConfirmModal(message, callback) {
             document.getElementById('confirm-message').textContent = message;
@@ -2179,7 +2238,7 @@
         }
 
         /**
-         * Hides the custom confirmation modal.
+         * Oculta o modal de confirmação personalizado.
          */
         function hideConfirmModal() {
             document.getElementById('confirm-modal').classList.add('hidden');
