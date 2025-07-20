@@ -245,7 +245,7 @@
                 <div>
                     <h1 class="text-xl font-bold text-primary">Controle Financeiro</h1>
                     <p class="text-sm text-secondary">Controle suas finanças</p>
-                    <p id="display-user-id" class="text-xs text-gray-500 mt-1 hidden"></p> <!-- Hidden by default -->
+                    <p id="display-user-id" class="text-xs text-gray-500 mt-1"></p> <!-- Made visible by default -->
                 </div>
                 <button id="logout-btn" class="p-2 rounded-xl bg-red-50 text-red-400 hover:bg-red-100 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -254,6 +254,9 @@
                 </button>
             </div>
         </header>
+
+        <!-- Message display area -->
+        <div id="app-message-area" class="px-4 mb-4"></div>
 
         <!-- Content Area -->
         <div class="px-4 space-y-6">
@@ -624,7 +627,7 @@
     </div>
 
     <!-- Edit Modal for Installments -->
-    <div id="edit-installment-modal" class="fixed inset-0 bg-black bg-opacity-30 hidden flex items-center justify-center p-4 z-50">
+    <div id="edit-installment-modal" class="fixed inset-0 bg-black bg-opacity30 hidden flex items-center justify-center p-4 z-50">
         <div class="glass-effect card-shadow rounded-2xl p-6 w-full max-w-md slide-up">
             <h3 class="text-lg font-bold text-primary mb-4">Editar Parcelamento</h3>
             <form id="edit-installment-form" class="space-y-4">
@@ -876,7 +879,8 @@
                     if (user) {
                         userId = user.uid;
                         isAuthReady = true;
-                        displayUserId.classList.add('hidden'); // Garante que está oculto
+                        displayUserId.textContent = `ID do Utilizador: ${userId}`; // Display User ID
+                        displayUserId.classList.remove('hidden'); // Make it visible
                         console.log("Utilizador autenticado:", userId);
                         authLoadingMessage.classList.add('hidden');
                         showApp();
@@ -917,7 +921,7 @@
                         <pre class="bg-gray-100 p-2 rounded text-xs mt-2 overflow-auto"><code>rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /artifacts/{appId}/users/{userId}/{document=**} {
+    match /artifacts/${appId}/users/{userId}/{document=**} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
   }
@@ -1039,7 +1043,7 @@ service cloud.firestore {
                 showAuth();
             } catch (error) {
                 console.error("Erro ao terminar sessão:", error);
-                authStatusMessage.textContent = `Erro ao terminar sessão: ${error.message}`;
+                showAppMessage(`Erro ao terminar sessão: ${error.message}`, "error");
             }
         }
         
@@ -1074,6 +1078,40 @@ service cloud.firestore {
         }
 
         /**
+         * Exibe uma mensagem temporária na área de mensagens da aplicação.
+         * @param {string} message - A mensagem a exibir.
+         * @param {string} type - O tipo de mensagem ('success', 'error', 'info').
+         * @param {number} duration - Duração da mensagem em milissegundos (padrão: 3000).
+         */
+        function showAppMessage(message, type, duration = 3000) {
+            const messageArea = document.getElementById('app-message-area');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `p-3 rounded-xl text-sm font-semibold fade-in`;
+
+            switch (type) {
+                case 'success':
+                    messageDiv.classList.add('bg-green-100', 'text-green-700');
+                    break;
+                case 'error':
+                    messageDiv.classList.add('bg-red-100', 'text-red-700');
+                    break;
+                case 'info':
+                    messageDiv.classList.add('bg-blue-100', 'text-blue-700');
+                    break;
+                default:
+                    messageDiv.classList.add('bg-gray-100', 'text-gray-700');
+            }
+            messageDiv.textContent = message;
+            messageArea.innerHTML = ''; // Clear previous messages
+            messageArea.appendChild(messageDiv);
+
+            setTimeout(() => {
+                messageDiv.classList.add('opacity-0');
+                messageDiv.addEventListener('transitionend', () => messageDiv.remove());
+            }, duration);
+        }
+
+        /**
          * Ouve atualizações em tempo real das despesas diárias do Firestore.
          */
         function listenForDailyExpenses() {
@@ -1087,12 +1125,7 @@ service cloud.firestore {
                 renderCharts();
             }, (error) => {
                 console.error("Erro ao ouvir despesas diárias:", error);
-                // Atualiza a mensagem de status da autenticação para o usuário
-                authStatusMessage.innerHTML = `
-                    <p class="text-red-600 font-semibold mb-2">Erro de Permissão!</p>
-                    <p>Não foi possível carregar as despesas diárias. Por favor, verifique as suas Regras de Segurança do Firestore.</p>
-                    <p class="mt-2">Certifique-se de que tem permissão para ler e escrever em: <code>artifacts/${appId}/users/${userId}/dailyExpenses</code></p>
-                `;
+                showAppMessage(`Erro ao carregar despesas diárias: ${error.message}. Verifique as permissões do Firestore.`, "error");
             });
         }
 
@@ -1110,12 +1143,7 @@ service cloud.firestore {
                 renderCharts();
             }, (error) => {
                 console.error("Erro ao ouvir despesas fixas:", error);
-                // Atualiza a mensagem de status da autenticação para o usuário
-                authStatusMessage.innerHTML = `
-                    <p class="text-red-600 font-semibold mb-2">Erro de Permissão!</p>
-                    <p>Não foi possível carregar as despesas fixas. Por favor, verifique as suas Regras de Segurança do Firestore.</p>
-                    <p class="mt-2">Certifique-se de que tem permissão para ler e escrever em: <code>artifacts/${appId}/users/${userId}/fixedExpenses</code></p>
-                `;
+                showAppMessage(`Erro ao carregar despesas fixas: ${error.message}. Verifique as permissões do Firestore.`, "error");
             });
         }
 
@@ -1133,12 +1161,7 @@ service cloud.firestore {
                 renderCharts();
             }, (error) => {
                 console.error("Erro ao ouvir parcelamentos:", error);
-                // Atualiza a mensagem de status da autenticação para o usuário
-                authStatusMessage.innerHTML = `
-                    <p class="text-red-600 font-semibold mb-2">Erro de Permissão!</p>
-                    <p>Não foi possível carregar os parcelamentos. Por favor, verifique as suas Regras de Segurança do Firestore.</p>
-                    <p class="mt-2">Certifique-se de que tem permissão para ler e escrever em: <code>artifacts/${appId}/users/${userId}/installments</code></p>
-                `;
+                showAppMessage(`Erro ao carregar parcelamentos: ${error.message}. Verifique as permissões do Firestore.`, "error");
             });
         }
 
@@ -1156,12 +1179,7 @@ service cloud.firestore {
                 renderCharts();
             }, (error) => {
                 console.error("Erro ao ouvir receitas mensais:", error);
-                // Atualiza a mensagem de status da autenticação para o usuário
-                authStatusMessage.innerHTML = `
-                    <p class="text-red-600 font-semibold mb-2">Erro de Permissão!</p>
-                    <p>Não foi possível carregar as receitas mensais. Por favor, verifique as suas Regras de Segurança do Firestore.</p>
-                    <p class="mt-2">Certifique-se de que tem permissão para ler e escrever em: <code>artifacts/${appId}/users/${userId}/monthlyIncomes</code></p>
-                `;
+                showAppMessage(`Erro ao carregar receitas mensais: ${error.message}. Verifique as permissões do Firestore.`, "error");
             });
         }
         
@@ -1174,7 +1192,7 @@ service cloud.firestore {
             e.preventDefault();
             if (!userId) {
                 console.error("Utilizador não autenticado para adicionar despesa diária.");
-                authStatusMessage.textContent = "Erro: Por favor, inicie sessão para adicionar despesas.";
+                showAppMessage("Erro: Por favor, inicie sessão para adicionar despesas.", "error");
                 return;
             }
 
@@ -1193,12 +1211,14 @@ service cloud.firestore {
                     });
                     e.target.reset();
                     setTodayDate();
+                    showAppMessage("Gasto diário adicionado com sucesso!", "success");
                 } catch (error) {
                     console.error("Erro ao adicionar despesa diária:", error);
-                    authStatusMessage.textContent = `Erro ao adicionar despesa: ${error.message}`;
+                    showAppMessage(`Erro ao adicionar despesa: ${error.message}`, "error");
                 }
             } else {
                 console.error('Por favor, preencha todos os campos do gasto diário corretamente.');
+                showAppMessage("Por favor, preencha todos os campos do gasto diário corretamente.", "error");
             }
         }
         
@@ -1248,9 +1268,10 @@ service cloud.firestore {
                 if (!userId) return;
                 try {
                     await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/dailyExpenses`, id));
+                    showAppMessage("Gasto diário excluído com sucesso!", "success");
                 } catch (error) {
                     console.error("Erro ao excluir despesa diária:", error);
-                    authStatusMessage.textContent = `Erro ao excluir despesa: ${error.message}`;
+                    showAppMessage(`Erro ao excluir despesa: ${error.message}`, "error");
                 }
             });
         }
@@ -1304,12 +1325,14 @@ service cloud.firestore {
                         value
                     });
                     closeEditModal();
+                    showAppMessage("Gasto diário atualizado com sucesso!", "success");
                 } catch (error) {
                     console.error("Erro ao editar despesa diária:", error);
-                    authStatusMessage.textContent = `Erro ao editar despesa: ${error.message}`;
+                    showAppMessage(`Erro ao editar despesa: ${error.message}`, "error");
                 }
             } else {
                 console.error('Por favor, preencha todos os campos do gasto diário corretamente para editar.');
+                showAppMessage("Por favor, preencha todos os campos do gasto diário corretamente para editar.", "error");
             }
         }
 
@@ -1322,7 +1345,7 @@ service cloud.firestore {
             e.preventDefault();
             if (!userId) {
                 console.error("Utilizador não autenticado para adicionar despesa fixa.");
-                authStatusMessage.textContent = "Erro: Por favor, inicie sessão para adicionar despesas fixas.";
+                showAppMessage("Erro: Por favor, inicie sessão para adicionar despesas fixas.", "error");
                 return;
             }
 
@@ -1338,12 +1361,14 @@ service cloud.firestore {
                         value
                     });
                     e.target.reset();
+                    showAppMessage("Despesa fixa adicionada com sucesso!", "success");
                 } catch (error) {
                     console.error("Erro ao adicionar despesa fixa:", error);
-                    authStatusMessage.textContent = `Erro ao adicionar despesa fixa: ${error.message}`;
+                    showAppMessage(`Erro ao adicionar despesa fixa: ${error.message}`, "error");
                 }
             } else {
                 console.error('Por favor, preencha todos os campos da despesa fixa corretamente.');
+                showAppMessage("Por favor, preencha todos os campos da despesa fixa corretamente.", "error");
             }
         }
         
@@ -1391,9 +1416,10 @@ service cloud.firestore {
                 if (!userId) return;
                 try {
                     await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/fixedExpenses`, id));
+                    showAppMessage("Despesa fixa excluída com sucesso!", "success");
                 } catch (error) {
                     console.error("Erro ao excluir despesa fixa:", error);
-                    authStatusMessage.textContent = `Erro ao excluir despesa fixa: ${error.message}`;
+                    showAppMessage(`Erro ao excluir despesa fixa: ${error.message}`, "error");
                 }
             });
         }
@@ -1444,12 +1470,14 @@ service cloud.firestore {
                         value
                     });
                     closeEditFixedModal();
+                    showAppMessage("Despesa fixa atualizada com sucesso!", "success");
                 } catch (error) {
                     console.error("Erro ao editar despesa fixa:", error);
-                    authStatusMessage.textContent = `Erro ao editar despesa fixa: ${error.message}`;
+                    showAppMessage(`Erro ao editar despesa fixa: ${error.message}`, "error");
                 }
             } else {
                 console.error('Por favor, preencha todos os campos da despesa fixa corretamente para editar.');
+                showAppMessage("Por favor, preencha todos os campos da despesa fixa corretamente para editar.", "error");
             }
         }
         
@@ -1462,7 +1490,7 @@ service cloud.firestore {
             e.preventDefault();
             if (!userId) {
                 console.error("Utilizador não autenticado para adicionar parcelamento.");
-                authStatusMessage.textContent = "Erro: Por favor, inicie sessão para adicionar parcelamentos.";
+                showAppMessage("Erro: Por favor, inicie sessão para adicionar parcelamentos.", "error");
                 return;
             }
 
@@ -1481,12 +1509,14 @@ service cloud.firestore {
                         paid: 0
                     });
                     e.target.reset();
+                    showAppMessage("Parcelamento adicionado com sucesso!", "success");
                 } catch (error) {
                     console.error("Erro ao adicionar parcelamento:", error);
-                    authStatusMessage.textContent = `Erro ao adicionar parcelamento: ${error.message}`;
+                    showAppMessage(`Erro ao adicionar parcelamento: ${error.message}`, "error");
                 }
             } else {
                 console.error('Por favor, preencha todos os campos do parcelamento corretamente.');
+                showAppMessage("Por favor, preencha todos os campos do parcelamento corretamente.", "error");
             }
         }
         
@@ -1552,9 +1582,10 @@ service cloud.firestore {
                     await updateDoc(doc(db, `artifacts/${appId}/users/${userId}/installments`, id), {
                         paid: installment.paid + 1
                     });
+                    showAppMessage("Parcela marcada como paga!", "success");
                 } catch (error) {
                     console.error("Erro ao marcar parcela como paga:", error);
-                    authStatusMessage.textContent = `Erro ao atualizar parcela: ${error.message}`;
+                    showAppMessage(`Erro ao atualizar parcela: ${error.message}`, "error");
                 }
             }
         }
@@ -1568,9 +1599,10 @@ service cloud.firestore {
                 if (!userId) return;
                 try {
                     await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/installments`, id));
+                    showAppMessage("Parcelamento excluído com sucesso!", "success");
                 } catch (error) {
                     console.error("Erro ao excluir parcelamento:", error);
-                    authStatusMessage.textContent = `Erro ao excluir parcelamento: ${error.message}`;
+                    showAppMessage(`Erro ao excluir parcelamento: ${error.message}`, "error");
                 }
             });
         }
@@ -1620,7 +1652,7 @@ service cloud.firestore {
             if (name && category && !isNaN(value) && value > 0 && !isNaN(totalInstallments) && totalInstallments > 0 && !isNaN(paidInstallments) && paidInstallments >= 0) {
                 if (paidInstallments > totalInstallments) {
                     console.error('O número de parcelas pagas não pode ser maior que o total de parcelas.');
-                    authStatusMessage.textContent = 'Erro: Parcelas pagas não podem exceder o total.';
+                    showAppMessage('Erro: Parcelas pagas não podem exceder o total.', "error");
                     return;
                 }
 
@@ -1633,12 +1665,14 @@ service cloud.firestore {
                         paid: paidInstallments
                     });
                     closeEditInstallmentModal();
+                    showAppMessage("Parcelamento atualizado com sucesso!", "success");
                 } catch (error) {
                     console.error("Erro ao editar parcelamento:", error);
-                    authStatusMessage.textContent = `Erro ao editar parcelamento: ${error.message}`;
+                    showAppMessage(`Erro ao editar parcelamento: ${error.message}`, "error");
                 }
             } else {
                 console.error('Por favor, preencha todos os campos do parcelamento corretamente para editar.');
+                showAppMessage("Por favor, preencha todos os campos do parcelamento corretamente para editar.", "error");
             }
         }
 
@@ -1651,7 +1685,7 @@ service cloud.firestore {
             e.preventDefault();
             if (!userId) {
                 console.error("Utilizador não autenticado para adicionar receita mensal.");
-                authStatusMessage.textContent = "Erro: Por favor, inicie sessão para adicionar receitas.";
+                showAppMessage("Erro: Por favor, inicie sessão para adicionar receitas.", "error");
                 return;
             }
 
@@ -1665,12 +1699,14 @@ service cloud.firestore {
                         value
                     });
                     e.target.reset();
+                    showAppMessage("Receita mensal adicionada com sucesso!", "success");
                 } catch (error) {
                     console.error("Erro ao adicionar receita mensal:", error);
-                    authStatusMessage.textContent = `Erro ao adicionar receita: ${error.message}`;
+                    showAppMessage(`Erro ao adicionar receita: ${error.message}`, "error");
                 }
             } else {
                 console.error('Por favor, preencha todos os campos da receita mensal corretamente.');
+                showAppMessage("Por favor, preencha todos os campos da receita mensal corretamente.", "error");
             }
         }
 
@@ -1717,9 +1753,10 @@ service cloud.firestore {
                 if (!userId) return;
                 try {
                     await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/monthlyIncomes`, id));
+                    showAppMessage("Receita mensal excluída com sucesso!", "success");
                 } catch (error) {
                     console.error("Erro ao excluir receita mensal:", error);
-                    authStatusMessage.textContent = `Erro ao excluir receita: ${error.message}`;
+                    showAppMessage(`Erro ao excluir receita: ${error.message}`, "error");
                 }
             });
         }
@@ -1767,12 +1804,14 @@ service cloud.firestore {
                         value
                     });
                     closeEditMonthlyIncomeModal();
+                    showAppMessage("Receita mensal atualizada com sucesso!", "success");
                 } catch (error) {
                     console.error("Erro ao editar receita mensal:", error);
-                    authStatusMessage.textContent = `Erro ao editar receita: ${error.message}`;
+                    showAppMessage(`Erro ao editar receita: ${error.message}`, "error");
                 }
             } else {
                 console.error('Por favor, preencha todos os campos da receita mensal corretamente para editar.');
+                showAppMessage("Por favor, preencha todos os campos da receita mensal corretamente para editar.", "error");
             }
         }
         
@@ -1865,6 +1904,7 @@ service cloud.firestore {
                 totalMonthlyExpenses += expense.value;
             });
             installments.forEach(installment => {
+                // Apenas conta o valor da parcela para o mês atual se ainda estiver a ser paga
                 if (installment.paid < installment.total) { 
                     totalMonthlyExpenses += installment.value;
                 }
@@ -2247,3 +2287,4 @@ service cloud.firestore {
     </script>
 </body>
 </html>
+]
