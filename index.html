@@ -203,19 +203,6 @@
     </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Chosen Palette: Warm Neutrals with Earthy Accents -->
-    <!-- Application Structure Plan: The application is structured as a single-page application (SPA) with a dashboard and dedicated sections for daily, fixed, installment, and monthly income expenses. This structure was chosen to provide a clear overview of financial data (dashboard) while allowing users to drill down into specific categories of transactions for detailed management. The bottom navigation facilitates quick switching between these views, promoting intuitive exploration and task-oriented interaction. -->
-    <!-- Visualization & Content Choices:
-    - Dashboard Summary Cards: Report Info -> Key Metrics -> Display as large, easily digestible numbers with relevant icons. Interaction: Quick glance. Justification: Provides immediate high-level overview. Library/Method: HTML/Tailwind.
-    - Income vs. Expenses Chart: Report Info -> Financial Performance -> Bar Chart. Interaction: Hover for detailed values. Justification: Compares two key financial aspects visually. Library/Method: Chart.js (Canvas).
-    - Gastos por Categoria (Expenses by Category): Report Info -> Spending Breakdown -> Doughnut Chart. Interaction: Hover for percentage/value. Justification: Shows proportion of spending across categories. Library/Method: Chart.js (Canvas).
-    - Despesas Parceladas (Installment Expenses): Report Info -> Debt/Commitments -> Bar Chart with progress bar in list. Interaction: Hover for remaining value, click to mark paid, edit/delete. Justification: Visualizes ongoing financial commitments and their progress. Library/Method: Chart.js (Canvas) for chart, HTML/Tailwind/JS for list.
-    - Despesas Fixas (Fixed Expenses): Report Info -> Recurring Costs -> Bar Chart. Interaction: Hover for value, edit/delete. Justification: Highlights predictable monthly outflows. Library/Method: Chart.js (Canvas) for chart, HTML/Tailwind/JS for list.
-    - Gastos Diários do Mês (Daily Spending for the Month): Report Info -> Spending Trends -> Line Chart. Interaction: Hover for daily totals, add/edit/delete daily expenses. Justification: Shows spending patterns over time. Library/Method: Chart.js (Canvas) for chart, HTML/Tailwind/JS for list.
-    - Daily, Fixed, Installment, Income Panels: Report Info -> Transaction Details -> Lists with forms for adding/editing/deleting. Interaction: CRUD operations. Justification: Allows detailed management of individual financial entries. Library/Method: HTML/Tailwind/JS.
-    - Modals (Edit/Confirm): Report Info -> User Interaction -> Overlay forms/confirmation. Interaction: Form submission, confirmation. Justification: Provides focused interaction for editing/deleting without navigating away. Library/Method: HTML/Tailwind/JS.
-    - Authentication Screen: Report Info -> Access Control -> Simple login/loading screen. Interaction: Automatic sign-in (anonymous). Justification: Manages user access and data isolation. Library/Method: HTML/Tailwind/JS. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <!-- Auth Screen -->
     <div id="auth-screen" class="min-h-screen flex items-center justify-center p-4">
         <div class="w-full max-w-md">
@@ -227,12 +214,62 @@
                         </svg>
                     </div>
                     <h1 class="text-2xl font-bold text-primary mb-2">Controle Financeiro</h1>
-                    <p class="text-secondary">A iniciar sessão automaticamente...</p>
+                    <p class="text-sm text-secondary">Gerencie suas finanças com tranquilidade</p>
                 </div>
                 
-                <!-- Formulário de autenticação removido, pois a autenticação é automática (anónima ou por token) -->
-                <p id="auth-loading-message" class="text-center text-sm text-blue-500 mt-4">A carregar...</p>
-                <p id="auth-status-message" class="text-center text-sm text-red-500 mt-4"></p>
+                <!-- Login Form -->
+                <div id="login-form" class="space-y-4">
+                    <div>
+                        <label for="login-email" class="block text-sm font-medium text-secondary mb-2">Email</label>
+                        <input type="email" id="login-email" placeholder="seuemail@exemplo.com"
+                               class="form-input w-full px-4 py-3 rounded-xl" required>
+                    </div>
+                    <div>
+                        <label for="login-password" class="block text-sm font-medium text-secondary mb-2">Senha</label>
+                        <input type="password" id="login-password" placeholder="********"
+                               class="form-input w-full px-4 py-3 rounded-xl" required>
+                    </div>
+                    <button type="button" id="login-btn" class="btn-primary w-full py-3 rounded-xl font-semibold">
+                        Entrar
+                    </button>
+                    <div class="text-center">
+                        <p class="text-sm text-secondary">Não tem uma conta?</p>
+                        <button type="button" id="show-register" class="text-primary font-semibold hover:underline">
+                            Cadastre-se aqui
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Register Form -->
+                <div id="register-form" class="space-y-4 hidden">
+                    <div>
+                        <label for="register-name" class="block text-sm font-medium text-secondary mb-2">Nome</label>
+                        <input type="text" id="register-name" placeholder="Seu nome completo"
+                               class="form-input w-full px-4 py-3 rounded-xl" required>
+                    </div>
+                    <div>
+                        <label for="register-email" class="block text-sm font-medium text-secondary mb-2">Email</label>
+                        <input type="email" id="register-email" placeholder="seuemail@exemplo.com"
+                               class="form-input w-full px-4 py-3 rounded-xl" required>
+                    </div>
+                    <div>
+                        <label for="register-password" class="block text-sm font-medium text-secondary mb-2">Senha</label>
+                        <input type="password" id="register-password" placeholder="********"
+                               class="form-input w-full px-4 py-3 rounded-xl" required>
+                    </div>
+                    <button type="button" id="register-btn" class="btn-success w-full py-3 rounded-xl font-semibold">
+                        Cadastrar
+                    </button>
+                    <div class="text-center">
+                        <p class="text-sm text-secondary">Já tem uma conta?</p>
+                        <button type="button" id="show-login" class="text-primary font-semibold hover:underline">
+                            Faça login aqui
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Status Messages -->
+                <div id="auth-status-message" class="mt-4 text-center text-sm"></div>
             </div>
         </div>
     </div>
@@ -244,8 +281,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-xl font-bold text-primary">Controle Financeiro</h1>
-                    <!-- Removido: <p class="text-sm text-secondary">Controle suas finanças</p> -->
-                    <!-- Removido: <p id="display-user-id" class="text-xs text-gray-500 mt-1"></p> -->
+                    <p id="display-user-name" class="text-sm text-secondary"></p>
                 </div>
                 <button id="logout-btn" class="p-2 rounded-xl bg-red-50 text-red-400 hover:bg-red-100 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -273,7 +309,7 @@
                             <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
                                 <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-                                </svg>
+                        </svg>
                             </div>
                         </div>
                     </div>
@@ -421,7 +457,7 @@
                                    class="form-input w-full px-4 py-3 rounded-xl" required oninput="capitalizeFirstLetter(this)">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-secondary mb-2">Categoria</labe l>
+                            <label class="block text-sm font-medium text-secondary mb-2">Categoria</label>
                             <input type="text" id="fixed-category" placeholder="Ex: Moradia, Serviços..." 
                                    class="form-input w-full px-4 py-3 rounded-xl" required oninput="capitalizeFirstLetter(this)">
                         </div>
@@ -606,7 +642,7 @@
                     <input type="text" id="edit-fixed-name" class="form-input w-full px-4 py-3 rounded-xl" required oninput="capitalizeFirstLetter(this)">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-secondary mb-2">Categoria</labe l>
+                    <label class="block text-sm font-medium text-secondary mb-2">Categoria</label>
                     <input type="text" id="edit-fixed-category" class="form-input w-full px-4 py-3 rounded-xl" required oninput="capitalizeFirstLetter(this)">
                 </div>
                 <div>
@@ -627,7 +663,7 @@
     </div>
 
     <!-- Edit Modal for Installments -->
-    <div id="edit-installment-modal" class="fixed inset-0 bg-black bg-opacity30 hidden flex items-center justify-center p-4 z-50">
+    <div id="edit-installment-modal" class="fixed inset-0 bg-black bg-opacity-30 hidden flex items-center justify-center p-4 z-50">
         <div class="glass-effect card-shadow rounded-2xl p-6 w-full max-w-md slide-up">
             <h3 class="text-lg font-bold text-primary mb-4">Editar Parcelamento</h3>
             <form id="edit-installment-form" class="space-y-4">
@@ -709,44 +745,9 @@
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // =====================================================================================================
-        // ATENÇÃO: CONFIGURAÇÃO DO FIREBASE
-        // Para que esta aplicação funcione, você PRECISA substituir os valores de 'YOUR_...' abaixo
-        // pelas credenciais do seu próprio projeto Firebase.
-        //
-        // 1. Vá para a Consola Firebase (console.firebase.google.com).
-        // 2. Selecione o seu projeto (ou crie um novo).
-        // 3. No painel do projeto, clique no ícone `</>` (Web) para adicionar uma aplicação web.
-        // 4. Siga os passos e copie o objeto `firebaseConfig` que será fornecido.
-        // 5. Cole os seus valores abaixo, substituindo os marcadores de posição.
-        //
-        // PARA PRODUÇÃO (Vercel, etc.): É ALTAMENTE RECOMENDADO usar variáveis de ambiente
-        // em vez de hardcoding das suas credenciais aqui por motivos de segurança.
-        // Consulte a documentação do Firebase e do Vercel sobre como configurar variáveis de ambiente.
-        // =====================================================================================================
-        const firebaseConfig = {
-          apiKey: "AIzaSyDIexIl-HuaiZxoMbJA6hkA666B4GazXVs",
-          authDomain: "finances-d9fc0.firebaseapp.com",
-          projectId: "finances-d9fc0",
-          storageBucket: "finances-d9fc0.firebasestorage.app",
-          messagingSenderId: "503065345421",
-          appId: "1:503065345421:web:834f1884c0a2606f8e11c4"
-        };
-        const appId = firebaseConfig.appId; // Obtido da configuração do Firebase
-        const initialAuthToken = null; // Mantenha como null se não estiver a usar um token de autenticação personalizado
-
-        let app;
-        let db;
-        let auth;
-        let userId = null;
-        let isAuthReady = false; // Flag para indicar se o estado de autenticação foi verificado
-
-        // Estado da Aplicação
+    <script>
+        // Estado da aplicação
+        let currentUser = null;
         let currentPanel = 'dashboard';
         let editingExpenseId = null;
         let editingFixedId = null;
@@ -754,227 +755,56 @@
         let editingMonthlyIncomeId = null;
         let confirmCallback = null;
         
-        // Armazenamento de Dados - Agora preenchido a partir do Firestore
+        // Armazenamento de dados (simulando localStorage por usuário)
+        let users = JSON.parse(localStorage.getItem('financeUsers') || '{}');
         let dailyExpenses = [];
         let fixedExpenses = [];
         let installments = [];
         let monthlyIncomes = [];
         
-        // Instâncias de Gráficos
+        // Instâncias de gráficos
         let categoryChart, installmentChart, fixedChart, dailyChart, incomeVsExpensesChart;
         
         // Elementos DOM
         const authScreen = document.getElementById('auth-screen');
         const appScreen = document.getElementById('app-screen');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
         const authStatusMessage = document.getElementById('auth-status-message');
-        const authLoadingMessage = document.getElementById('auth-loading-message');
-        const displayUserId = document.getElementById('display-user-id');
+        const displayUserName = document.getElementById('display-user-name');
         const bottomNav = document.querySelector('.bottom-nav');
 
-        // Inicializar a aplicação no DOMContentLoaded
+        // Inicializar aplicação
         document.addEventListener('DOMContentLoaded', function() {
-            initializeFirebase();
             setupEventListeners();
             setTodayDate();
+            checkExistingSession();
         });
 
-        /**
-         * Capitaliza a primeira letra do valor de um elemento de input.
-         * @param {HTMLInputElement} inputElement - O elemento de input a capitalizar.
-         */
-        window.capitalizeFirstLetter = function(inputElement) {
-            const value = inputElement.value;
-            if (value.length > 0) {
-                inputElement.value = value.charAt(0).toUpperCase() + value.slice(1);
+        // Verificar se há sessão existente
+        function checkExistingSession() {
+            const savedUser = localStorage.getItem('currentFinanceUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                loadUserData();
+                showApp();
             }
         }
 
-        /**
-         * Formata um campo de input numérico como moeda com vírgula como separador decimal.
-         * Lida com input em tempo real (oninput) e formatação final (onblur).
-         * Armazena o valor numérico (com ponto) num atributo de dados para uso interno.
-         * @param {HTMLInputElement} inputElement - O elemento de input a formatar.
-         */
-        window.formatCurrencyInput = function(inputElement) {
-            let value = inputElement.value;
-
-            // Se o valor estiver vazio, limpa os dados numéricos e retorna
-            if (value === '') {
-                inputElement.dataset.numericValue = '';
-                return;
-            }
-
-            // Remove todos os caracteres não numéricos, exceto a vírgula
-            value = value.replace(/[^0-9,]/g, '');
-
-            // Lida com múltiplas vírgulas: mantém apenas a primeira
-            const parts = value.split(',');
-            if (parts.length > 2) {
-                value = parts[0] + ',' + parts.slice(1).join('');
-            }
-
-            // Garante no máximo duas casas decimais após a vírgula
-            if (value.includes(',')) {
-                const decimalPart = value.split(',')[1];
-                if (decimalPart && decimalPart.length > 2) {
-                    value = value.substring(0, value.indexOf(',') + 3);
-                }
-            }
-
-            // Se o evento for 'blur', garante duas casas decimais
-            if (event && event.type === 'blur') {
-                const numericVal = parseFloat(value.replace(',', '.'));
-                if (!isNaN(numericVal)) {
-                    value = numericVal.toFixed(2).replace('.', ',');
-                } else {
-                    value = ''; // Limpa se não for um número válido no blur
-                }
-            }
-
-            // Atualiza o campo de input com o valor formatado
-            inputElement.value = value;
-
-            // Para uso interno (parsing para float), converte vírgula para ponto
-            let parsedValue = parseFloat(value.replace(',', '.'));
-            if (isNaN(parsedValue)) {
-                parsedValue = 0; // Padrão para 0 se não for um número válido
-            }
-            // Armazena o valor numérico real (com ponto) num atributo de dados para fácil recuperação
-            inputElement.dataset.numericValue = parsedValue;
-        }
-        
-        /**
-         * Inicializa o Firebase e configura o listener de autenticação.
-         */
-        async function initializeFirebase() {
-            authLoadingMessage.classList.remove('hidden');
-            authStatusMessage.textContent = ''; // Limpa mensagens anteriores
-
-            try {
-                // Verifica se a configuração do Firebase está disponível
-                if (!firebaseConfig || Object.keys(firebaseConfig).length === 0 || firebaseConfig.apiKey === "YOUR_API_KEY") {
-                    console.error("A configuração do Firebase está vazia ou não foi fornecida corretamente.");
-                    authStatusMessage.innerHTML = `
-                        <p class="text-red-600 font-semibold mb-2">Erro de Configuração do Firebase!</p>
-                        <p>Por favor, abra o ficheiro HTML e substitua os marcadores de posição
-                        (ex: <code class="bg-red-100 px-1 rounded">YOUR_API_KEY</code>)
-                        pelas suas credenciais reais do Firebase.</p>
-                        <p class="mt-2">Consulte o guia de configuração do Firebase para mais detalhes.</p>
-                    `;
-                    authLoadingMessage.classList.add('hidden');
-                    showAuth(); // Garante que o ecrã de autenticação é mostrado imediatamente
-                    return; // Interrompe a inicialização se a configuração estiver em falta
-                }
-
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                console.log("Firebase App ID:", appId);
-                console.log("Firebase Config:", firebaseConfig);
-                console.log("Initial Auth Token:", initialAuthToken ? "Presente" : "Não Presente");
-
-
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        userId = user.uid;
-                        isAuthReady = true;
-                        // displayUserId.textContent = `ID do Utilizador: ${userId}`; // Display User ID
-                        // displayUserId.classList.remove('hidden'); // Make it visible
-                        console.log("Utilizador autenticado:", userId);
-                        authLoadingMessage.classList.add('hidden');
-                        showApp();
-                        // Começa a ouvir as coleções do Firestore
-                        listenForDailyExpenses();
-                        listenForFixedExpenses();
-                        listenForInstallments();
-                        listenForMonthlyIncomes();
-                    } else {
-                        userId = null;
-                        isAuthReady = true; // O estado de autenticação foi verificado, mesmo que não esteja logado
-                        console.log("Utilizador não autenticado.");
-                        authLoadingMessage.classList.add('hidden');
-                        showAuth();
-                    }
-                });
-
-                // Tenta iniciar sessão usando o token personalizado fornecido ou anonimamente
-                if (initialAuthToken) {
-                    console.log("A tentar iniciar sessão com token personalizado...");
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    console.log("Nenhum token de autenticação personalizado encontrado, a tentar iniciar sessão anonimamente...");
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Erro de login:", error);
-                let errorMessage = `Erro de login: ${error.message}.`;
-                if (error.code === 'auth/operation-not-allowed') {
-                    errorMessage += " Isto geralmente significa que o método de autenticação (por exemplo, Anónimo, Token Personalizado) não está ativado nas configurações do seu projeto Firebase. Por favor, verifique a consola do Firebase (Autenticação > Métodos de Início de Sessão).";
-                } else if (error.code === 'auth/configuration-not-found') {
-                    errorMessage += " Isto indica que a configuração do Firebase (apiKey, authDomain, projectId, etc.) no seu código pode estar incorreta ou o método de autenticação anónimo não está ativado no seu projeto Firebase. Por favor, verifique as suas credenciais e as definições de autenticação na Consola Firebase (Autenticação > Métodos de Início de Sessão > Anónimo).";
-                } else if (error.code === 'permission-denied') {
-                    errorMessage = `
-                        <p class="text-red-600 font-semibold mb-2">Erro de Permissão do Firestore!</p>
-                        <p>Não foi possível aceder aos dados. Por favor, verifique as suas Regras de Segurança do Firestore na Consola Firebase.</p>
-                        <p class="mt-2">Certifique-se de que as suas regras permitem a leitura e escrita para utilizadores autenticados nos caminhos de dados da sua aplicação. Por exemplo:</p>
-                        <pre class="bg-gray-100 p-2 rounded text-xs mt-2 overflow-auto"><code>rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /artifacts/${appId}/users/{userId}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-  }
-}</code></pre>
-                        <p class="mt-2">Substitua 'appId' pelo ID da sua aplicação Firebase e 'userId' pelo UID do utilizador autenticado.</p>
-                    `;
-                }
-                authStatusMessage.innerHTML = errorMessage; // Use innerHTML para renderizar a tag <pre>
-                authLoadingMessage.classList.add('hidden');
-                showAuth(); // Garante que o ecrã de autenticação é mostrado em caso de erro
-            }
-        }
-        
-        /**
-         * Exibe o ecrã de autenticação e oculta o ecrã da aplicação.
-         * Também garante que a navegação inferior está oculta.
-         */
-        function showAuth() {
-            authScreen.classList.remove('hidden');
-            appScreen.classList.add('hidden');
-            bottomNav.classList.add('hidden');
-        }
-        
-        /**
-         * Exibe o ecrã principal da aplicação e oculta o ecrã de autenticação.
-         * Atualiza o nome do utilizador no cabeçalho, atualiza o dashboard e renderiza os gráficos.
-         * Também garante que a navegação inferior está visível.
-         */
-        function showApp() {
-            authScreen.classList.add('hidden');
-            appScreen.classList.remove('hidden');
-            bottomNav.classList.remove('hidden');
-            updateDashboard();
-            renderCharts();
-            switchPanel(currentPanel); // Garante que o painel correto é mostrado ao carregar a aplicação
-        }
-        
-        /**
-         * Define a data padrão para o formulário de despesas diárias para a data de hoje.
-         */
-        function setTodayDate() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('daily-date').value = today;
-        }
-        
-        /**
-         * Configura todos os event listeners para formulários, botões e interações de modal.
-         */
+        // Configurar event listeners
         function setupEventListeners() {
-            // Clique no botão de logout
+            // Botões de alternância entre login e registro
+            document.getElementById('show-register').addEventListener('click', showRegisterForm);
+            document.getElementById('show-login').addEventListener('click', showLoginForm);
+            
+            // Botões de login e registro
+            document.getElementById('login-btn').addEventListener('click', handleLogin);
+            document.getElementById('register-btn').addEventListener('click', handleRegister);
+            
+            // Botão de logout
             document.getElementById('logout-btn').addEventListener('click', handleLogout);
             
-            // Clique nos botões de navegação
+            // Navegação
             document.querySelectorAll('.nav-item').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const panel = e.currentTarget.dataset.panel;
@@ -982,13 +812,13 @@ service cloud.firestore {
                 });
             });
             
-            // Envio de formulários de despesas
+            // Formulários
             document.getElementById('daily-form').addEventListener('submit', handleDailyExpense);
             document.getElementById('fixed-form').addEventListener('submit', handleFixedExpense);
             document.getElementById('installments-form').addEventListener('submit', handleInstallment);
             document.getElementById('income-form').addEventListener('submit', handleMonthlyIncome);
             
-            // Envio de formulários de edição
+            // Formulários de edição
             document.getElementById('edit-form').addEventListener('submit', handleEditExpense);
             document.getElementById('edit-fixed-form').addEventListener('submit', handleEditFixedExpense);
             document.getElementById('edit-installment-form').addEventListener('submit', handleEditInstallment);
@@ -1000,7 +830,16 @@ service cloud.firestore {
             document.getElementById('cancel-edit-installment').addEventListener('click', closeEditInstallmentModal);
             document.getElementById('cancel-edit-monthly-income').addEventListener('click', closeEditMonthlyIncomeModal);
             
-            // Cliques no fundo do modal para fechar
+            // Modal de confirmação
+            document.getElementById('confirm-cancel').addEventListener('click', hideConfirmModal);
+            document.getElementById('confirm-delete').addEventListener('click', () => {
+                if (confirmCallback) {
+                    confirmCallback();
+                }
+                hideConfirmModal();
+            });
+            
+            // Fechar modais clicando no fundo
             document.getElementById('edit-modal').addEventListener('click', (e) => {
                 if (e.target.id === 'edit-modal') closeEditModal();
             });
@@ -1013,76 +852,174 @@ service cloud.firestore {
             document.getElementById('edit-monthly-income-modal').addEventListener('click', (e) => {
                 if (e.target.id === 'edit-monthly-income-modal') closeEditMonthlyIncomeModal();
             });
-
-            // Botões do modal de confirmação
-            document.getElementById('confirm-cancel').addEventListener('click', hideConfirmModal);
-            document.getElementById('confirm-delete').addEventListener('click', () => {
-                if (confirmCallback) {
-                    confirmCallback();
-                }
-                hideConfirmModal();
-            });
             document.getElementById('confirm-modal').addEventListener('click', (e) => {
                 if (e.target.id === 'confirm-modal') hideConfirmModal();
             });
         }
-        
-        /**
-         * Lida com o processo de logout.
-         * Termina a sessão do Firebase e exibe o ecrã de autenticação.
-         */
-        async function handleLogout() {
-            try {
-                await auth.signOut();
-                console.log("Sessão terminada com sucesso.");
-                // Limpa os dados locais ao fazer logout
-                dailyExpenses = [];
-                fixedExpenses = [];
-                installments = [];
-                monthlyIncomes = [];
-                showAuth();
-            } catch (error) {
-                console.error("Erro ao terminar sessão:", error);
-                showAppMessage(`Erro ao terminar sessão: ${error.message}`, "error");
-            }
+
+        // Mostrar formulário de registro
+        function showRegisterForm() {
+            loginForm.classList.add('hidden');
+            registerForm.classList.remove('hidden');
+            authStatusMessage.textContent = '';
         }
-        
-        /**
-         * Alterna entre diferentes painéis (Dashboard, Diários, Fixas, Parceladas, Receitas).
-         * Oculta todos os painéis e mostra o selecionado, atualizando o estado ativo da navegação.
-         * @param {string} panelId - O ID do painel a mostrar (ex: 'dashboard', 'daily', 'income').
-         */
-        function switchPanel(panelId) {
-            const panels = ['dashboard-panel', 'daily-panel', 'fixed-panel', 'installments-panel', 'income-panel'];
-            panels.forEach(id => {
-                document.getElementById(id).classList.add('hidden');
-            });
-            document.getElementById(`${panelId}-panel`).classList.remove('hidden');
+
+        // Mostrar formulário de login
+        function showLoginForm() {
+            registerForm.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+            authStatusMessage.textContent = '';
+        }
+
+        // Lidar com login
+        function handleLogin() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value.trim();
             
-            document.querySelectorAll('.nav-item').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`.nav-item[data-panel="${panelId}"]`).classList.add('active');
+            if (!email || !password) {
+                showAuthMessage('Por favor, preencha todos os campos.', 'error');
+                return;
+            }
             
-            currentPanel = panelId;
+            // Verificar se o usuário existe
+            if (!users[email]) {
+                showAuthMessage('Usuário não encontrado. Cadastre-se primeiro.', 'error');
+                return;
+            }
             
-            // Renderiza novamente as listas e gráficos ao trocar de painel para garantir dados atualizados
-            if (panelId === 'daily') renderDailyExpenses();
-            if (panelId === 'fixed') renderFixedExpenses();
-            if (panelId === 'installments') renderInstallments();
-            if (panelId === 'income') renderMonthlyIncomes();
-            if (panelId === 'dashboard') {
-                updateDashboard();
-                renderCharts();
+            // Verificar senha
+            if (users[email].password !== password) {
+                showAuthMessage('Senha incorreta.', 'error');
+                return;
+            }
+            
+            // Login bem-sucedido
+            currentUser = users[email];
+            localStorage.setItem('currentFinanceUser', JSON.stringify(currentUser));
+            loadUserData();
+            showApp();
+            showAppMessage('Login realizado com sucesso!', 'success');
+        }
+
+        // Lidar com registro
+        function handleRegister() {
+            const name = document.getElementById('register-name').value.trim();
+            const email = document.getElementById('register-email').value.trim();
+            const password = document.getElementById('register-password').value.trim();
+            
+            if (!name || !email || !password) {
+                showAuthMessage('Por favor, preencha todos os campos.', 'error');
+                return;
+            }
+            
+            // Validar email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showAuthMessage('Por favor, insira um email válido.', 'error');
+                return;
+            }
+            
+            // Verificar se o usuário já existe
+            if (users[email]) {
+                showAuthMessage('Este email já está cadastrado. Faça login.', 'error');
+                return;
+            }
+            
+            // Criar novo usuário
+            const newUser = {
+                name: name,
+                email: email,
+                password: password,
+                dailyExpenses: [],
+                fixedExpenses: [],
+                installments: [],
+                monthlyIncomes: []
+            };
+            
+            users[email] = newUser;
+            localStorage.setItem('financeUsers', JSON.stringify(users));
+            
+            // Fazer login automático
+            currentUser = newUser;
+            localStorage.setItem('currentFinanceUser', JSON.stringify(currentUser));
+            loadUserData();
+            showApp();
+            showAppMessage('Cadastro realizado com sucesso!', 'success');
+        }
+
+        // Lidar com logout
+        function handleLogout() {
+            saveUserData();
+            currentUser = null;
+            localStorage.removeItem('currentFinanceUser');
+            
+            // Limpar dados locais
+            dailyExpenses = [];
+            fixedExpenses = [];
+            installments = [];
+            monthlyIncomes = [];
+            
+            // Limpar formulários
+            document.getElementById('login-email').value = '';
+            document.getElementById('login-password').value = '';
+            document.getElementById('register-name').value = '';
+            document.getElementById('register-email').value = '';
+            document.getElementById('register-password').value = '';
+            
+            showAuth();
+            showLoginForm();
+        }
+
+        // Carregar dados do usuário
+        function loadUserData() {
+            if (currentUser) {
+                dailyExpenses = currentUser.dailyExpenses || [];
+                fixedExpenses = currentUser.fixedExpenses || [];
+                installments = currentUser.installments || [];
+                monthlyIncomes = currentUser.monthlyIncomes || [];
             }
         }
 
-        /**
-         * Exibe uma mensagem temporária na área de mensagens da aplicação.
-         * @param {string} message - A mensagem a exibir.
-         * @param {string} type - O tipo de mensagem ('success', 'error', 'info').
-         * @param {number} duration - Duração da mensagem em milissegundos (padrão: 3000).
-         */
+        // Salvar dados do usuário
+        function saveUserData() {
+            if (currentUser) {
+                currentUser.dailyExpenses = dailyExpenses;
+                currentUser.fixedExpenses = fixedExpenses;
+                currentUser.installments = installments;
+                currentUser.monthlyIncomes = monthlyIncomes;
+                
+                users[currentUser.email] = currentUser;
+                localStorage.setItem('financeUsers', JSON.stringify(users));
+                localStorage.setItem('currentFinanceUser', JSON.stringify(currentUser));
+            }
+        }
+
+        // Mostrar tela de autenticação
+        function showAuth() {
+            authScreen.classList.remove('hidden');
+            appScreen.classList.add('hidden');
+            bottomNav.classList.add('hidden');
+        }
+
+        // Mostrar aplicação principal
+        function showApp() {
+            authScreen.classList.add('hidden');
+            appScreen.classList.remove('hidden');
+            bottomNav.classList.remove('hidden');
+            
+            displayUserName.textContent = `Bem-vindo, ${currentUser.name}!`;
+            updateDashboard();
+            renderCharts();
+            switchPanel(currentPanel);
+        }
+
+        // Mostrar mensagem de autenticação
+        function showAuthMessage(message, type) {
+            authStatusMessage.textContent = message;
+            authStatusMessage.className = `mt-4 text-center text-sm ${type === 'error' ? 'text-red-500' : 'text-green-500'}`;
+        }
+
+        // Mostrar mensagem da aplicação
         function showAppMessage(message, type, duration = 3000) {
             const messageArea = document.getElementById('app-message-area');
             const messageDiv = document.createElement('div');
@@ -1102,7 +1039,7 @@ service cloud.firestore {
                     messageDiv.classList.add('bg-gray-100', 'text-gray-700');
             }
             messageDiv.textContent = message;
-            messageArea.innerHTML = ''; // Clear previous messages
+            messageArea.innerHTML = '';
             messageArea.appendChild(messageDiv);
 
             setTimeout(() => {
@@ -1111,121 +1048,122 @@ service cloud.firestore {
             }, duration);
         }
 
-        /**
-         * Ouve atualizações em tempo real das despesas diárias do Firestore.
-         */
-        function listenForDailyExpenses() {
-            if (!isAuthReady || !userId) return;
-            const q = query(collection(db, `artifacts/${appId}/users/${userId}/dailyExpenses`));
-            onSnapshot(q, (snapshot) => {
-                dailyExpenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                console.log("Despesas Diárias atualizadas:", dailyExpenses);
-                renderDailyExpenses();
-                updateDashboard();
-                renderCharts();
-            }, (error) => {
-                console.error("Erro ao ouvir despesas diárias:", error);
-                showAppMessage(`Erro ao carregar despesas diárias: ${error.message}. Verifique as permissões do Firestore.`, "error");
-            });
+        // Definir data de hoje
+        function setTodayDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('daily-date').value = today;
         }
 
-        /**
-         * Ouve atualizações em tempo real das despesas fixas do Firestore.
-         */
-        function listenForFixedExpenses() {
-            if (!isAuthReady || !userId) return;
-            const q = query(collection(db, `artifacts/${appId}/users/${userId}/fixedExpenses`));
-            onSnapshot(q, (snapshot) => {
-                fixedExpenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                console.log("Despesas Fixas atualizadas:", fixedExpenses);
-                renderFixedExpenses();
-                updateDashboard();
-                renderCharts();
-            }, (error) => {
-                console.error("Erro ao ouvir despesas fixas:", error);
-                showAppMessage(`Erro ao carregar despesas fixas: ${error.message}. Verifique as permissões do Firestore.`, "error");
+        // Capitalizar primeira letra
+        window.capitalizeFirstLetter = function(inputElement) {
+            const words = inputElement.value.split(' ');
+            const capitalizedWords = words.map(word => {
+                if (word.length > 0) {
+                    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+                }
+                return word;
             });
+            inputElement.value = capitalizedWords.join(' ');
         }
 
-        /**
-         * Ouve atualizações em tempo real dos parcelamentos do Firestore.
-         */
-        function listenForInstallments() {
-            if (!isAuthReady || !userId) return;
-            const q = query(collection(db, `artifacts/${appId}/users/${userId}/installments`));
-            onSnapshot(q, (snapshot) => {
-                installments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                console.log("Parcelamentos atualizados:", installments);
-                renderInstallments();
-                updateDashboard();
-                renderCharts();
-            }, (error) => {
-                console.error("Erro ao ouvir parcelamentos:", error);
-                showAppMessage(`Erro ao carregar parcelamentos: ${error.message}. Verifique as permissões do Firestore.`, "error");
-            });
-        }
+        // Formatar entrada de moeda
+        window.formatCurrencyInput = function(inputElement) {
+            let value = inputElement.value;
 
-        /**
-         * Ouve atualizações em tempo real das receitas mensais do Firestore.
-         */
-        function listenForMonthlyIncomes() {
-            if (!isAuthReady || !userId) return;
-            const q = query(collection(db, `artifacts/${appId}/users/${userId}/monthlyIncomes`));
-            onSnapshot(q, (snapshot) => {
-                monthlyIncomes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                console.log("Receitas Mensais atualizadas:", monthlyIncomes);
-                renderMonthlyIncomes();
-                updateDashboard();
-                renderCharts();
-            }, (error) => {
-                console.error("Erro ao ouvir receitas mensais:", error);
-                showAppMessage(`Erro ao carregar receitas mensais: ${error.message}. Verifique as permissões do Firestore.`, "error");
-            });
-        }
-        
-        /**
-         * Lida com o envio do formulário de despesas diárias.
-         * Adiciona uma nova despesa diária ao Firestore.
-         * @param {Event} e - O objeto do evento de envio.
-         */
-        async function handleDailyExpense(e) {
-            e.preventDefault();
-            if (!userId) {
-                console.error("Utilizador não autenticado para adicionar despesa diária.");
-                showAppMessage("Erro: Por favor, inicie sessão para adicionar despesas.", "error");
+            if (value === '') {
+                inputElement.dataset.numericValue = '';
                 return;
             }
 
+            value = value.replace(/[^0-9,]/g, '');
+
+            const parts = value.split(',');
+            if (parts.length > 2) {
+                value = parts[0] + ',' + parts.slice(1).join('');
+            }
+
+            if (value.includes(',')) {
+                const decimalPart = value.split(',')[1];
+                if (decimalPart && decimalPart.length > 2) {
+                    value = value.substring(0, value.indexOf(',') + 3);
+                }
+            }
+
+            if (event && event.type === 'blur') {
+                const numericVal = parseFloat(value.replace(',', '.'));
+                if (!isNaN(numericVal)) {
+                    value = numericVal.toFixed(2).replace('.', ',');
+                } else {
+                    value = '';
+                }
+            }
+
+            inputElement.value = value;
+
+            let parsedValue = parseFloat(value.replace(',', '.'));
+            if (isNaN(parsedValue)) {
+                parsedValue = 0;
+            }
+            inputElement.dataset.numericValue = parsedValue;
+        }
+
+        // Alternar painéis
+        function switchPanel(panelId) {
+            const panels = ['dashboard-panel', 'daily-panel', 'fixed-panel', 'installments-panel', 'income-panel'];
+            panels.forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(`${panelId}-panel`).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.nav-item[data-panel="${panelId}"]`).classList.add('active');
+            
+            currentPanel = panelId;
+            
+            if (panelId === 'daily') renderDailyExpenses();
+            if (panelId === 'fixed') renderFixedExpenses();
+            if (panelId === 'installments') renderInstallments();
+            if (panelId === 'income') renderMonthlyIncomes();
+            if (panelId === 'dashboard') {
+                updateDashboard();
+                renderCharts();
+            }
+        }
+
+        // Lidar com despesa diária
+        function handleDailyExpense(e) {
+            e.preventDefault();
+            
             const date = document.getElementById('daily-date').value;
             const category = document.getElementById('daily-category').value;
             const description = document.getElementById('daily-description').value;
             const value = parseFloat(document.getElementById('daily-value').dataset.numericValue);
             
             if (date && category && description && !isNaN(value) && value > 0) {
-                try {
-                    await addDoc(collection(db, `artifacts/${appId}/users/${userId}/dailyExpenses`), {
-                        date,
-                        category,
-                        description,
-                        value
-                    });
-                    e.target.reset();
-                    setTodayDate();
-                    showAppMessage("Gasto diário adicionado com sucesso!", "success");
-                } catch (error) {
-                    console.error("Erro ao adicionar despesa diária:", error);
-                    showAppMessage(`Erro ao adicionar despesa: ${error.message}`, "error");
-                }
+                const expense = {
+                    id: Date.now().toString(),
+                    date,
+                    category,
+                    description,
+                    value
+                };
+                
+                dailyExpenses.push(expense);
+                saveUserData();
+                e.target.reset();
+                setTodayDate();
+                renderDailyExpenses();
+                updateDashboard();
+                renderCharts();
+                showAppMessage('Gasto diário adicionado com sucesso!', 'success');
             } else {
-                console.error('Por favor, preencha todos os campos do gasto diário corretamente.');
-                showAppMessage("Por favor, preencha todos os campos do gasto diário corretamente.", "error");
+                showAppMessage('Por favor, preencha todos os campos corretamente.', 'error');
             }
         }
-        
-        /**
-         * Renderiza a lista de despesas diárias.
-         * Limpa a lista existente e anexa novos itens de despesa.
-         */
+
+        // Renderizar despesas diárias
         function renderDailyExpenses() {
             const dailyList = document.getElementById('daily-list');
             dailyList.innerHTML = '';
@@ -1258,29 +1196,20 @@ service cloud.firestore {
                 dailyList.appendChild(expenseItem);
             });
         }
-        
-        /**
-         * Confirma a exclusão de uma despesa diária.
-         * @param {string} id - O ID da despesa a excluir.
-         */
+
+        // Confirmar exclusão de despesa diária
         window.confirmDeleteDailyExpense = function(id) {
-            showConfirmModal('Tem certeza que deseja excluir este gasto diário?', async () => {
-                if (!userId) return;
-                try {
-                    await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/dailyExpenses`, id));
-                    showAppMessage("Gasto diário excluído com sucesso!", "success");
-                } catch (error) {
-                    console.error("Erro ao excluir despesa diária:", error);
-                    showAppMessage(`Erro ao excluir despesa: ${error.message}`, "error");
-                }
+            showConfirmModal('Tem certeza que deseja excluir este gasto diário?', () => {
+                dailyExpenses = dailyExpenses.filter(expense => expense.id !== id);
+                saveUserData();
+                renderDailyExpenses();
+                updateDashboard();
+                renderCharts();
+                showAppMessage('Gasto diário excluído com sucesso!', 'success');
             });
         }
-        
-        /**
-         * Abre o modal de edição para uma despesa diária.
-         * Preenche o formulário com os dados atuais da despesa.
-         * @param {string} id - O ID da despesa a editar.
-         */
+
+        // Abrir modal de edição
         window.openEditModal = function(id) {
             editingExpenseId = id;
             const expense = dailyExpenses.find(exp => exp.id === id);
@@ -1293,89 +1222,73 @@ service cloud.firestore {
                 document.getElementById('edit-modal').classList.remove('hidden');
             }
         }
-        
-        /**
-         * Fecha o modal de edição de despesas diárias.
-         */
+
+        // Fechar modal de edição
         function closeEditModal() {
             document.getElementById('edit-modal').classList.add('hidden');
             editingExpenseId = null;
         }
-        
-        /**
-         * Lida com o envio do formulário de edição de despesas diárias.
-         * Atualiza a despesa no Firestore.
-         * @param {Event} e - O objeto do evento de envio.
-         */
-        async function handleEditExpense(e) {
-            e.preventDefault();
-            if (!userId || !editingExpenseId) return;
 
+        // Lidar com edição de despesa
+        function handleEditExpense(e) {
+            e.preventDefault();
+            
             const date = document.getElementById('edit-date').value;
             const category = document.getElementById('edit-category').value;
             const description = document.getElementById('edit-description').value;
             const value = parseFloat(document.getElementById('edit-value').dataset.numericValue);
             
             if (date && category && description && !isNaN(value) && value > 0) {
-                try {
-                    await updateDoc(doc(db, `artifacts/${appId}/users/${userId}/dailyExpenses`, editingExpenseId), {
+                const expenseIndex = dailyExpenses.findIndex(exp => exp.id === editingExpenseId);
+                if (expenseIndex !== -1) {
+                    dailyExpenses[expenseIndex] = {
+                        ...dailyExpenses[expenseIndex],
                         date,
                         category,
                         description,
                         value
-                    });
+                    };
+                    saveUserData();
                     closeEditModal();
-                    showAppMessage("Gasto diário atualizado com sucesso!", "success");
-                } catch (error) {
-                    console.error("Erro ao editar despesa diária:", error);
-                    showAppMessage(`Erro ao editar despesa: ${error.message}`, "error");
+                    renderDailyExpenses();
+                    updateDashboard();
+                    renderCharts();
+                    showAppMessage('Gasto diário atualizado com sucesso!', 'success');
                 }
             } else {
-                console.error('Por favor, preencha todos os campos do gasto diário corretamente para editar.');
-                showAppMessage("Por favor, preencha todos os campos do gasto diário corretamente para editar.", "error");
+                showAppMessage('Por favor, preencha todos os campos corretamente.', 'error');
             }
         }
 
-        /**
-         * Lida com o envio do formulário de despesas fixas.
-         * Adiciona uma nova despesa fixa ao Firestore.
-         * @param {Event} e - O objeto do evento de envio.
-         */
-        async function handleFixedExpense(e) {
+        // Lidar com despesa fixa
+        function handleFixedExpense(e) {
             e.preventDefault();
-            if (!userId) {
-                console.error("Utilizador não autenticado para adicionar despesa fixa.");
-                showAppMessage("Erro: Por favor, inicie sessão para adicionar despesas fixas.", "error");
-                return;
-            }
-
+            
             const name = document.getElementById('fixed-name').value;
             const category = document.getElementById('fixed-category').value;
             const value = parseFloat(document.getElementById('fixed-value').dataset.numericValue);
             
             if (name && category && !isNaN(value) && value > 0) {
-                try {
-                    await addDoc(collection(db, `artifacts/${appId}/users/${userId}/fixedExpenses`), {
-                        name,
-                        category,
-                        value
-                    });
-                    e.target.reset();
-                    showAppMessage("Despesa fixa adicionada com sucesso!", "success");
-                } catch (error) {
-                    console.error("Erro ao adicionar despesa fixa:", error);
-                    showAppMessage(`Erro ao adicionar despesa fixa: ${error.message}`, "error");
-                }
+                const expense = {
+                    id: Date.now().toString(),
+                    name,
+                    category,
+                    value
+                };
+                
+                fixedExpenses.push(expense);
+                saveUserData();
+                e.target.reset();
+                renderFixedExpenses();
+                updateDashboard();
+                renderCharts();
+                showAppMessage('Despesa fixa adicionada com sucesso!', 'success');
             } else {
-                console.error('Por favor, preencha todos os campos da despesa fixa corretamente.');
-                showAppMessage("Por favor, preencha todos os campos da despesa fixa corretamente.", "error");
+                showAppMessage('Por favor, preencha todos os campos corretamente.', 'error');
             }
         }
-        
-        /**
-         * Renderiza a lista de despesas fixas.
-         * Limpa a lista existente e anexa novos itens de despesa fixa.
-         */
+
+        // Renderizar despesas fixas
         function renderFixedExpenses() {
             const fixedList = document.getElementById('fixed-list');
             fixedList.innerHTML = '';
@@ -1406,29 +1319,20 @@ service cloud.firestore {
                 fixedList.appendChild(expenseItem);
             });
         }
-        
-        /**
-         * Confirma a exclusão de uma despesa fixa.
-         * @param {string} id - O ID da despesa fixa a excluir.
-         */
+
+        // Confirmar exclusão de despesa fixa
         window.confirmDeleteFixedExpense = function(id) {
-            showConfirmModal('Tem certeza que deseja excluir esta despesa fixa?', async () => {
-                if (!userId) return;
-                try {
-                    await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/fixedExpenses`, id));
-                    showAppMessage("Despesa fixa excluída com sucesso!", "success");
-                } catch (error) {
-                    console.error("Erro ao excluir despesa fixa:", error);
-                    showAppMessage(`Erro ao excluir despesa fixa: ${error.message}`, "error");
-                }
+            showConfirmModal('Tem certeza que deseja excluir esta despesa fixa?', () => {
+                fixedExpenses = fixedExpenses.filter(expense => expense.id !== id);
+                saveUserData();
+                renderFixedExpenses();
+                updateDashboard();
+                renderCharts();
+                showAppMessage('Despesa fixa excluída com sucesso!', 'success');
             });
         }
 
-        /**
-         * Abre o modal de edição para uma despesa fixa.
-         * Preenche o formulário com os dados atuais da despesa.
-         * @param {string} id - O ID da despesa fixa a editar.
-         */
+        // Abrir modal de edição de despesa fixa
         window.openEditFixedModal = function(id) {
             editingFixedId = id;
             const expense = fixedExpenses.find(exp => exp.id === id);
@@ -1441,89 +1345,73 @@ service cloud.firestore {
             }
         }
 
-        /**
-         * Fecha o modal de edição de despesas fixas.
-         */
+        // Fechar modal de edição de despesa fixa
         function closeEditFixedModal() {
             document.getElementById('edit-fixed-modal').classList.add('hidden');
             editingFixedId = null;
         }
 
-        /**
-         * Lida com o envio do formulário de edição de despesas fixas.
-         * Atualiza a despesa fixa no Firestore.
-         * @param {Event} e - O objeto do evento de envio.
-         */
-        async function handleEditFixedExpense(e) {
+        // Lidar com edição de despesa fixa
+        function handleEditFixedExpense(e) {
             e.preventDefault();
-            if (!userId || !editingFixedId) return;
-
+            
             const name = document.getElementById('edit-fixed-name').value;
             const category = document.getElementById('edit-fixed-category').value;
             const value = parseFloat(document.getElementById('edit-fixed-value').dataset.numericValue);
             
             if (name && category && !isNaN(value) && value > 0) {
-                try {
-                    await updateDoc(doc(db, `artifacts/${appId}/users/${userId}/fixedExpenses`, editingFixedId), {
+                const expenseIndex = fixedExpenses.findIndex(exp => exp.id === editingFixedId);
+                if (expenseIndex !== -1) {
+                    fixedExpenses[expenseIndex] = {
+                        ...fixedExpenses[expenseIndex],
                         name,
                         category,
                         value
-                    });
+                    };
+                    saveUserData();
                     closeEditFixedModal();
-                    showAppMessage("Despesa fixa atualizada com sucesso!", "success");
-                } catch (error) {
-                    console.error("Erro ao editar despesa fixa:", error);
-                    showAppMessage(`Erro ao editar despesa fixa: ${error.message}`, "error");
+                    renderFixedExpenses();
+                    updateDashboard();
+                    renderCharts();
+                    showAppMessage('Despesa fixa atualizada com sucesso!', 'success');
                 }
             } else {
-                console.error('Por favor, preencha todos os campos da despesa fixa corretamente para editar.');
-                showAppMessage("Por favor, preencha todos os campos da despesa fixa corretamente para editar.", "error");
+                showAppMessage('Por favor, preencha todos os campos corretamente.', 'error');
             }
         }
-        
-        /**
-         * Lida com o envio do formulário de parcelamento.
-         * Adiciona um novo parcelamento ao Firestore.
-         * @param {Event} e - O objeto do evento de envio.
-         */
-        async function handleInstallment(e) {
-            e.preventDefault();
-            if (!userId) {
-                console.error("Utilizador não autenticado para adicionar parcelamento.");
-                showAppMessage("Erro: Por favor, inicie sessão para adicionar parcelamentos.", "error");
-                return;
-            }
 
+        // Lidar com parcelamento
+        function handleInstallment(e) {
+            e.preventDefault();
+            
             const name = document.getElementById('installment-name').value;
             const category = document.getElementById('installment-category').value;
             const value = parseFloat(document.getElementById('installment-value').dataset.numericValue);
             const totalInstallments = parseInt(document.getElementById('installment-total').value);
             
             if (name && category && !isNaN(value) && value > 0 && !isNaN(totalInstallments) && totalInstallments > 0) {
-                try {
-                    await addDoc(collection(db, `artifacts/${appId}/users/${userId}/installments`), {
-                        name,
-                        category,
-                        value,
-                        total: totalInstallments,
-                        paid: 0
-                    });
-                    e.target.reset();
-                    showAppMessage("Parcelamento adicionado com sucesso!", "success");
-                } catch (error) {
-                    console.error("Erro ao adicionar parcelamento:", error);
-                    showAppMessage(`Erro ao adicionar parcelamento: ${error.message}`, "error");
-                }
+                const installment = {
+                    id: Date.now().toString(),
+                    name,
+                    category,
+                    value,
+                    total: totalInstallments,
+                    paid: 0
+                };
+                
+                installments.push(installment);
+                saveUserData();
+                e.target.reset();
+                renderInstallments();
+                updateDashboard();
+                renderCharts();
+                showAppMessage('Parcelamento adicionado com sucesso!', 'success');
             } else {
-                console.error('Por favor, preencha todos os campos do parcelamento corretamente.');
-                showAppMessage("Por favor, preencha todos os campos do parcelamento corretamente.", "error");
+                showAppMessage('Por favor, preencha todos os campos corretamente.', 'error');
             }
         }
-        
-        /**
-         * Renderiza a lista de parcelamentos.
-         * Limpa a lista existente e anexa novos itens de parcelamento.
-         */
+
+        // Renderizar parcelamentos
         function renderInstallments() {
             const installmentsList = document.getElementById('installments-list');
             installmentsList.innerHTML = '';
@@ -1569,49 +1457,33 @@ service cloud.firestore {
                 installmentsList.appendChild(installmentItem);
             });
         }
-        
-        /**
-         * Marca uma parcela como paga para um determinado ID de parcelamento.
-         * @param {string} id - O ID do parcelamento a atualizar.
-         */
-        window.markInstallmentPaid = async function(id) {
-            if (!userId) return;
+
+        // Marcar parcela como paga
+        window.markInstallmentPaid = function(id) {
             const installment = installments.find(inst => inst.id === id);
             if (installment && installment.paid < installment.total) {
-                try {
-                    await updateDoc(doc(db, `artifacts/${appId}/users/${userId}/installments`, id), {
-                        paid: installment.paid + 1
-                    });
-                    showAppMessage("Parcela marcada como paga!", "success");
-                } catch (error) {
-                    console.error("Erro ao marcar parcela como paga:", error);
-                    showAppMessage(`Erro ao atualizar parcela: ${error.message}`, "error");
-                }
+                installment.paid += 1;
+                saveUserData();
+                renderInstallments();
+                updateDashboard();
+                renderCharts();
+                showAppMessage('Parcela marcada como paga!', 'success');
             }
         }
-        
-        /**
-         * Confirma a exclusão de um parcelamento.
-         * @param {string} id - O ID do parcelamento a excluir.
-         */
+
+        // Confirmar exclusão de parcelamento
         window.confirmDeleteInstallment = function(id) {
-            showConfirmModal('Tem certeza que deseja excluir este parcelamento?', async () => {
-                if (!userId) return;
-                try {
-                    await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/installments`, id));
-                    showAppMessage("Parcelamento excluído com sucesso!", "success");
-                } catch (error) {
-                    console.error("Erro ao excluir parcelamento:", error);
-                    showAppMessage(`Erro ao excluir parcelamento: ${error.message}`, "error");
-                }
+            showConfirmModal('Tem certeza que deseja excluir este parcelamento?', () => {
+                installments = installments.filter(installment => installment.id !== id);
+                saveUserData();
+                renderInstallments();
+                updateDashboard();
+                renderCharts();
+                showAppMessage('Parcelamento excluído com sucesso!', 'success');
             });
         }
 
-        /**
-         * Abre o modal de edição para um parcelamento.
-         * Preenche o formulário com os dados atuais do parcelamento.
-         * @param {string} id - O ID do parcelamento a editar.
-         */
+        // Abrir modal de edição de parcelamento
         window.openEditInstallmentModal = function(id) {
             editingInstallmentId = id;
             const installment = installments.find(inst => inst.id === id);
@@ -1626,23 +1498,16 @@ service cloud.firestore {
             }
         }
 
-        /**
-         * Fecha o modal de edição de parcelamento.
-         */
+        // Fechar modal de edição de parcelamento
         function closeEditInstallmentModal() {
             document.getElementById('edit-installment-modal').classList.add('hidden');
             editingInstallmentId = null;
         }
 
-        /**
-         * Lida com o envio do formulário de edição de parcelamento.
-         * Atualiza o parcelamento no Firestore.
-         * @param {Event} e - O objeto do evento de envio.
-         */
-        async function handleEditInstallment(e) {
+        // Lidar com edição de parcelamento
+        function handleEditInstallment(e) {
             e.preventDefault();
-            if (!userId || !editingInstallmentId) return;
-
+            
             const name = document.getElementById('edit-installment-name').value;
             const category = document.getElementById('edit-installment-category').value;
             const value = parseFloat(document.getElementById('edit-installment-value').dataset.numericValue);
@@ -1651,69 +1516,59 @@ service cloud.firestore {
             
             if (name && category && !isNaN(value) && value > 0 && !isNaN(totalInstallments) && totalInstallments > 0 && !isNaN(paidInstallments) && paidInstallments >= 0) {
                 if (paidInstallments > totalInstallments) {
-                    console.error('O número de parcelas pagas não pode ser maior que o total de parcelas.');
-                    showAppMessage('Erro: Parcelas pagas não podem exceder o total.', "error");
+                    showAppMessage('Erro: Parcelas pagas não podem exceder o total.', 'error');
                     return;
                 }
 
-                try {
-                    await updateDoc(doc(db, `artifacts/${appId}/users/${userId}/installments`, editingInstallmentId), {
+                const installmentIndex = installments.findIndex(inst => inst.id === editingInstallmentId);
+                if (installmentIndex !== -1) {
+                    installments[installmentIndex] = {
+                        ...installments[installmentIndex],
                         name,
                         category,
                         value,
                         total: totalInstallments,
                         paid: paidInstallments
-                    });
+                    };
+                    saveUserData();
                     closeEditInstallmentModal();
-                    showAppMessage("Parcelamento atualizado com sucesso!", "success");
-                } catch (error) {
-                    console.error("Erro ao editar parcelamento:", error);
-                    showAppMessage(`Erro ao editar parcelamento: ${error.message}`, "error");
+                    renderInstallments();
+                    updateDashboard();
+                    renderCharts();
+                    showAppMessage('Parcelamento atualizado com sucesso!', 'success');
                 }
             } else {
-                console.error('Por favor, preencha todos os campos do parcelamento corretamente para editar.');
-                showAppMessage("Por favor, preencha todos os campos do parcelamento corretamente para editar.", "error");
+                showAppMessage('Por favor, preencha todos os campos corretamente.', 'error');
             }
         }
 
-        /**
-         * Lida com o envio do formulário de receita mensal.
-         * Adiciona uma nova receita mensal ao Firestore.
-         * @param {Event} e - O objeto do evento de envio.
-         */
-        async function handleMonthlyIncome(e) {
+        // Lidar com receita mensal
+        function handleMonthlyIncome(e) {
             e.preventDefault();
-            if (!userId) {
-                console.error("Utilizador não autenticado para adicionar receita mensal.");
-                showAppMessage("Erro: Por favor, inicie sessão para adicionar receitas.", "error");
-                return;
-            }
-
+            
             const source = document.getElementById('income-source').value;
             const value = parseFloat(document.getElementById('income-value').dataset.numericValue);
             
             if (source && !isNaN(value) && value > 0) {
-                try {
-                    await addDoc(collection(db, `artifacts/${appId}/users/${userId}/monthlyIncomes`), {
-                        source,
-                        value
-                    });
-                    e.target.reset();
-                    showAppMessage("Receita mensal adicionada com sucesso!", "success");
-                } catch (error) {
-                    console.error("Erro ao adicionar receita mensal:", error);
-                    showAppMessage(`Erro ao adicionar receita: ${error.message}`, "error");
-                }
+                const income = {
+                    id: Date.now().toString(),
+                    source,
+                    value
+                };
+                
+                monthlyIncomes.push(income);
+                saveUserData();
+                e.target.reset();
+                renderMonthlyIncomes();
+                updateDashboard();
+                renderCharts();
+                showAppMessage('Receita mensal adicionada com sucesso!', 'success');
             } else {
-                console.error('Por favor, preencha todos os campos da receita mensal corretamente.');
-                showAppMessage("Por favor, preencha todos os campos da receita mensal corretamente.", "error");
+                showAppMessage('Por favor, preencha todos os campos corretamente.', 'error');
             }
         }
 
-        /**
-         * Renderiza a lista de receitas mensais.
-         * Limpa a lista existente e anexa novos itens de receita.
-         */
+        // Renderizar receitas mensais
         function renderMonthlyIncomes() {
             const incomeList = document.getElementById('income-list');
             incomeList.innerHTML = '';
@@ -1744,28 +1599,19 @@ service cloud.firestore {
             });
         }
 
-        /**
-         * Confirma a exclusão de uma receita mensal.
-         * @param {string} id - O ID da receita a excluir.
-         */
+        // Confirmar exclusão de receita mensal
         window.confirmDeleteMonthlyIncome = function(id) {
-            showConfirmModal('Tem certeza que deseja excluir esta receita mensal?', async () => {
-                if (!userId) return;
-                try {
-                    await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/monthlyIncomes`, id));
-                    showAppMessage("Receita mensal excluída com sucesso!", "success");
-                } catch (error) {
-                    console.error("Erro ao excluir receita mensal:", error);
-                    showAppMessage(`Erro ao excluir receita: ${error.message}`, "error");
-                }
+            showConfirmModal('Tem certeza que deseja excluir esta receita mensal?', () => {
+                monthlyIncomes = monthlyIncomes.filter(income => income.id !== id);
+                saveUserData();
+                renderMonthlyIncomes();
+                updateDashboard();
+                renderCharts();
+                showAppMessage('Receita mensal excluída com sucesso!', 'success');
             });
         }
 
-        /**
-         * Abre o modal de edição para uma receita mensal.
-         * Preenche o formulário com os dados atuais da receita.
-         * @param {string} id - O ID da receita a editar.
-         */
+        // Abrir modal de edição de receita mensal
         window.openEditMonthlyIncomeModal = function(id) {
             editingMonthlyIncomeId = id;
             const income = monthlyIncomes.find(inc => inc.id === id);
@@ -1777,47 +1623,40 @@ service cloud.firestore {
             }
         }
 
-        /**
-         * Fecha o modal de edição de receita mensal.
-         */
+        // Fechar modal de edição de receita mensal
         function closeEditMonthlyIncomeModal() {
             document.getElementById('edit-monthly-income-modal').classList.add('hidden');
             editingMonthlyIncomeId = null;
         }
 
-        /**
-         * Lida com o envio do formulário de edição de receita mensal.
-         * Atualiza a receita no Firestore.
-         * @param {Event} e - O objeto do evento de envio.
-         */
-        async function handleEditMonthlyIncome(e) {
+        // Lidar com edição de receita mensal
+        function handleEditMonthlyIncome(e) {
             e.preventDefault();
-            if (!userId || !editingMonthlyIncomeId) return;
-
+            
             const source = document.getElementById('edit-income-source').value;
             const value = parseFloat(document.getElementById('edit-income-value').dataset.numericValue);
             
             if (source && !isNaN(value) && value > 0) {
-                try {
-                    await updateDoc(doc(db, `artifacts/${appId}/users/${userId}/monthlyIncomes`, editingMonthlyIncomeId), {
+                const incomeIndex = monthlyIncomes.findIndex(inc => inc.id === editingMonthlyIncomeId);
+                if (incomeIndex !== -1) {
+                    monthlyIncomes[incomeIndex] = {
+                        ...monthlyIncomes[incomeIndex],
                         source,
                         value
-                    });
+                    };
+                    saveUserData();
                     closeEditMonthlyIncomeModal();
-                    showAppMessage("Receita mensal atualizada com sucesso!", "success");
-                } catch (error) {
-                    console.error("Erro ao editar receita mensal:", error);
-                    showAppMessage(`Erro ao editar receita: ${error.message}`, "error");
+                    renderMonthlyIncomes();
+                    updateDashboard();
+                    renderCharts();
+                    showAppMessage('Receita mensal atualizada com sucesso!', 'success');
                 }
             } else {
-                console.error('Por favor, preencha todos os campos da receita mensal corretamente para editar.');
-                showAppMessage("Por favor, preencha todos os campos da receita mensal corretamente.", "error");
+                showAppMessage('Por favor, preencha todos os campos corretamente.', 'error');
             }
         }
-        
-        /**
-         * Atualiza os cartões de resumo do dashboard (Total de Despesas Mensais, Despesas Diárias, Total de Receita Mensal, Saldo Mensal).
-         */
+
+        // Atualizar dashboard
         function updateDashboard() {
             const now = new Date();
             const currentMonth = now.getMonth();
@@ -1835,7 +1674,6 @@ service cloud.firestore {
                 totalMonthlyExpenses += expense.value;
             });
             installments.forEach(installment => {
-                // Apenas conta o valor da parcela para o mês atual se ainda estiver a ser paga
                 if (installment.paid < installment.total) { 
                     totalMonthlyExpenses += installment.value;
                 }
@@ -1868,10 +1706,7 @@ service cloud.firestore {
             }
         }
 
-        /**
-         * Renderiza todos os gráficos (Categoria, Parcelamento, Fixas, Diárias, Receita vs. Despesas).
-         * Destrói as instâncias de gráficos existentes antes de criar novas para evitar fugas de memória.
-         */
+        // Renderizar gráficos
         function renderCharts() {
             if (categoryChart) categoryChart.destroy();
             if (installmentChart) installmentChart.destroy();
@@ -1886,9 +1721,7 @@ service cloud.firestore {
             renderDailyChart();
         }
 
-        /**
-         * Renderiza o gráfico de barras "Receita vs. Despesas".
-         */
+        // Renderizar gráfico de receita vs despesas
         function renderIncomeVsExpensesChart() {
             const ctx = document.getElementById('incomeVsExpensesChart').getContext('2d');
             
@@ -1904,7 +1737,6 @@ service cloud.firestore {
                 totalMonthlyExpenses += expense.value;
             });
             installments.forEach(installment => {
-                // Apenas conta o valor da parcela para o mês atual se ainda estiver a ser paga
                 if (installment.paid < installment.total) { 
                     totalMonthlyExpenses += installment.value;
                 }
@@ -1975,14 +1807,16 @@ service cloud.firestore {
             });
         }
 
-        /**
-         * Renderiza o gráfico de donut "Gastos por Categoria".
-         */
+        // Renderizar gráfico de categoria
         function renderCategoryChart() {
             const ctx = document.getElementById('categoryChart').getContext('2d');
             const categoryData = {};
             dailyExpenses.forEach(expense => {
-                categoryData[expense.category] = (categoryData[expense.category] || 0) + expense.value;
+                const expenseDate = new Date(expense.date);
+                const now = new Date();
+                if (expenseDate.getMonth() === now.getMonth() && expenseDate.getFullYear() === now.getFullYear()) {
+                    categoryData[expense.category] = (categoryData[expense.category] || 0) + expense.value;
+                }
             });
 
             const labels = Object.keys(categoryData);
@@ -2044,9 +1878,7 @@ service cloud.firestore {
             });
         }
 
-        /**
-         * Renderiza o gráfico de barras "Despesas Parceladas".
-         */
+        // Renderizar gráfico de parcelamentos
         function renderInstallmentChart() {
             const ctx = document.getElementById('installmentChart').getContext('2d');
             const installmentNames = installments.map(inst => inst.name);
@@ -2112,9 +1944,7 @@ service cloud.firestore {
             });
         }
 
-        /**
-         * Renderiza o gráfico de barras "Despesas Fixas".
-         */
+        // Renderizar gráfico de despesas fixas
         function renderFixedChart() {
             const ctx = document.getElementById('fixedChart').getContext('2d');
             const fixedNames = fixedExpenses.map(exp => exp.name);
@@ -2180,9 +2010,7 @@ service cloud.firestore {
             });
         }
 
-        /**
-         * Renderiza o gráfico de linha "Gastos Diários do Mês".
-         */
+        // Renderizar gráfico diário
         function renderDailyChart() {
             const ctx = document.getElementById('dailyChart').getContext('2d');
             const now = new Date();
@@ -2266,20 +2094,14 @@ service cloud.firestore {
             });
         }
 
-        /**
-         * Exibe um modal de confirmação personalizado.
-         * @param {string} message - A mensagem a exibir no modal.
-         * @param {function} callback - A função a executar se o utilizador confirmar.
-         */
+        // Mostrar modal de confirmação
         function showConfirmModal(message, callback) {
             document.getElementById('confirm-message').textContent = message;
             document.getElementById('confirm-modal').classList.remove('hidden');
             confirmCallback = callback;
         }
 
-        /**
-         * Oculta o modal de confirmação personalizado.
-         */
+        // Ocultar modal de confirmação
         function hideConfirmModal() {
             document.getElementById('confirm-modal').classList.add('hidden');
             confirmCallback = null;
@@ -2287,3 +2109,4 @@ service cloud.firestore {
     </script>
 </body>
 </html>
+
