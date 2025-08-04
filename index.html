@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -7,6 +6,7 @@
     <title>Controle Financeiro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -201,6 +201,20 @@
             background-color: #6b8e23;
             color: #ffffff;
         }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -234,7 +248,6 @@
                         Entrar
                     </button>
                     <div class="text-center">
-                
                         <button type="button" id="show-register" class="text-primary font-semibold hover:underline">
                             Cadastre-se aqui
                         </button>
@@ -262,7 +275,6 @@
                         Cadastrar
                     </button>
                     <div class="text-center">
-                      
                         <button type="button" id="show-login" class="text-primary font-semibold hover:underline">
                             Faça login aqui
                         </button>
@@ -310,7 +322,7 @@
                             <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
                                 <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-                        </svg>
+                                </svg>
                             </div>
                         </div>
                     </div>
@@ -400,7 +412,7 @@
             <!-- Daily Expenses Panel -->
             <div id="daily-panel" class="hidden space-y-6">
                 <div class="glass-effect card-shadow rounded-2xl p-6">
-                    <h2 class="text-xl font-bold text-primary mb-6">Gastos Diários</h2>
+                    <h2 class="text-xl font-bold text-primary mb-6">Gastos à Vista</h2>
                     
                     <!-- Add Form -->
                     <form id="daily-form" class="space-y-4 mb-6">
@@ -458,7 +470,7 @@
                                    class="form-input w-full px-4 py-3 rounded-xl" required oninput="capitalizeFirstLetter(this)">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-secondary mb-2">Categoria</label>
+                            <label class="block text-sm font-medium text-secondary mb-2">Categoria</labe l>
                             <input type="text" id="fixed-category" placeholder="Ex: Moradia, Serviços..." 
                                    class="form-input w-full px-4 py-3 rounded-xl" required oninput="capitalizeFirstLetter(this)">
                         </div>
@@ -552,7 +564,7 @@
     </div>
 
     <!-- Bottom Navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 bottom-nav slide-up hidden">
+    <nav class="fixed bottom-0 left-0 right-0 bottom-nav slide-up hidden" id="bottom-nav">
         <div class="flex justify-around py-2">
             <button class="nav-item active flex flex-col items-center p-3" data-panel="dashboard">
                 <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -565,7 +577,7 @@
                 <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                 </svg>
-                <span class="text-xs">Diários</span>
+                <span class="text-xs">Gastos à Vista</span>
             </button>
             
             <button class="nav-item flex flex-col items-center p-3" data-panel="fixed">
@@ -643,7 +655,7 @@
                     <input type="text" id="edit-fixed-name" class="form-input w-full px-4 py-3 rounded-xl" required oninput="capitalizeFirstLetter(this)">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-secondary mb-2">Categoria</label>
+                    <label class="block text-sm font-medium text-secondary mb-2">Categoria</labe l>
                     <input type="text" id="edit-fixed-category" class="form-input w-full px-4 py-3 rounded-xl" required oninput="capitalizeFirstLetter(this)">
                 </div>
                 <div>
@@ -746,9 +758,30 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase Configuration - SUBSTITUA COM A SUA PRÓPRIA CONFIGURAÇÃO DO FIREBASE
+        // Pode encontrar isto nas definições do seu projeto Firebase -> Definições do projeto -> Os seus apps -> Aplicação web -> Config
+         const firebaseConfig = {
+  apiKey: "AIzaSyA25uBTHV1fJA1LO1Ep2STr-wkAG9fiyLg",
+  authDomain: "financecontrol-af907.firebaseapp.com",
+  projectId: "financecontrol-af907",
+  storageBucket: "financecontrol-af907.firebasestorage.app",
+  messagingSenderId: "698736291231",
+  appId: "1:698736291231:web:0c5c7c8b24ef75049b61aa"
+};
+
+        let app;
+        let db;
+        let auth;
+        let userId = null;
+        let userName = "Utilizador"; // Nome predefinido
+        let isAuthReady = false; // Flag para indicar se o estado de autenticação foi verificado
+
         // Estado da aplicação
-        let currentUser = null;
         let currentPanel = 'dashboard';
         let editingExpenseId = null;
         let editingFixedId = null;
@@ -756,8 +789,7 @@
         let editingMonthlyIncomeId = null;
         let confirmCallback = null;
         
-        // Armazenamento de dados (simulando localStorage por usuário)
-        let users = JSON.parse(localStorage.getItem('financeUsers') || '{}');
+        // Armazenamento de dados - Agora preenchido a partir do Firestore
         let dailyExpenses = [];
         let fixedExpenses = [];
         let installments = [];
@@ -773,39 +805,204 @@
         const registerForm = document.getElementById('register-form');
         const authStatusMessage = document.getElementById('auth-status-message');
         const displayUserName = document.getElementById('display-user-name');
-        const bottomNav = document.querySelector('.bottom-nav');
+        const bottomNav = document.getElementById('bottom-nav');
+        const appMessageArea = document.getElementById('app-message-area');
 
-        // Inicializar aplicação
+        // Inicializar aplicação ao carregar o DOM
         document.addEventListener('DOMContentLoaded', function() {
+            initializeFirebase();
             setupEventListeners();
             setTodayDate();
-            checkExistingSession();
         });
 
-        // Verificar se há sessão existente
-        function checkExistingSession() {
-            const savedUser = localStorage.getItem('currentFinanceUser');
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                loadUserData();
-                showApp();
+        /**
+         * Exibe uma mensagem temporária na área de mensagens da aplicação.
+         * @param {string} message - A mensagem a ser exibida.
+         * @param {string} type - O tipo de mensagem ('success', 'error', 'info').
+         */
+        function showAppMessage(message, type = 'info') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `p-3 rounded-xl text-sm mb-4 fade-in ${
+                type === 'success' ? 'bg-green-100 text-green-700' :
+                type === 'error' ? 'bg-red-100 text-red-700' :
+                'bg-blue-100 text-blue-700'
+            }`;
+            messageDiv.textContent = message;
+            appMessageArea.innerHTML = ''; // Limpa mensagens anteriores
+            appMessageArea.appendChild(messageDiv);
+
+            setTimeout(() => {
+                messageDiv.classList.add('hidden');
+                appMessageArea.innerHTML = '';
+            }, 5000); // A mensagem desaparece após 5 segundos
+        }
+
+        /**
+         * Coloca em maiúscula a primeira letra do valor de um elemento de input.
+         * @param {HTMLInputElement} inputElement - O elemento de input a ser capitalizado.
+         */
+        window.capitalizeFirstLetter = function(inputElement) { // Tornada global
+            const value = inputElement.value;
+            if (value.length > 0) {
+                inputElement.value = value.charAt(0).toUpperCase() + value.slice(1);
             }
         }
 
-        // Configurar event listeners
+        /**
+         * Formata um campo de input numérico como moeda com vírgula como separador decimal.
+         * Lida com input em tempo real (oninput) e formatação final (onblur).
+         * Armazena o valor numérico (com ponto) num atributo de dados para uso interno.
+         * @param {HTMLInputElement} inputElement - O elemento de input a ser formatado.
+         */
+        window.formatCurrencyInput = function(inputElement) { // Tornada global
+            let value = inputElement.value;
+
+            // Se o valor estiver vazio, limpa os dados numéricos e retorna
+            if (value === '') {
+                inputElement.dataset.numericValue = '';
+                return;
+            }
+
+            // Remove todos os caracteres não numéricos, exceto a vírgula
+            value = value.replace(/[^0-9,]/g, '');
+
+            // Lida com múltiplas vírgulas: mantém apenas a primeira
+            const parts = value.split(',');
+            if (parts.length > 2) {
+                value = parts[0] + ',' + parts.slice(1).join('');
+            }
+
+            // Garante no máximo duas casas decimais após a vírgula
+            if (value.includes(',')) {
+                const decimalPart = value.split(',')[1];
+                if (decimalPart && decimalPart.length > 2) {
+                    value = value.substring(0, value.indexOf(',') + 3);
+                }
+            }
+
+            // Se o evento for 'blur', garante duas casas decimais
+            if (event && event.type === 'blur') {
+                const numericVal = parseFloat(value.replace(',', '.'));
+                if (!isNaN(numericVal)) {
+                    value = numericVal.toFixed(2).replace('.', ',');
+                } else {
+                    value = ''; // Limpa se não for um número válido no blur
+                }
+            }
+
+            // Atualiza o campo de input com o valor formatado
+            inputElement.value = value;
+
+            // Para uso interno (parsing para float), converte vírgula para ponto
+            let parsedValue = parseFloat(value.replace(',', '.'));
+            if (isNaN(parsedValue)) {
+                parsedValue = 0; // Padrão para 0 se não for um número válido
+            }
+            // Armazena o valor numérico real (com ponto) num atributo de dados para fácil recuperação
+            inputElement.dataset.numericValue = parsedValue;
+        }
+        
+        /**
+         * Inicializa o Firebase e configura o listener de autenticação.
+         */
+        async function initializeFirebase() {
+            authStatusMessage.textContent = 'A carregar...';
+            // Verifica se a configuração do Firebase está disponível
+            if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_API_KEY") {
+                console.error("A configuração do Firebase está em falta ou incompleta. Por favor, atualize firebaseConfig com os detalhes reais do seu projeto Firebase.");
+                authStatusMessage.innerHTML = `
+                    <span class="text-red-500">Erro de Configuração do Firebase:</span>
+                    <br>Por favor, atualize o objeto <code>firebaseConfig</code> no código
+                    com as credenciais do seu projeto Firebase.
+                    <br>Consulte o guia "Como Encontrar a API Key no Firebase" para mais detalhes.
+                `;
+                return;
+            }
+
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        userName = user.displayName || user.email; // Usa o nome de exibição se disponível, caso contrário o email
+                        isAuthReady = true;
+                        console.log("Utilizador autenticado:", userId, "Nome:", userName);
+                        displayUserName.textContent = `Olá, ${userName}!`;
+                        authStatusMessage.textContent = ''; // Limpa a mensagem de autenticação
+                        showApp();
+                        // Começa a ouvir as coleções do Firestore
+                        listenForDailyExpenses();
+                        listenForFixedExpenses();
+                        listenForInstallments();
+                        listenForMonthlyIncomes();
+                    } else {
+                        userId = null;
+                        userName = "Utilizador";
+                        isAuthReady = true; // Estado de autenticação verificado, mesmo que não esteja logado
+                        console.log("Utilizador não autenticado.");
+                        displayUserName.textContent = `Olá, ${userName}!`; // Redefine o nome
+                        authStatusMessage.textContent = ''; // Limpa a mensagem de autenticação
+                        showAuth();
+                    }
+                });
+            } catch (error) {
+                console.error("Erro ao inicializar Firebase:", error);
+                authStatusMessage.textContent = `Erro ao inicializar: ${error.message}`;
+            }
+        }
+        
+        /**
+         * Exibe a tela de autenticação e oculta a tela da aplicação.
+         * Também garante que a navegação inferior esteja oculta.
+         */
+        function showAuth() {
+            authScreen.classList.remove('hidden');
+            appScreen.classList.add('hidden');
+            bottomNav.classList.add('hidden');
+            authStatusMessage.textContent = ''; // Limpa qualquer status anterior
+            loginForm.classList.remove('hidden');
+            registerForm.classList.add('hidden');
+        }
+        
+        /**
+         * Exibe a tela principal da aplicação e oculta a tela de autenticação.
+         * Atualiza o nome do utilizador no cabeçalho, atualiza o dashboard e renderiza os gráficos.
+         * Também garante que a navegação inferior esteja visível.
+         */
+        function showApp() {
+            authScreen.classList.add('hidden');
+            appScreen.classList.remove('hidden');
+            bottomNav.classList.remove('hidden');
+            updateDashboard();
+            renderCharts();
+            switchPanel(currentPanel); // Garante que o painel correto seja exibido ao carregar a aplicação
+        }
+        
+        /**
+         * Define a data padrão para o formulário de despesas diárias como a data de hoje.
+         */
+        function setTodayDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('daily-date').value = today;
+        }
+        
+        /**
+         * Configura todos os event listeners para formulários, botões e interações de modal.
+         */
         function setupEventListeners() {
-            // Botões de alternância entre login e registro
+            // Botões da tela de autenticação
             document.getElementById('show-register').addEventListener('click', showRegisterForm);
             document.getElementById('show-login').addEventListener('click', showLoginForm);
-            
-            // Botões de login e registro
             document.getElementById('login-btn').addEventListener('click', handleLogin);
             document.getElementById('register-btn').addEventListener('click', handleRegister);
             
-            // Botão de logout
+            // Clique no botão de logout
             document.getElementById('logout-btn').addEventListener('click', handleLogout);
             
-            // Navegação
+            // Clique nos botões de navegação
             document.querySelectorAll('.nav-item').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const panel = e.currentTarget.dataset.panel;
@@ -813,34 +1010,25 @@
                 });
             });
             
-            // Formulários
+            // Envio de formulários de despesas
             document.getElementById('daily-form').addEventListener('submit', handleDailyExpense);
             document.getElementById('fixed-form').addEventListener('submit', handleFixedExpense);
             document.getElementById('installments-form').addEventListener('submit', handleInstallment);
             document.getElementById('income-form').addEventListener('submit', handleMonthlyIncome);
             
-            // Formulários de edição
+            // Envios de formulários de edição
             document.getElementById('edit-form').addEventListener('submit', handleEditExpense);
             document.getElementById('edit-fixed-form').addEventListener('submit', handleEditFixedExpense);
             document.getElementById('edit-installment-form').addEventListener('submit', handleEditInstallment);
             document.getElementById('edit-monthly-income-form').addEventListener('submit', handleEditMonthlyIncome);
             
-            // Botões de cancelamento de modal
+            // Botões de cancelar do modal
             document.getElementById('cancel-edit').addEventListener('click', closeEditModal);
             document.getElementById('cancel-edit-fixed').addEventListener('click', closeEditFixedModal);
             document.getElementById('cancel-edit-installment').addEventListener('click', closeEditInstallmentModal);
             document.getElementById('cancel-edit-monthly-income').addEventListener('click', closeEditMonthlyIncomeModal);
             
-            // Modal de confirmação
-            document.getElementById('confirm-cancel').addEventListener('click', hideConfirmModal);
-            document.getElementById('confirm-delete').addEventListener('click', () => {
-                if (confirmCallback) {
-                    confirmCallback();
-                }
-                hideConfirmModal();
-            });
-            
-            // Fechar modais clicando no fundo
+            // Cliques no fundo do modal para fechar
             document.getElementById('edit-modal').addEventListener('click', (e) => {
                 if (e.target.id === 'edit-modal') closeEditModal();
             });
@@ -853,262 +1041,129 @@
             document.getElementById('edit-monthly-income-modal').addEventListener('click', (e) => {
                 if (e.target.id === 'edit-monthly-income-modal') closeEditMonthlyIncomeModal();
             });
+
+            // Botões do modal de confirmação
+            document.getElementById('confirm-cancel').addEventListener('click', hideConfirmModal);
+            document.getElementById('confirm-delete').addEventListener('click', () => {
+                if (confirmCallback) {
+                    confirmCallback();
+                }
+                hideConfirmModal();
+            });
             document.getElementById('confirm-modal').addEventListener('click', (e) => {
                 if (e.target.id === 'confirm-modal') hideConfirmModal();
             });
         }
 
-        // Mostrar formulário de registro
+        /**
+         * Exibe o formulário de registo e oculta o formulário de login.
+         */
         function showRegisterForm() {
             loginForm.classList.add('hidden');
             registerForm.classList.remove('hidden');
-            authStatusMessage.textContent = '';
+            authStatusMessage.textContent = ''; // Limpa a mensagem de status
         }
 
-        // Mostrar formulário de login
+        /**
+         * Exibe o formulário de login e oculta o formulário de registo.
+         */
         function showLoginForm() {
-            registerForm.classList.add('hidden');
             loginForm.classList.remove('hidden');
-            authStatusMessage.textContent = '';
+            registerForm.classList.add('hidden');
+            authStatusMessage.textContent = ''; // Limpa a mensagem de status
         }
 
-        // Lidar com login
-        function handleLogin() {
-            const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-password').value.trim();
-            
-            if (!email || !password) {
-                showAuthMessage('Por favor, preencha todos os campos.', 'error');
-                return;
+        /**
+         * Lida com o login do utilizador com email e palavra-passe.
+         */
+        async function handleLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            authStatusMessage.textContent = 'A iniciar sessão...';
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                authStatusMessage.textContent = 'Sessão iniciada com sucesso!';
+                // onAuthStateChanged irá lidar com a exibição da tela da aplicação
+            } catch (error) {
+                console.error("Erro de login:", error);
+                let errorMessage = "Erro ao iniciar sessão.";
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    errorMessage = "Email ou palavra-passe inválidos.";
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = "Formato de email inválido.";
+                } else if (error.code === 'auth/too-many-requests') {
+                    errorMessage = "Demasiadas tentativas de login. Tente novamente mais tarde.";
+                }
+                authStatusMessage.textContent = errorMessage;
             }
-            
-            // Verificar se o usuário existe
-            if (!users[email]) {
-                showAuthMessage('Usuário não encontrado. Cadastre-se primeiro.', 'error');
-                return;
-            }
-            
-            // Verificar senha
-            if (users[email].password !== password) {
-                showAuthMessage('Senha incorreta.', 'error');
-                return;
-            }
-            
-            // Login bem-sucedido
-            currentUser = users[email];
-            localStorage.setItem('currentFinanceUser', JSON.stringify(currentUser));
-            loadUserData();
-            showApp();
-            showAppMessage('Login realizado com sucesso!', 'success');
         }
 
-        // Lidar com registro
-        function handleRegister() {
-            const name = document.getElementById('register-name').value.trim();
-            const email = document.getElementById('register-email').value.trim();
-            const password = document.getElementById('register-password').value.trim();
-            
+        /**
+         * Lida com o registo do utilizador com email, palavra-passe e nome.
+         */
+        async function handleRegister() {
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            authStatusMessage.textContent = 'A registar...';
+
             if (!name || !email || !password) {
-                showAuthMessage('Por favor, preencha todos os campos.', 'error');
+                authStatusMessage.textContent = "Por favor, preencha todos os campos.";
                 return;
             }
-            
-            // Validar email
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                showAuthMessage('Por favor, insira um email válido.', 'error');
-                return;
-            }
-            
-            // Verificar se o usuário já existe
-            if (users[email]) {
-                showAuthMessage('Este email já está cadastrado. Faça login.', 'error');
-                return;
-            }
-            
-            // Criar novo usuário
-            const newUser = {
-                name: name,
-                email: email,
-                password: password,
-                dailyExpenses: [],
-                fixedExpenses: [],
-                installments: [],
-                monthlyIncomes: []
-            };
-            
-            users[email] = newUser;
-            localStorage.setItem('financeUsers', JSON.stringify(users));
-            
-            // Fazer login automático
-            currentUser = newUser;
-            localStorage.setItem('currentFinanceUser', JSON.stringify(currentUser));
-            loadUserData();
-            showApp();
-            showAppMessage('Cadastro realizado com sucesso!', 'success');
-        }
 
-        // Lidar com logout
-        function handleLogout() {
-            saveUserData();
-            currentUser = null;
-            localStorage.removeItem('currentFinanceUser');
-            
-            // Limpar dados locais
-            dailyExpenses = [];
-            fixedExpenses = [];
-            installments = [];
-            monthlyIncomes = [];
-            
-            // Limpar formulários
-            document.getElementById('login-email').value = '';
-            document.getElementById('login-password').value = '';
-            document.getElementById('register-name').value = '';
-            document.getElementById('register-email').value = '';
-            document.getElementById('register-password').value = '';
-            
-            showAuth();
-            showLoginForm();
-        }
-
-        // Carregar dados do usuário
-        function loadUserData() {
-            if (currentUser) {
-                dailyExpenses = currentUser.dailyExpenses || [];
-                fixedExpenses = currentUser.fixedExpenses || [];
-                installments = currentUser.installments || [];
-                monthlyIncomes = currentUser.monthlyIncomes || [];
-            }
-        }
-
-        // Salvar dados do usuário
-        function saveUserData() {
-            if (currentUser) {
-                currentUser.dailyExpenses = dailyExpenses;
-                currentUser.fixedExpenses = fixedExpenses;
-                currentUser.installments = installments;
-                currentUser.monthlyIncomes = monthlyIncomes;
-                
-                users[currentUser.email] = currentUser;
-                localStorage.setItem('financeUsers', JSON.stringify(users));
-                localStorage.setItem('currentFinanceUser', JSON.stringify(currentUser));
-            }
-        }
-
-        // Mostrar tela de autenticação
-        function showAuth() {
-            authScreen.classList.remove('hidden');
-            appScreen.classList.add('hidden');
-            bottomNav.classList.add('hidden');
-        }
-
-        // Mostrar aplicação principal
-        function showApp() {
-            authScreen.classList.add('hidden');
-            appScreen.classList.remove('hidden');
-            bottomNav.classList.remove('hidden');
-            
-            displayUserName.textContent = `Bem-vindo, ${currentUser.name}!`;
-            updateDashboard();
-            renderCharts();
-            switchPanel(currentPanel);
-        }
-
-        // Mostrar mensagem de autenticação
-        function showAuthMessage(message, type) {
-            authStatusMessage.textContent = message;
-            authStatusMessage.className = `mt-4 text-center text-sm ${type === 'error' ? 'text-red-500' : 'text-green-500'}`;
-        }
-
-        // Mostrar mensagem da aplicação
-        function showAppMessage(message, type, duration = 3000) {
-            const messageArea = document.getElementById('app-message-area');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `p-3 rounded-xl text-sm font-semibold fade-in`;
-
-            switch (type) {
-                case 'success':
-                    messageDiv.classList.add('bg-green-100', 'text-green-700');
-                    break;
-                case 'error':
-                    messageDiv.classList.add('bg-red-100', 'text-red-700');
-                    break;
-                case 'info':
-                    messageDiv.classList.add('bg-blue-100', 'text-blue-700');
-                    break;
-                default:
-                    messageDiv.classList.add('bg-gray-100', 'text-gray-700');
-            }
-            messageDiv.textContent = message;
-            messageArea.innerHTML = '';
-            messageArea.appendChild(messageDiv);
-
-            setTimeout(() => {
-                messageDiv.classList.add('opacity-0');
-                messageDiv.addEventListener('transitionend', () => messageDiv.remove());
-            }, duration);
-        }
-
-        // Definir data de hoje
-        function setTodayDate() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('daily-date').value = today;
-        }
-
-        // Capitalizar primeira letra
-        window.capitalizeFirstLetter = function(inputElement) {
-            const words = inputElement.value.split(' ');
-            const capitalizedWords = words.map(word => {
-                if (word.length > 0) {
-                    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                await updateProfile(userCredential.user, { displayName: name });
+                // Armazena o nome do utilizador no Firestore
+                await setDoc(doc(db, `artifacts/${firebaseConfig.appId}/users`, userCredential.user.uid), {
+                    name: name,
+                    email: email,
+                    createdAt: new Date()
+                });
+                authStatusMessage.textContent = 'Registo bem-sucedido! A iniciar sessão...';
+                // onAuthStateChanged irá lidar com a exibição da tela da aplicação
+            } catch (error) {
+                console.error("Erro de registo:", error);
+                let errorMessage = "Erro ao registar.";
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = "Este email já está em uso.";
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = "Formato de email inválido.";
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = "A palavra-passe deve ter pelo menos 6 caracteres.";
                 }
-                return word;
-            });
-            inputElement.value = capitalizedWords.join(' ');
+                authStatusMessage.textContent = errorMessage;
+            }
         }
-
-        // Formatar entrada de moeda
-        window.formatCurrencyInput = function(inputElement) {
-            let value = inputElement.value;
-
-            if (value === '') {
-                inputElement.dataset.numericValue = '';
-                return;
+        
+        /**
+         * Lida com o processo de logout.
+         * Termina a sessão do Firebase e exibe a tela de autenticação.
+         */
+        async function handleLogout() {
+            try {
+                await signOut(auth);
+                console.log("Sessão terminada com sucesso.");
+                // Limpa os dados locais ao fazer logout
+                dailyExpenses = [];
+                fixedExpenses = [];
+                installments = [];
+                monthlyIncomes = [];
+                showAuth();
+                showAppMessage('Sessão terminada com sucesso.', 'success');
+            } catch (error) {
+                console.error("Erro ao terminar sessão:", error);
+                showAppMessage(`Erro ao terminar sessão: ${error.message}`, 'error');
             }
-
-            value = value.replace(/[^0-9,]/g, '');
-
-            const parts = value.split(',');
-            if (parts.length > 2) {
-                value = parts[0] + ',' + parts.slice(1).join('');
-            }
-
-            if (value.includes(',')) {
-                const decimalPart = value.split(',')[1];
-                if (decimalPart && decimalPart.length > 2) {
-                    value = value.substring(0, value.indexOf(',') + 3);
-                }
-            }
-
-            if (event && event.type === 'blur') {
-                const numericVal = parseFloat(value.replace(',', '.'));
-                if (!isNaN(numericVal)) {
-                    value = numericVal.toFixed(2).replace('.', ',');
-                } else {
-                    value = '';
-                }
-            }
-
-            inputElement.value = value;
-
-            let parsedValue = parseFloat(value.replace(',', '.'));
-            if (isNaN(parsedValue)) {
-                parsedValue = 0;
-            }
-            inputElement.dataset.numericValue = parsedValue;
         }
-
-        // Alternar painéis
+        
+        /**
+         * Alterna entre diferentes painéis (Dashboard, Diário, Fixas, Parceladas, Receitas).
+         * Oculta todos os painéis e exibe o selecionado, atualizando o estado ativo da navegação.
+         * @param {string} panelId - O ID do painel a ser exibido (ex: 'dashboard', 'daily', 'income').
+         */
         function switchPanel(panelId) {
             const panels = ['dashboard-panel', 'daily-panel', 'fixed-panel', 'installments-panel', 'income-panel'];
             panels.forEach(id => {
@@ -1123,6 +1178,7 @@
             
             currentPanel = panelId;
             
+            // Re-renderiza listas e gráficos ao alternar painéis para garantir dados atualizados
             if (panelId === 'daily') renderDailyExpenses();
             if (panelId === 'fixed') renderFixedExpenses();
             if (panelId === 'installments') renderInstallments();
@@ -1133,38 +1189,119 @@
             }
         }
 
-        // Lidar com despesa diária
-        function handleDailyExpense(e) {
+        /**
+         * Ouve atualizações em tempo real das despesas diárias do Firestore.
+         */
+        function listenForDailyExpenses() {
+            if (!isAuthReady || !userId) return;
+            const q = query(collection(db, `artifacts/${firebaseConfig.appId}/users/${userId}/dailyExpenses`));
+            onSnapshot(q, (snapshot) => {
+                dailyExpenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                console.log("Daily Expenses updated:", dailyExpenses);
+                renderDailyExpenses();
+                updateDashboard();
+                renderCharts();
+            }, (error) => {
+                console.error("Erro ao ouvir despesas diárias:", error);
+                showAppMessage(`Erro ao carregar despesas diárias: ${error.message}`, 'error');
+            });
+        }
+
+        /**
+         * Ouve atualizações em tempo real das despesas fixas do Firestore.
+         */
+        function listenForFixedExpenses() {
+            if (!isAuthReady || !userId) return;
+            const q = query(collection(db, `artifacts/${firebaseConfig.appId}/users/${userId}/fixedExpenses`));
+            onSnapshot(q, (snapshot) => {
+                fixedExpenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                console.log("Fixed Expenses updated:", fixedExpenses);
+                renderFixedExpenses();
+                updateDashboard();
+                renderCharts();
+            }, (error) => {
+                console.error("Erro ao ouvir despesas fixas:", error);
+                showAppMessage(`Erro ao carregar despesas fixas: ${error.message}`, 'error');
+            });
+        }
+
+        /**
+         * Ouve atualizações em tempo real dos parcelamentos do Firestore.
+         */
+        function listenForInstallments() {
+            if (!isAuthReady || !userId) return;
+            const q = query(collection(db, `artifacts/${firebaseConfig.appId}/users/${userId}/installments`));
+            onSnapshot(q, (snapshot) => {
+                installments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                console.log("Installments updated:", installments);
+                renderInstallments();
+                updateDashboard();
+                renderCharts();
+            }, (error) => {
+                console.error("Erro ao ouvir parcelamentos:", error);
+                showAppMessage(`Erro ao carregar parcelamentos: ${error.message}`, 'error');
+            });
+        }
+
+        /**
+         * Ouve atualizações em tempo real das receitas mensais do Firestore.
+         */
+        function listenForMonthlyIncomes() {
+            if (!isAuthReady || !userId) return;
+            const q = query(collection(db, `artifacts/${firebaseConfig.appId}/users/${userId}/monthlyIncomes`));
+            onSnapshot(q, (snapshot) => {
+                monthlyIncomes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                console.log("Monthly Incomes updated:", monthlyIncomes);
+                renderMonthlyIncomes();
+                updateDashboard();
+                renderCharts();
+            }, (error) => {
+                console.error("Erro ao ouvir receitas mensais:", error);
+                showAppMessage(`Erro ao carregar receitas mensais: ${error.message}`, 'error');
+            });
+        }
+        
+        /**
+         * Lida com o envio do formulário de despesas diárias.
+         * Adiciona uma nova despesa diária ao Firestore.
+         * @param {Event} e - O objeto de evento de envio.
+         */
+        async function handleDailyExpense(e) {
             e.preventDefault();
-            
+            if (!userId) {
+                showAppMessage("Erro: Por favor, inicie sessão para adicionar despesas.", 'error');
+                return;
+            }
+
             const date = document.getElementById('daily-date').value;
             const category = document.getElementById('daily-category').value;
             const description = document.getElementById('daily-description').value;
             const value = parseFloat(document.getElementById('daily-value').dataset.numericValue);
             
             if (date && category && description && !isNaN(value) && value > 0) {
-                const expense = {
-                    id: Date.now().toString(),
-                    date,
-                    category,
-                    description,
-                    value
-                };
-                
-                dailyExpenses.push(expense);
-                saveUserData();
-                e.target.reset();
-                setTodayDate();
-                renderDailyExpenses();
-                updateDashboard();
-                renderCharts();
-                showAppMessage('Gasto diário adicionado com sucesso!', 'success');
+                try {
+                    await addDoc(collection(db, `artifacts/${firebaseConfig.appId}/users/${userId}/dailyExpenses`), {
+                        date,
+                        category,
+                        description,
+                        value
+                    });
+                    e.target.reset();
+                    setTodayDate();
+                    showAppMessage('Gasto diário adicionado com sucesso!', 'success');
+                } catch (error) {
+                    console.error("Erro ao adicionar despesa diária:", error);
+                    showAppMessage(`Erro ao adicionar despesa: ${error.message}`, 'error');
+                }
             } else {
-                showAppMessage('Por favor, preencha todos os campos corretamente.', 'error');
+                showAppMessage('Por favor, preencha todos os campos do gasto diário corretamente.', 'error');
             }
         }
-
-        // Renderizar despesas diárias
+        
+        /**
+         * Renderiza a lista de despesas diárias.
+         * Limpa a lista existente e anexa novos itens de despesa.
+         */
         function renderDailyExpenses() {
             const dailyList = document.getElementById('daily-list');
             dailyList.innerHTML = '';
@@ -1197,21 +1334,30 @@
                 dailyList.appendChild(expenseItem);
             });
         }
-
-        // Confirmar exclusão de despesa diária
-        window.confirmDeleteDailyExpense = function(id) {
-            showConfirmModal('Tem certeza que deseja excluir este gasto diário?', () => {
-                dailyExpenses = dailyExpenses.filter(expense => expense.id !== id);
-                saveUserData();
-                renderDailyExpenses();
-                updateDashboard();
-                renderCharts();
-                showAppMessage('Gasto diário excluído com sucesso!', 'success');
+        
+        /**
+         * Confirma a exclusão de uma despesa diária.
+         * @param {string} id - O ID da despesa a ser excluída.
+         */
+        window.confirmDeleteDailyExpense = function(id) { // Tornada global
+            showConfirmModal('Tem certeza que deseja excluir este gasto diário?', async () => {
+                if (!userId) return;
+                try {
+                    await deleteDoc(doc(db, `artifacts/${firebaseConfig.appId}/users/${userId}/dailyExpenses`, id));
+                    showAppMessage('Gasto diário excluído com sucesso!', 'success');
+                } catch (error) {
+                    console.error("Erro ao excluir despesa diária:", error);
+                    showAppMessage(`Erro ao excluir despesa: ${error.message}`, 'error');
+                }
             });
         }
-
-        // Abrir modal de edição
-        window.openEditModal = function(id) {
+        
+        /**
+         * Abre o modal de edição para uma despesa diária.
+         * Preenche o formulário com os dados atuais da despesa.
+         * @param {string} id - O ID da despesa a ser editada.
+         */
+        window.openEditModal = function(id) { // Tornada global
             editingExpenseId = id;
             const expense = dailyExpenses.find(exp => exp.id === id);
             if (expense) {
@@ -1223,73 +1369,86 @@
                 document.getElementById('edit-modal').classList.remove('hidden');
             }
         }
-
-        // Fechar modal de edição
+        
+        /**
+         * Fecha o modal de edição de despesas diárias.
+         */
         function closeEditModal() {
             document.getElementById('edit-modal').classList.add('hidden');
             editingExpenseId = null;
         }
-
-        // Lidar com edição de despesa
-        function handleEditExpense(e) {
+        
+        /**
+         * Lida com o envio do formulário de edição de despesas diárias.
+         * Atualiza a despesa no Firestore.
+         * @param {Event} e - O objeto de evento de envio.
+         */
+        async function handleEditExpense(e) {
             e.preventDefault();
-            
+            if (!userId || !editingExpenseId) return;
+
             const date = document.getElementById('edit-date').value;
             const category = document.getElementById('edit-category').value;
             const description = document.getElementById('edit-description').value;
             const value = parseFloat(document.getElementById('edit-value').dataset.numericValue);
             
             if (date && category && description && !isNaN(value) && value > 0) {
-                const expenseIndex = dailyExpenses.findIndex(exp => exp.id === editingExpenseId);
-                if (expenseIndex !== -1) {
-                    dailyExpenses[expenseIndex] = {
-                        ...dailyExpenses[expenseIndex],
+                try {
+                    await updateDoc(doc(db, `artifacts/${firebaseConfig.appId}/users/${userId}/dailyExpenses`, editingExpenseId), {
                         date,
                         category,
                         description,
                         value
-                    };
-                    saveUserData();
+                    });
                     closeEditModal();
-                    renderDailyExpenses();
-                    updateDashboard();
-                    renderCharts();
                     showAppMessage('Gasto diário atualizado com sucesso!', 'success');
+                } catch (error) {
+                    console.error("Erro ao editar despesa diária:", error);
+                    showAppMessage(`Erro ao editar despesa: ${error.message}`, 'error');
                 }
             } else {
-                showAppMessage('Por favor, preencha todos os campos corretamente.', 'error');
+                showAppMessage('Por favor, preencha todos os campos do gasto diário corretamente para editar.', 'error');
             }
         }
 
-        // Lidar com despesa fixa
-        function handleFixedExpense(e) {
+        /**
+         * Lida com o envio do formulário de despesas fixas.
+         * Adiciona uma nova despesa fixa ao Firestore.
+         * @param {Event} e - O objeto de evento de envio.
+         */
+        async function handleFixedExpense(e) {
             e.preventDefault();
-            
+            if (!userId) {
+                showAppMessage("Erro: Por favor, inicie sessão para adicionar despesas fixas.", 'error');
+                return;
+            }
+
             const name = document.getElementById('fixed-name').value;
             const category = document.getElementById('fixed-category').value;
             const value = parseFloat(document.getElementById('fixed-value').dataset.numericValue);
             
             if (name && category && !isNaN(value) && value > 0) {
-                const expense = {
-                    id: Date.now().toString(),
-                    name,
-                    category,
-                    value
-                };
-                
-                fixedExpenses.push(expense);
-                saveUserData();
-                e.target.reset();
-                renderFixedExpenses();
-                updateDashboard();
-                renderCharts();
-                showAppMessage('Despesa fixa adicionada com sucesso!', 'success');
+                try {
+                    await addDoc(collection(db, `artifacts/${firebaseConfig.appId}/users/${userId}/fixedExpenses`), {
+                        name,
+                        category,
+                        value
+                    });
+                    e.target.reset();
+                    showAppMessage('Despesa fixa adicionada com sucesso!', 'success');
+                } catch (error) {
+                    console.error("Erro ao adicionar despesa fixa:", error);
+                    showAppMessage(`Erro ao adicionar despesa fixa: ${error.message}`, 'error');
+                }
             } else {
-                showAppMessage('Por favor, preencha todos os campos corretamente.', 'error');
+                showAppMessage('Por favor, preencha todos os campos da despesa fixa corretamente.', 'error');
             }
         }
-
-        // Renderizar despesas fixas
+        
+        /**
+         * Renderiza a lista de despesas fixas.
+         * Limpa a lista existente e anexa novos itens de despesa fixa.
+         */
         function renderFixedExpenses() {
             const fixedList = document.getElementById('fixed-list');
             fixedList.innerHTML = '';
@@ -1320,21 +1479,30 @@
                 fixedList.appendChild(expenseItem);
             });
         }
-
-        // Confirmar exclusão de despesa fixa
-        window.confirmDeleteFixedExpense = function(id) {
-            showConfirmModal('Tem certeza que deseja excluir esta despesa fixa?', () => {
-                fixedExpenses = fixedExpenses.filter(expense => expense.id !== id);
-                saveUserData();
-                renderFixedExpenses();
-                updateDashboard();
-                renderCharts();
-                showAppMessage('Despesa fixa excluída com sucesso!', 'success');
+        
+        /**
+         * Confirma a exclusão de uma despesa fixa.
+         * @param {string} id - O ID da despesa fixa a ser excluída.
+         */
+        window.confirmDeleteFixedExpense = function(id) { // Tornada global
+            showConfirmModal('Tem certeza que deseja excluir esta despesa fixa?', async () => {
+                if (!userId) return;
+                try {
+                    await deleteDoc(doc(db, `artifacts/${firebaseConfig.appId}/users/${userId}/fixedExpenses`, id));
+                    showAppMessage('Despesa fixa excluída com sucesso!', 'success');
+                } catch (error) {
+                    console.error("Erro ao excluir despesa fixa:", error);
+                    showAppMessage(`Erro ao excluir despesa fixa: ${error.message}`, 'error');
+                }
             });
         }
 
-        // Abrir modal de edição de despesa fixa
-        window.openEditFixedModal = function(id) {
+        /**
+         * Abre o modal de edição para uma despesa fixa.
+         * Preenche o formulário com os dados atuais da despesa.
+         * @param {string} id - O ID da despesa fixa a ser editada.
+         */
+        window.openEditFixedModal = function(id) { // Tornada global
             editingFixedId = id;
             const expense = fixedExpenses.find(exp => exp.id === id);
             if (expense) {
@@ -1346,73 +1514,86 @@
             }
         }
 
-        // Fechar modal de edição de despesa fixa
+        /**
+         * Fecha o modal de edição de despesas fixas.
+         */
         function closeEditFixedModal() {
             document.getElementById('edit-fixed-modal').classList.add('hidden');
             editingFixedId = null;
         }
 
-        // Lidar com edição de despesa fixa
-        function handleEditFixedExpense(e) {
+        /**
+         * Lida com o envio do formulário de edição de despesas fixas.
+         * Atualiza a despesa fixa no Firestore.
+         * @param {Event} e - O objeto de evento de envio.
+         */
+        async function handleEditFixedExpense(e) {
             e.preventDefault();
-            
+            if (!userId || !editingFixedId) return;
+
             const name = document.getElementById('edit-fixed-name').value;
             const category = document.getElementById('edit-fixed-category').value;
             const value = parseFloat(document.getElementById('edit-fixed-value').dataset.numericValue);
             
             if (name && category && !isNaN(value) && value > 0) {
-                const expenseIndex = fixedExpenses.findIndex(exp => exp.id === editingFixedId);
-                if (expenseIndex !== -1) {
-                    fixedExpenses[expenseIndex] = {
-                        ...fixedExpenses[expenseIndex],
+                try {
+                    await updateDoc(doc(db, `artifacts/${firebaseConfig.appId}/users/${userId}/fixedExpenses`, editingFixedId), {
                         name,
                         category,
                         value
-                    };
-                    saveUserData();
+                    });
                     closeEditFixedModal();
-                    renderFixedExpenses();
-                    updateDashboard();
-                    renderCharts();
                     showAppMessage('Despesa fixa atualizada com sucesso!', 'success');
+                } catch (error) {
+                    console.error("Erro ao editar despesa fixa:", error);
+                    showAppMessage(`Erro ao editar despesa fixa: ${error.message}`, 'error');
                 }
             } else {
-                showAppMessage('Por favor, preencha todos os campos corretamente.', 'error');
+                showAppMessage('Por favor, preencha todos os campos da despesa fixa corretamente para editar.', 'error');
             }
         }
-
-        // Lidar com parcelamento
-        function handleInstallment(e) {
+        
+        /**
+         * Lida com o envio do formulário de parcelamento.
+         * Adiciona um novo parcelamento ao Firestore.
+         * @param {Event} e - O objeto de evento de envio.
+         */
+        async function handleInstallment(e) {
             e.preventDefault();
-            
+            if (!userId) {
+                showAppMessage("Erro: Por favor, inicie sessão para adicionar parcelamento.", 'error');
+                return;
+            }
+
             const name = document.getElementById('installment-name').value;
             const category = document.getElementById('installment-category').value;
             const value = parseFloat(document.getElementById('installment-value').dataset.numericValue);
             const totalInstallments = parseInt(document.getElementById('installment-total').value);
             
             if (name && category && !isNaN(value) && value > 0 && !isNaN(totalInstallments) && totalInstallments > 0) {
-                const installment = {
-                    id: Date.now().toString(),
-                    name,
-                    category,
-                    value,
-                    total: totalInstallments,
-                    paid: 0
-                };
-                
-                installments.push(installment);
-                saveUserData();
-                e.target.reset();
-                renderInstallments();
-                updateDashboard();
-                renderCharts();
-                showAppMessage('Parcelamento adicionado com sucesso!', 'success');
+                try {
+                    await addDoc(collection(db, `artifacts/${firebaseConfig.appId}/users/${userId}/installments`), {
+                        name,
+                        category,
+                        value,
+                        total: totalInstallments,
+                        paid: 0
+                    });
+                    e.target.reset();
+                    showAppMessage('Parcelamento adicionado com sucesso!', 'success');
+                } catch (error) {
+                    console.error("Erro ao adicionar parcelamento:", error);
+                    showAppMessage(`Erro ao adicionar parcelamento: ${error.message}`, 'error');
+                }
             } else {
-                showAppMessage('Por favor, preencha todos os campos corretamente.', 'error');
+                showAppMessage('Por favor, preencha todos os campos do parcelamento corretamente.', 'error');
             }
         }
-
-        // Renderizar parcelamentos
+        
+        /**
+         * Renderiza a lista de parcelamentos.
+         * Limpa a lista existente e anexa novos itens de parcelamento.
+         */
         function renderInstallments() {
             const installmentsList = document.getElementById('installments-list');
             installmentsList.innerHTML = '';
@@ -1458,34 +1639,50 @@
                 installmentsList.appendChild(installmentItem);
             });
         }
-
-        // Marcar parcela como paga
-        window.markInstallmentPaid = function(id) {
+        
+        /**
+         * Marca uma parcela como paga para um determinado ID de parcelamento.
+         * @param {string} id - O ID do parcelamento a ser atualizado.
+         */
+        window.markInstallmentPaid = async function(id) { // Tornada global
+            if (!userId) return;
             const installment = installments.find(inst => inst.id === id);
             if (installment && installment.paid < installment.total) {
-                installment.paid += 1;
-                saveUserData();
-                renderInstallments();
-                updateDashboard();
-                renderCharts();
-                showAppMessage('Parcela marcada como paga!', 'success');
+                try {
+                    await updateDoc(doc(db, `artifacts/${firebaseConfig.appId}/users/${userId}/installments`, id), {
+                        paid: installment.paid + 1
+                    });
+                    showAppMessage('Parcela marcada como paga!', 'success');
+                } catch (error) {
+                    console.error("Erro ao marcar parcela como paga:", error);
+                    showAppMessage(`Erro ao atualizar parcela: ${error.message}`, 'error');
+                }
             }
         }
-
-        // Confirmar exclusão de parcelamento
-        window.confirmDeleteInstallment = function(id) {
-            showConfirmModal('Tem certeza que deseja excluir este parcelamento?', () => {
-                installments = installments.filter(installment => installment.id !== id);
-                saveUserData();
-                renderInstallments();
-                updateDashboard();
-                renderCharts();
-                showAppMessage('Parcelamento excluído com sucesso!', 'success');
+        
+        /**
+         * Confirma a exclusão de um parcelamento.
+         * @param {string} id - O ID do parcelamento a ser excluído.
+         */
+        window.confirmDeleteInstallment = function(id) { // Tornada global
+            showConfirmModal('Tem certeza que deseja excluir este parcelamento?', async () => {
+                if (!userId) return;
+                try {
+                    await deleteDoc(doc(db, `artifacts/${firebaseConfig.appId}/users/${userId}/installments`, id));
+                    showAppMessage('Parcelamento excluído com sucesso!', 'success');
+                } catch (error) {
+                    console.error("Erro ao excluir parcelamento:", error);
+                    showAppMessage(`Erro ao excluir parcelamento: ${error.message}`, 'error');
+                }
             });
         }
 
-        // Abrir modal de edição de parcelamento
-        window.openEditInstallmentModal = function(id) {
+        /**
+         * Abre o modal de edição para um parcelamento.
+         * Preenche o formulário com os dados atuais do parcelamento.
+         * @param {string} id - O ID do parcelamento a ser editado.
+         */
+        window.openEditInstallmentModal = function(id) { // Tornada global
             editingInstallmentId = id;
             const installment = installments.find(inst => inst.id === id);
             if (installment) {
@@ -1499,16 +1696,23 @@
             }
         }
 
-        // Fechar modal de edição de parcelamento
+        /**
+         * Fecha o modal de edição de parcelamento.
+         */
         function closeEditInstallmentModal() {
             document.getElementById('edit-installment-modal').classList.add('hidden');
             editingInstallmentId = null;
         }
 
-        // Lidar com edição de parcelamento
-        function handleEditInstallment(e) {
+        /**
+         * Lida com o envio do formulário de edição de parcelamento.
+         * Atualiza o parcelamento no Firestore.
+         * @param {Event} e - O objeto de evento de envio.
+         */
+        async function handleEditInstallment(e) {
             e.preventDefault();
-            
+            if (!userId || !editingInstallmentId) return;
+
             const name = document.getElementById('edit-installment-name').value;
             const category = document.getElementById('edit-installment-category').value;
             const value = parseFloat(document.getElementById('edit-installment-value').dataset.numericValue);
@@ -1517,59 +1721,65 @@
             
             if (name && category && !isNaN(value) && value > 0 && !isNaN(totalInstallments) && totalInstallments > 0 && !isNaN(paidInstallments) && paidInstallments >= 0) {
                 if (paidInstallments > totalInstallments) {
-                    showAppMessage('Erro: Parcelas pagas não podem exceder o total.', 'error');
+                    showAppMessage('O número de parcelas pagas não pode ser maior que o total de parcelas.', 'error');
                     return;
                 }
 
-                const installmentIndex = installments.findIndex(inst => inst.id === editingInstallmentId);
-                if (installmentIndex !== -1) {
-                    installments[installmentIndex] = {
-                        ...installments[installmentIndex],
+                try {
+                    await updateDoc(doc(db, `artifacts/${firebaseConfig.appId}/users/${userId}/installments`, editingInstallmentId), {
                         name,
                         category,
                         value,
                         total: totalInstallments,
                         paid: paidInstallments
-                    };
-                    saveUserData();
+                    });
                     closeEditInstallmentModal();
-                    renderInstallments();
-                    updateDashboard();
-                    renderCharts();
                     showAppMessage('Parcelamento atualizado com sucesso!', 'success');
+                } catch (error) {
+                    console.error("Erro ao editar parcelamento:", error);
+                    showAppMessage(`Erro ao editar parcelamento: ${error.message}`, 'error');
                 }
             } else {
-                showAppMessage('Por favor, preencha todos os campos corretamente.', 'error');
+                showAppMessage('Por favor, preencha todos os campos do parcelamento corretamente para editar.', 'error');
             }
         }
 
-        // Lidar com receita mensal
-        function handleMonthlyIncome(e) {
+        /**
+         * Lida com o envio do formulário de receita mensal.
+         * Adiciona uma nova receita mensal ao Firestore.
+         * @param {Event} e - O objeto de evento de envio.
+         */
+        async function handleMonthlyIncome(e) {
             e.preventDefault();
-            
+            if (!userId) {
+                showAppMessage("Erro: Por favor, inicie sessão para adicionar receita mensal.", 'error');
+                return;
+            }
+
             const source = document.getElementById('income-source').value;
             const value = parseFloat(document.getElementById('income-value').dataset.numericValue);
             
             if (source && !isNaN(value) && value > 0) {
-                const income = {
-                    id: Date.now().toString(),
-                    source,
-                    value
-                };
-                
-                monthlyIncomes.push(income);
-                saveUserData();
-                e.target.reset();
-                renderMonthlyIncomes();
-                updateDashboard();
-                renderCharts();
-                showAppMessage('Receita mensal adicionada com sucesso!', 'success');
+                try {
+                    await addDoc(collection(db, `artifacts/${firebaseConfig.appId}/users/${userId}/monthlyIncomes`), {
+                        source,
+                        value
+                    });
+                    e.target.reset();
+                    showAppMessage('Receita adicionada com sucesso!', 'success');
+                } catch (error) {
+                    console.error("Erro ao adicionar receita mensal:", error);
+                    showAppMessage(`Erro ao adicionar receita: ${error.message}`, 'error');
+                }
             } else {
-                showAppMessage('Por favor, preencha todos os campos corretamente.', 'error');
+                showAppMessage('Por favor, preencha todos os campos da receita mensal corretamente.', 'error');
             }
         }
 
-        // Renderizar receitas mensais
+        /**
+         * Renderiza a lista de receitas mensais.
+         * Limpa a lista existente e anexa novos itens de receita.
+         */
         function renderMonthlyIncomes() {
             const incomeList = document.getElementById('income-list');
             incomeList.innerHTML = '';
@@ -1600,20 +1810,29 @@
             });
         }
 
-        // Confirmar exclusão de receita mensal
-        window.confirmDeleteMonthlyIncome = function(id) {
-            showConfirmModal('Tem certeza que deseja excluir esta receita mensal?', () => {
-                monthlyIncomes = monthlyIncomes.filter(income => income.id !== id);
-                saveUserData();
-                renderMonthlyIncomes();
-                updateDashboard();
-                renderCharts();
-                showAppMessage('Receita mensal excluída com sucesso!', 'success');
+        /**
+         * Confirma a exclusão de uma receita mensal.
+         * @param {string} id - O ID da receita a ser excluída.
+         */
+        window.confirmDeleteMonthlyIncome = function(id) { // Tornada global
+            showConfirmModal('Tem certeza que deseja excluir esta receita mensal?', async () => {
+                if (!userId) return;
+                try {
+                    await deleteDoc(doc(db, `artifacts/${firebaseConfig.appId}/users/${userId}/monthlyIncomes`, id));
+                    showAppMessage('Receita mensal excluída com sucesso!', 'success');
+                } catch (error) {
+                    console.error("Erro ao excluir receita mensal:", error);
+                    showAppMessage(`Erro ao excluir receita: ${error.message}`, 'error');
+                }
             });
         }
 
-        // Abrir modal de edição de receita mensal
-        window.openEditMonthlyIncomeModal = function(id) {
+        /**
+         * Abre o modal de edição para uma receita mensal.
+         * Preenche o formulário com os dados atuais da receita.
+         * @param {string} id - O ID da receita a ser editada.
+         */
+        window.openEditMonthlyIncomeModal = function(id) { // Tornada global
             editingMonthlyIncomeId = id;
             const income = monthlyIncomes.find(inc => inc.id === id);
             if (income) {
@@ -1624,40 +1843,46 @@
             }
         }
 
-        // Fechar modal de edição de receita mensal
+        /**
+         * Fecha o modal de edição de receita mensal.
+         */
         function closeEditMonthlyIncomeModal() {
             document.getElementById('edit-monthly-income-modal').classList.add('hidden');
             editingMonthlyIncomeId = null;
         }
 
-        // Lidar com edição de receita mensal
-        function handleEditMonthlyIncome(e) {
+        /**
+         * Lida com o envio do formulário de edição de receita mensal.
+         * Atualiza a receita no Firestore.
+         * @param {Event} e - O objeto de evento de envio.
+         */
+        async function handleEditMonthlyIncome(e) {
             e.preventDefault();
-            
+            if (!userId || !editingMonthlyIncomeId) return;
+
             const source = document.getElementById('edit-income-source').value;
             const value = parseFloat(document.getElementById('edit-income-value').dataset.numericValue);
             
             if (source && !isNaN(value) && value > 0) {
-                const incomeIndex = monthlyIncomes.findIndex(inc => inc.id === editingMonthlyIncomeId);
-                if (incomeIndex !== -1) {
-                    monthlyIncomes[incomeIndex] = {
-                        ...monthlyIncomes[incomeIndex],
+                try {
+                    await updateDoc(doc(db, `artifacts/${firebaseConfig.appId}/users/${userId}/monthlyIncomes`, editingMonthlyIncomeId), {
                         source,
                         value
-                    };
-                    saveUserData();
+                    });
                     closeEditMonthlyIncomeModal();
-                    renderMonthlyIncomes();
-                    updateDashboard();
-                    renderCharts();
                     showAppMessage('Receita mensal atualizada com sucesso!', 'success');
+                } catch (error) {
+                    console.error("Erro ao editar receita mensal:", error);
+                    showAppMessage(`Erro ao editar receita: ${error.message}`, 'error');
                 }
             } else {
-                showAppMessage('Por favor, preencha todos os campos corretamente.', 'error');
+                showAppMessage('Por favor, preencha todos os campos da receita mensal corretamente para editar.', 'error');
             }
         }
-
-        // Atualizar dashboard
+        
+        /**
+         * Atualiza os cartões de resumo do dashboard (Total de Despesas Mensais, Despesas Diárias, Total de Receita Mensal, Saldo Mensal).
+         */
         function updateDashboard() {
             const now = new Date();
             const currentMonth = now.getMonth();
@@ -1675,6 +1900,7 @@
                 totalMonthlyExpenses += expense.value;
             });
             installments.forEach(installment => {
+                // Apenas conta o valor da parcela para o mês atual se ainda estiver a ser paga
                 if (installment.paid < installment.total) { 
                     totalMonthlyExpenses += installment.value;
                 }
@@ -1707,7 +1933,10 @@
             }
         }
 
-        // Renderizar gráficos
+        /**
+         * Renderiza todos os gráficos (Categoria, Parcelamento, Fixas, Diário, Receita vs. Despesas).
+         * Destrói as instâncias de gráficos existentes antes de criar novas para evitar vazamentos de memória.
+         */
         function renderCharts() {
             if (categoryChart) categoryChart.destroy();
             if (installmentChart) installmentChart.destroy();
@@ -1722,7 +1951,9 @@
             renderDailyChart();
         }
 
-        // Renderizar gráfico de receita vs despesas
+        /**
+         * Renderiza o gráfico de barras "Receita vs. Despesas".
+         */
         function renderIncomeVsExpensesChart() {
             const ctx = document.getElementById('incomeVsExpensesChart').getContext('2d');
             
@@ -1808,16 +2039,14 @@
             });
         }
 
-        // Renderizar gráfico de categoria
+        /**
+         * Renderiza o gráfico de rosca "Gastos por Categoria".
+         */
         function renderCategoryChart() {
             const ctx = document.getElementById('categoryChart').getContext('2d');
             const categoryData = {};
             dailyExpenses.forEach(expense => {
-                const expenseDate = new Date(expense.date);
-                const now = new Date();
-                if (expenseDate.getMonth() === now.getMonth() && expenseDate.getFullYear() === now.getFullYear()) {
-                    categoryData[expense.category] = (categoryData[expense.category] || 0) + expense.value;
-                }
+                categoryData[expense.category] = (categoryData[expense.category] || 0) + expense.value;
             });
 
             const labels = Object.keys(categoryData);
@@ -1879,7 +2108,9 @@
             });
         }
 
-        // Renderizar gráfico de parcelamentos
+        /**
+         * Renderiza o gráfico de barras "Despesas Parceladas".
+         */
         function renderInstallmentChart() {
             const ctx = document.getElementById('installmentChart').getContext('2d');
             const installmentNames = installments.map(inst => inst.name);
@@ -1945,7 +2176,9 @@
             });
         }
 
-        // Renderizar gráfico de despesas fixas
+        /**
+         * Renderiza o gráfico de barras "Despesas Fixas".
+         */
         function renderFixedChart() {
             const ctx = document.getElementById('fixedChart').getContext('2d');
             const fixedNames = fixedExpenses.map(exp => exp.name);
@@ -2011,7 +2244,9 @@
             });
         }
 
-        // Renderizar gráfico diário
+        /**
+         * Renderiza o gráfico de linha "Gastos Diários do Mês".
+         */
         function renderDailyChart() {
             const ctx = document.getElementById('dailyChart').getContext('2d');
             const now = new Date();
@@ -2088,6 +2323,12 @@
                                     family: 'Inter',
                                     size: 14
                                 }
+                            },
+                            ticks: {
+                                color: '#8b7355',
+                                font: {
+                                    family: 'Inter'
+                                }
                             }
                         }
                     }
@@ -2095,14 +2336,20 @@
             });
         }
 
-        // Mostrar modal de confirmação
+        /**
+         * Exibe um modal de confirmação personalizado.
+         * @param {string} message - A mensagem a ser exibida no modal.
+         * @param {function} callback - A função a ser executada se o utilizador confirmar.
+         */
         function showConfirmModal(message, callback) {
             document.getElementById('confirm-message').textContent = message;
             document.getElementById('confirm-modal').classList.remove('hidden');
             confirmCallback = callback;
         }
 
-        // Ocultar modal de confirmação
+        /**
+         * Oculta o modal de confirmação personalizado.
+         */
         function hideConfirmModal() {
             document.getElementById('confirm-modal').classList.add('hidden');
             confirmCallback = null;
