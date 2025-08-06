@@ -2251,20 +2251,28 @@
             const labels = Object.keys(categoryData);
             const data = Object.values(categoryData);
             
-            // Paleta de cores mais distintas
+            // Paleta de cores mais distintas e vibrantes
             const distinctColors = [
-                '#a8956b', // Marrom-dourado (Alimentação)
-                '#7d8471', // Verde-acinzentado (Transporte)
-                '#c4a484', // Bege-rosado (Saúde)
-                '#5d4e37', // Marrom escuro (Vestuário)
-                '#9ca3af', // Cinza azulado (Higiene)
-                '#8b7355', // Marrom médio (Lazer)
-                '#b8a082', // Marrom claro (Outros)
-                '#6b7059', // Verde musgo (Extra 1)
-                '#d4c4b0', // Bege claro (Extra 2)
-                '#a68b5b', // Marrom avermelhado (Extra 3)
-                '#94a3b8', // Azul acinzentado (Extra 4)
-                '#78716c'  // Cinza chumbo (Extra 5)
+                '#FF6384', // Vermelho
+                '#36A2EB', // Azul
+                '#FFCE56', // Amarelo
+                '#4BC0C0', // Ciano
+                '#9966FF', // Roxo
+                '#FF9F40', // Laranja
+                '#E7E9ED', // Cinza claro
+                '#A3E4D7', // Verde menta
+                '#FADBD8', // Rosa claro
+                '#D6EAF8', // Azul claro
+                '#F9E79F', // Amarelo claro
+                '#D2B4DE', // Lilás
+                '#A9CCE3', // Azul acinzentado
+                '#F5CBA7', // Pêssego
+                '#AED6F1', // Azul bebê
+                '#F1948A', // Salmão
+                '#82E0AA', // Verde esmeralda
+                '#BB8FCE', // Lavanda
+                '#F7DC6F', // Dourado
+                '#C0392B'  // Vermelho escuro
             ];
 
             const backgroundColors = labels.map((_, index) => distinctColors[index % distinctColors.length]);
