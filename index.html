@@ -172,46 +172,18 @@
         .bg-accent-2 {
             background-color: #e8ddd4;
         }
-        
-        .tag-alimentacao {
-            background-color: #d4c4b0;
-            color: #5d4e37;
-        }
-        
-        .tag-transporte {
-            background-color: #c4a484;
-            color: #5d4e37;
-        }
-        
-        .tag-saude {
-            background-color: #b8a082;
-            color: #5d4e37;
-        }
-        
-        .tag-vestuario {
-            background-color: #a8956b;
-            color: #ffffff;
-        }
-        
-        .tag-higiene {
-            background-color: #9ca3af;
-            color: #ffffff;
-        }
-        
-        .tag-lazer {
-            background-color: #8b7355;
-            color: #ffffff;
-        }
-        
-        .tag-outros {
-            background-color: #7d8471;
-            color: #ffffff;
-        }
-        
-        .tag-receita {
-            background-color: #6b8e23;
-            color: #ffffff;
-        }
+
+        /* Novas classes de tags para as novas categorias */
+        .tag-moradia { background-color: #d4c4b0; color: #5d4e37; }
+        .tag-alimentacao { background-color: #c4a484; color: #5d4e37; }
+        .tag-mobilidade { background-color: #b8a082; color: #5d4e37; }
+        .tag-saude-e-beleza { background-color: #a8956b; color: #ffffff; }
+        .tag-educacao { background-color: #9ca3af; color: #ffffff; }
+        .tag-lazer-e-servicos { background-color: #8b7355; color: #ffffff; }
+        .tag-taxas { background-color: #7d8471; color: #ffffff; }
+        .tag-investimentos { background-color: #6b7059; color: #ffffff; }
+        .tag-outros { background-color: #a8956b; color: #ffffff; } /* Pode ser mais neutro ou padronizado */
+        .tag-receita { background-color: #6b8e23; color: #ffffff; }
 
         .loading {
             display: inline-block;
@@ -485,15 +457,21 @@
                                 <label class="block text-sm font-medium text-secondary mb-2">Categoria</label>
                                 <select id="daily-category" class="form-input w-full px-4 py-3 rounded-xl" required>
                                     <option value="">Selecione...</option>
+                                    <option value="Moradia">Moradia</option>
                                     <option value="Alimentação">Alimentação</option>
-                                    <option value="Transporte">Transporte</option>
-                                    <option value="Saúde">Saúde</option>
-                                    <option value="Vestuário">Vestuário</option>
-                                    <option value="Higiene">Higiene</option>
-                                    <option value="Lazer">Lazer</option>
+                                    <option value="Mobilidade">Mobilidade</option>
+                                    <option value="Saúde & Beleza">Saúde & Beleza</option>
+                                    <option value="Educação">Educação</option>
+                                    <option value="Lazer & Serviços">Lazer & Serviços</option>
+                                    <option value="Taxas">Taxas</option>
+                                    <option value="Investimentos">Investimentos</option>
                                     <option value="Outros">Outros</option>
                                 </select>
                             </div>
+                        </div>
+                        <div id="daily-other-category-container" class="hidden">
+                            <label for="daily-other-category-input" class="block text-sm font-medium text-secondary mb-2">Qual outra categoria?</label>
+                            <input type="text" id="daily-other-category-input" placeholder="Digite a categoria" class="form-input w-full px-4 py-3 rounded-xl" oninput="capitalizeEachWord(this)">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-secondary mb-2">Descrição</label>
@@ -530,9 +508,23 @@
                                    class="form-input w-full px-4 py-3 rounded-xl" required oninput="capitalizeEachWord(this)">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-secondary mb-2">Categoria</labe l>
-                            <input type="text" id="fixed-category" placeholder="Ex: Moradia, Serviços..." 
-                                   class="form-input w-full px-4 py-3 rounded-xl" required oninput="capitalizeEachWord(this)">
+                            <label class="block text-sm font-medium text-secondary mb-2">Categoria</label>
+                            <select id="fixed-category" class="form-input w-full px-4 py-3 rounded-xl" required>
+                                <option value="">Selecione...</option>
+                                <option value="Moradia">Moradia</option>
+                                <option value="Alimentação">Alimentação</option>
+                                <option value="Mobilidade">Mobilidade</option>
+                                <option value="Saúde & Beleza">Saúde & Beleza</option>
+                                <option value="Educação">Educação</option>
+                                <option value="Lazer & Serviços">Lazer & Serviços</option>
+                                <option value="Taxas">Taxas</option>
+                                <option value="Investimentos">Investimentos</option>
+                                <option value="Outros">Outros</option>
+                            </select>
+                        </div>
+                        <div id="fixed-other-category-container" class="hidden">
+                            <label for="fixed-other-category-input" class="block text-sm font-medium text-secondary mb-2">Qual outra categoria?</label>
+                            <input type="text" id="fixed-other-category-input" placeholder="Digite a categoria" class="form-input w-full px-4 py-3 rounded-xl" oninput="capitalizeEachWord(this)">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-secondary mb-2">Valor Mensal</label>
@@ -565,8 +557,22 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-secondary mb-2">Categoria</label>
-                            <input type="text" id="installment-category" placeholder="Ex: Eletrônicos..." 
-                                   class="form-input w-full px-4 py-3 rounded-xl" required oninput="capitalizeEachWord(this)">
+                            <select id="installment-category" class="form-input w-full px-4 py-3 rounded-xl" required>
+                                <option value="">Selecione...</option>
+                                <option value="Moradia">Moradia</option>
+                                <option value="Alimentação">Alimentação</option>
+                                <option value="Mobilidade">Mobilidade</option>
+                                <option value="Saúde & Beleza">Saúde & Beleza</option>
+                                <option value="Educação">Educação</option>
+                                <option value="Lazer & Serviços">Lazer & Serviços</option>
+                                <option value="Taxas">Taxas</option>
+                                <option value="Investimentos">Investimentos</option>
+                                <option value="Outros">Outros</option>
+                            </select>
+                        </div>
+                        <div id="installment-other-category-container" class="hidden">
+                            <label for="installment-other-category-input" class="block text-sm font-medium text-secondary mb-2">Qual outra categoria?</label>
+                            <input type="text" id="installment-other-category-input" placeholder="Digite a categoria" class="form-input w-full px-4 py-3 rounded-xl" oninput="capitalizeEachWord(this)">
                         </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div>
@@ -681,14 +687,20 @@
                 <div>
                     <label class="block text-sm font-medium text-secondary mb-2">Categoria</label>
                     <select id="edit-category" class="form-input w-full px-4 py-3 rounded-xl" required>
+                        <option value="Moradia">Moradia</option>
                         <option value="Alimentação">Alimentação</option>
-                        <option value="Transporte">Transporte</option>
-                        <option value="Saúde">Saúde</option>
-                        <option value="Vestuário">Vestuário</option>
-                        <option value="Higiene">Higiene</option>
-                        <option value="Lazer">Lazer</option>
+                        <option value="Mobilidade">Mobilidade</option>
+                        <option value="Saúde & Beleza">Saúde & Beleza</option>
+                        <option value="Educação">Educação</option>
+                        <option value="Lazer & Serviços">Lazer & Serviços</option>
+                        <option value="Taxas">Taxas</option>
+                        <option value="Investimentos">Investimentos</option>
                         <option value="Outros">Outros</option>
                     </select>
+                </div>
+                <div id="edit-other-category-container" class="hidden">
+                    <label for="edit-other-category-input" class="block text-sm font-medium text-secondary mb-2">Qual outra categoria?</label>
+                    <input type="text" id="edit-other-category-input" placeholder="Digite a categoria" class="form-input w-full px-4 py-3 rounded-xl" oninput="capitalizeEachWord(this)">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-secondary mb-2">Descrição</label>
@@ -721,8 +733,22 @@
                     <input type="text" id="edit-fixed-name" class="form-input w-full px-4 py-3 rounded-xl" required oninput="capitalizeEachWord(this)">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-secondary mb-2">Categoria</labe l>
-                    <input type="text" id="edit-fixed-category" class="form-input w-full px-4 py-3 rounded-xl" required oninput="capitalizeEachWord(this)">
+                    <label class="block text-sm font-medium text-secondary mb-2">Categoria</label>
+                    <select id="edit-fixed-category" class="form-input w-full px-4 py-3 rounded-xl" required>
+                        <option value="Moradia">Moradia</option>
+                        <option value="Alimentação">Alimentação</option>
+                        <option value="Mobilidade">Mobilidade</option>
+                        <option value="Saúde & Beleza">Saúde & Beleza</option>
+                        <option value="Educação">Educação</option>
+                        <option value="Lazer & Serviços">Lazer & Serviços</option>
+                        <option value="Taxas">Taxas</option>
+                        <option value="Investimentos">Investimentos</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                </div>
+                <div id="edit-fixed-other-category-container" class="hidden">
+                    <label for="edit-fixed-other-category-input" class="block text-sm font-medium text-secondary mb-2">Qual outra categoria?</label>
+                    <input type="text" id="edit-fixed-other-category-input" placeholder="Digite a categoria" class="form-input w-full px-4 py-3 rounded-xl" oninput="capitalizeEachWord(this)">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-secondary mb-2">Valor Mensal</label>
@@ -752,7 +778,21 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-secondary mb-2">Categoria</label>
-                    <input type="text" id="edit-installment-category" class="form-input w-full px-4 py-3 rounded-xl" required oninput="capitalizeEachWord(this)">
+                    <select id="edit-installment-category" class="form-input w-full px-4 py-3 rounded-xl" required>
+                        <option value="Moradia">Moradia</option>
+                        <option value="Alimentação">Alimentação</option>
+                        <option value="Mobilidade">Mobilidade</option>
+                        <option value="Saúde & Beleza">Saúde & Beleza</option>
+                        <option value="Educação">Educação</option>
+                        <option value="Lazer & Serviços">Lazer & Serviços</option>
+                        <option value="Taxas">Taxas</option>
+                        <option value="Investimentos">Investimentos</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                </div>
+                <div id="edit-installment-other-category-container" class="hidden">
+                    <label for="edit-installment-other-category-input" class="block text-sm font-medium text-secondary mb-2">Qual outra categoria?</label>
+                    <input type="text" id="edit-installment-other-category-input" placeholder="Digite a categoria" class="form-input w-full px-4 py-3 rounded-xl" oninput="capitalizeEachWord(this)">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
@@ -858,7 +898,7 @@
   apiKey: "AIzaSyA25uBTHV1fJA1LO1Ep2STr-wkAG9fiyLg",
   authDomain: "financecontrol-af907.firebaseapp.com",
   projectId: "financecontrol-af907",
-  storageBucket: "financecontrol-af907.firebasestorage.app",
+  storageBucket: "financecontrol-af907.firebaseapp.com",
   messagingSenderId: "698736291231",
   appId: "1:698736291231:web:0c5c7c8b24ef75049b61aa"
 };
@@ -1088,6 +1128,40 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('daily-date').value = today;
         }
+
+        // Função auxiliar para criar as opções de categoria
+        function createCategoryOptions(selectedCategory = '') {
+            const categories = [
+                "Moradia", "Alimentação", "Mobilidade", "Saúde & Beleza",
+                "Educação", "Lazer & Serviços", "Taxas", "Investimentos", "Outros"
+            ];
+            let optionsHtml = '<option value="">Selecione...</option>';
+            categories.forEach(cat => {
+                const isSelected = cat === selectedCategory ? 'selected' : '';
+                optionsHtml += `<option value="${cat}" ${isSelected}>${cat}</option>`;
+            });
+            return optionsHtml;
+        }
+
+        // Função para mostrar/esconder o campo "Qual outra categoria?"
+        function toggleOtherCategoryInput(selectId, inputContainerId, inputId, initialValue = '') {
+            const selectElement = document.getElementById(selectId);
+            const inputContainer = document.getElementById(inputContainerId);
+            const inputElement = document.getElementById(inputId);
+
+            if (selectElement.value === 'Outros') {
+                inputContainer.classList.remove('hidden');
+                // Se o valor inicial não é uma das categorias padrão, use-o para preencher o campo "Outros"
+                if (!createCategoryOptions().includes(`value="${initialValue}"`)) {
+                    inputElement.value = initialValue;
+                } else {
+                    inputElement.value = ''; // Limpa se for "Outros" mas o valor anterior não era uma categoria personalizada
+                }
+            } else {
+                inputContainer.classList.add('hidden');
+                inputElement.value = '';
+            }
+        }
         
         /**
          * Configura todos os event listeners para formulários, botões e interações de modal.
@@ -1098,7 +1172,7 @@
             document.getElementById('show-login').addEventListener('click', showLoginForm);
             document.getElementById('login-btn').addEventListener('click', handleLogin);
             document.getElementById('register-btn').addEventListener('click', handleRegister);
-            document.getElementById('forgot-password-btn').addEventListener('click', openForgotPasswordModal); // Alterado para abrir o modal
+            document.getElementById('forgot-password-btn').addEventListener('click', openForgotPasswordModal);
             
             // Clique no botão de logout
             document.getElementById('logout-btn').addEventListener('click', handleLogout);
@@ -1164,6 +1238,15 @@
 
             // PDF Download Button event listener
             document.getElementById('download-pdf-btn').addEventListener('click', generatePdfReport);
+
+            // Adicionar event listeners para os selects de categoria
+            document.getElementById('daily-category').addEventListener('change', () => toggleOtherCategoryInput('daily-category', 'daily-other-category-container', 'daily-other-category-input'));
+            document.getElementById('fixed-category').addEventListener('change', () => toggleOtherCategoryInput('fixed-category', 'fixed-other-category-container', 'fixed-other-category-input'));
+            document.getElementById('installment-category').addEventListener('change', () => toggleOtherCategoryInput('installment-category', 'installment-other-category-container', 'installment-other-category-input'));
+            
+            document.getElementById('edit-category').addEventListener('change', () => toggleOtherCategoryInput('edit-category', 'edit-other-category-container', 'edit-other-category-input'));
+            document.getElementById('edit-fixed-category').addEventListener('change', () => toggleOtherCategoryInput('edit-fixed-category', 'edit-fixed-other-category-container', 'edit-fixed-other-category-input'));
+            document.getElementById('edit-installment-category').addEventListener('change', () => toggleOtherCategoryInput('edit-installment-category', 'edit-installment-other-category-container', 'edit-installment-other-category-input'));
         }
 
         /**
@@ -1294,17 +1377,19 @@
 
             try {
                 await sendPasswordResetEmail(auth, email);
-                forgotPasswordMessage.textContent = `Um email de redefinição de senha foi enviado para ${email}. Por favor, verifique sua caixa de entrada.`;
+                forgotPasswordMessage.textContent = `Um email de redefinição de senha foi enviado para ${email}. Por favor, verifique sua caixa de entrada e pasta de spam.`; // Adicionado "pasta de spam"
                 forgotPasswordMessage.className = 'text-center text-sm text-green-700';
                 // Opcional: fechar o modal após um pequeno atraso
                 setTimeout(closeForgotPasswordModal, 5000);
             } catch (error) {
-                console.error("Erro ao redefinir senha:", error);
-                let errorMessage = "Erro ao enviar email de redefinição de senha.";
+                console.error("Erro ao redefinir senha:", error); // Registra o erro completo no console
+                let errorMessage = "Erro ao enviar email de redefinição de senha. Por favor, tente novamente.";
                 if (error.code === 'auth/user-not-found') {
-                    errorMessage = "Nenhum usuário encontrado com este email.";
+                    errorMessage = "Nenhum usuário encontrado com este email. Verifique o endereço.";
                 } else if (error.code === 'auth/invalid-email') {
                     errorMessage = "Formato de email inválido.";
+                } else if (error.code === 'auth/too-many-requests') { // Adicionado tratamento para limites de requisição
+                    errorMessage = "Muitas tentativas de redefinição de senha. Por favor, tente novamente mais tarde.";
                 }
                 forgotPasswordMessage.textContent = errorMessage;
                 forgotPasswordMessage.className = 'text-center text-sm text-red-700';
@@ -1447,7 +1532,16 @@
             }
 
             const date = document.getElementById('daily-date').value;
-            const category = document.getElementById('daily-category').value;
+            let category = document.getElementById('daily-category').value;
+            const otherCategoryInput = document.getElementById('daily-other-category-input');
+
+            if (category === 'Outros' && otherCategoryInput.value.trim() !== '') {
+                category = otherCategoryInput.value.trim();
+            } else if (category === 'Outros' && otherCategoryInput.value.trim() === '') {
+                showAppMessage('Por favor, digite a categoria "Outros".', 'error');
+                return;
+            }
+
             const description = document.getElementById('daily-description').value;
             const value = parseFloat(document.getElementById('daily-value').dataset.numericValue);
             
@@ -1461,6 +1555,8 @@
                     });
                     e.target.reset();
                     setTodayDate();
+                    otherCategoryInput.value = ''; // Clear other category input
+                    document.getElementById('daily-other-category-container').classList.add('hidden'); // Hide it
                     showAppMessage('Gasto diário adicionado com sucesso!', 'success');
                 } catch (error) {
                     console.error("Erro ao adicionar despesa diária:", error);
@@ -1487,12 +1583,15 @@
             }
 
             sortedExpenses.forEach(expense => {
+                // Normalize category name for CSS class
+                const categoryClass = expense.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s/g, '-').replace(/&/g, 'e');
+
                 const expenseItem = document.createElement('div');
                 expenseItem.className = `glass-effect card-shadow rounded-xl p-4 flex items-center justify-between fade-in`;
                 expenseItem.innerHTML = `
                     <div>
                         <p class="text-primary font-semibold">${expense.description}</p>
-                        <p class="text-sm text-secondary">${new Date(expense.date).toLocaleDateString('pt-BR')} - <span class="tag-${expense.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s/g, '-')} px-2 py-0.5 rounded-full text-xs">${expense.category}</span></p>
+                        <p class="text-sm text-secondary">${new Date(expense.date).toLocaleDateString('pt-BR')} - <span class="tag-${categoryClass} px-2 py-0.5 rounded-full text-xs">${expense.category}</span></p>
                     </div>
                     <div class="flex items-center space-x-2">
                         <p class="text-primary font-bold">R$ ${expense.value.toFixed(2).replace('.', ',')}</p>
@@ -1535,10 +1634,13 @@
             const expense = dailyExpenses.find(exp => exp.id === id);
             if (expense) {
                 document.getElementById('edit-date').value = expense.date;
-                document.getElementById('edit-category').value = expense.category;
+                document.getElementById('edit-category').innerHTML = createCategoryOptions(expense.category); // Atualiza opções
                 document.getElementById('edit-description').value = expense.description;
                 document.getElementById('edit-value').value = expense.value.toFixed(2).replace('.', ',');
                 document.getElementById('edit-value').dataset.numericValue = expense.value;
+
+                toggleOtherCategoryInput('edit-category', 'edit-other-category-container', 'edit-other-category-input', expense.category);
+
                 document.getElementById('edit-modal').classList.remove('hidden');
             }
         }
@@ -1549,6 +1651,8 @@
         function closeEditModal() {
             document.getElementById('edit-modal').classList.add('hidden');
             editingExpenseId = null;
+            document.getElementById('edit-other-category-container').classList.add('hidden'); // Esconde campo "Outros"
+            document.getElementById('edit-other-category-input').value = ''; // Limpa campo "Outros"
         }
         
         /**
@@ -1561,7 +1665,16 @@
             if (!userId || !editingExpenseId) return;
 
             const date = document.getElementById('edit-date').value;
-            const category = document.getElementById('edit-category').value;
+            let category = document.getElementById('edit-category').value;
+            const otherCategoryInput = document.getElementById('edit-other-category-input');
+
+            if (category === 'Outros' && otherCategoryInput.value.trim() !== '') {
+                category = otherCategoryInput.value.trim();
+            } else if (category === 'Outros' && otherCategoryInput.value.trim() === '') {
+                showAppMessage('Por favor, digite a categoria "Outros".', 'error');
+                return;
+            }
+            
             const description = document.getElementById('edit-description').value;
             const value = parseFloat(document.getElementById('edit-value').dataset.numericValue);
             
@@ -1597,7 +1710,16 @@
             }
 
             const name = document.getElementById('fixed-name').value;
-            const category = document.getElementById('fixed-category').value;
+            let category = document.getElementById('fixed-category').value;
+            const otherCategoryInput = document.getElementById('fixed-other-category-input');
+
+            if (category === 'Outros' && otherCategoryInput.value.trim() !== '') {
+                category = otherCategoryInput.value.trim();
+            } else if (category === 'Outros' && otherCategoryInput.value.trim() === '') {
+                showAppMessage('Por favor, digite a categoria "Outros".', 'error');
+                return;
+            }
+
             const value = parseFloat(document.getElementById('fixed-value').dataset.numericValue);
             
             if (name && category && !isNaN(value) && value > 0) {
@@ -1608,6 +1730,8 @@
                         value
                     });
                     e.target.reset();
+                    otherCategoryInput.value = ''; // Clear other category input
+                    document.getElementById('fixed-other-category-container').classList.add('hidden'); // Hide it
                     showAppMessage('Despesa fixa adicionada com sucesso!', 'success');
                 } catch (error) {
                     console.error("Erro ao adicionar despesa fixa:", error);
@@ -1632,12 +1756,15 @@
             }
 
             fixedExpenses.forEach(expense => {
+                // Normalize category name for CSS class
+                const categoryClass = expense.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s/g, '-').replace(/&/g, 'e');
+
                 const expenseItem = document.createElement('div');
                 expenseItem.className = `glass-effect card-shadow rounded-xl p-4 flex items-center justify-between fade-in`;
                 expenseItem.innerHTML = `
                     <div>
                         <p class="text-primary font-semibold">${expense.name}</p>
-                        <p class="text-sm text-secondary">${expense.category}</p>
+                        <p class="text-sm text-secondary"><span class="tag-${categoryClass} px-2 py-0.5 rounded-full text-xs">${expense.category}</span></p>
                     </div>
                     <div class="flex items-center space-x-2">
                         <p class="text-primary font-bold">R$ ${expense.value.toFixed(2).replace('.', ',')}</p>
@@ -1680,9 +1807,12 @@
             const expense = fixedExpenses.find(exp => exp.id === id);
             if (expense) {
                 document.getElementById('edit-fixed-name').value = expense.name;
-                document.getElementById('edit-fixed-category').value = expense.category;
+                document.getElementById('edit-fixed-category').innerHTML = createCategoryOptions(expense.category); // Atualiza opções
                 document.getElementById('edit-fixed-value').value = expense.value.toFixed(2).replace('.', ',');
                 document.getElementById('edit-fixed-value').dataset.numericValue = expense.value;
+                
+                toggleOtherCategoryInput('edit-fixed-category', 'edit-fixed-other-category-container', 'edit-fixed-other-category-input', expense.category);
+                
                 document.getElementById('edit-fixed-modal').classList.remove('hidden');
             }
         }
@@ -1693,6 +1823,8 @@
         function closeEditFixedModal() {
             document.getElementById('edit-fixed-modal').classList.add('hidden');
             editingFixedId = null;
+            document.getElementById('edit-fixed-other-category-container').classList.add('hidden'); // Esconde campo "Outros"
+            document.getElementById('edit-fixed-other-category-input').value = ''; // Limpa campo "Outros"
         }
 
         /**
@@ -1705,7 +1837,16 @@
             if (!userId || !editingFixedId) return;
 
             const name = document.getElementById('edit-fixed-name').value;
-            const category = document.getElementById('edit-fixed-category').value;
+            let category = document.getElementById('edit-fixed-category').value;
+            const otherCategoryInput = document.getElementById('edit-fixed-other-category-input');
+
+            if (category === 'Outros' && otherCategoryInput.value.trim() !== '') {
+                category = otherCategoryInput.value.trim();
+            } else if (category === 'Outros' && otherCategoryInput.value.trim() === '') {
+                showAppMessage('Por favor, digite a categoria "Outros".', 'error');
+                return;
+            }
+
             const value = parseFloat(document.getElementById('edit-fixed-value').dataset.numericValue);
             
             if (name && category && !isNaN(value) && value > 0) {
@@ -1739,7 +1880,16 @@
             }
 
             const name = document.getElementById('installment-name').value;
-            const category = document.getElementById('installment-category').value;
+            let category = document.getElementById('installment-category').value;
+            const otherCategoryInput = document.getElementById('installment-other-category-input');
+
+            if (category === 'Outros' && otherCategoryInput.value.trim() !== '') {
+                category = otherCategoryInput.value.trim();
+            } else if (category === 'Outros' && otherCategoryInput.value.trim() === '') {
+                showAppMessage('Por favor, digite a categoria "Outros".', 'error');
+                return;
+            }
+
             const value = parseFloat(document.getElementById('installment-value').dataset.numericValue);
             const totalInstallments = parseInt(document.getElementById('installment-total').value);
             const paidInstallments = parseInt(document.getElementById('installment-paid').value); // Get paid installments
@@ -1759,6 +1909,8 @@
                     });
                     e.target.reset();
                     document.getElementById('installment-paid').value = 0; // Reset paid to 0
+                    otherCategoryInput.value = ''; // Clear other category input
+                    document.getElementById('installment-other-category-container').classList.add('hidden'); // Hide it
                     showAppMessage('Parcelamento adicionado com sucesso!', 'success');
                 } catch (error) {
                     console.error("Erro ao adicionar parcelamento:", error);
@@ -1786,6 +1938,8 @@
                 const remaining = installment.total - installment.paid;
                 const totalValue = installment.value * installment.total;
                 const progress = (installment.paid / installment.total) * 100;
+                // Normalize category name for CSS class
+                const categoryClass = installment.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s/g, '-').replace(/&/g, 'e');
 
                 const installmentItem = document.createElement('div');
                 installmentItem.className = `glass-effect card-shadow rounded-xl p-4 fade-in`;
@@ -1793,7 +1947,7 @@
                     <div class="flex items-center justify-between mb-2">
                         <div>
                             <p class="text-primary font-semibold">${installment.name}</p>
-                            <p class="text-sm text-secondary">${installment.category}</p>
+                            <p class="text-sm text-secondary"><span class="tag-${categoryClass} px-2 py-0.5 rounded-full text-xs">${installment.category}</span></p>
                         </div>
                         <div class="text-right">
                             <p class="text-primary font-bold">R$ ${installment.value.toFixed(2).replace('.', ',')} / parcela</p>
@@ -1866,11 +2020,14 @@
             const installment = installments.find(inst => inst.id === id);
             if (installment) {
                 document.getElementById('edit-installment-name').value = installment.name;
-                document.getElementById('edit-installment-category').value = installment.category;
+                document.getElementById('edit-installment-category').innerHTML = createCategoryOptions(installment.category); // Atualiza opções
                 document.getElementById('edit-installment-value').value = installment.value.toFixed(2).replace('.', ',');
                 document.getElementById('edit-installment-value').dataset.numericValue = installment.value;
                 document.getElementById('edit-installment-total').value = installment.total;
                 document.getElementById('edit-installment-paid').value = installment.paid;
+                
+                toggleOtherCategoryInput('edit-installment-category', 'edit-installment-other-category-container', 'edit-installment-other-category-input', installment.category);
+
                 document.getElementById('edit-installment-modal').classList.remove('hidden');
             }
         }
@@ -1881,6 +2038,8 @@
         function closeEditInstallmentModal() {
             document.getElementById('edit-installment-modal').classList.add('hidden');
             editingInstallmentId = null;
+            document.getElementById('edit-installment-other-category-container').classList.add('hidden'); // Esconde campo "Outros"
+            document.getElementById('edit-installment-other-category-input').value = ''; // Limpa campo "Outros"
         }
 
         /**
@@ -1893,7 +2052,16 @@
             if (!userId || !editingInstallmentId) return;
 
             const name = document.getElementById('edit-installment-name').value;
-            const category = document.getElementById('edit-installment-category').value;
+            let category = document.getElementById('edit-installment-category').value;
+            const otherCategoryInput = document.getElementById('edit-installment-other-category-input');
+
+            if (category === 'Outros' && otherCategoryInput.value.trim() !== '') {
+                category = otherCategoryInput.value.trim();
+            } else if (category === 'Outros' && otherCategoryInput.value.trim() === '') {
+                showAppMessage('Por favor, digite a categoria "Outros".', 'error');
+                return;
+            }
+
             const value = parseFloat(document.getElementById('edit-installment-value').dataset.numericValue);
             const totalInstallments = parseInt(document.getElementById('edit-installment-total').value);
             const paidInstallments = parseInt(document.getElementById('edit-installment-paid').value);
