@@ -489,7 +489,7 @@
                     </form>
                     
                     <!-- Expenses List -->
-                    <div id="daily-list" class="space-y-3">
+                    <div id="daily-list" class="space-y-4">
                         <!-- Dynamic content -->
                     </div>
                 </div>
@@ -537,7 +537,7 @@
                     </form>
                     
                     <!-- Fixed Expenses List -->
-                    <div id="fixed-list" class="space-y-3">
+                    <div id="fixed-list" class="space-y-4">
                         <!-- Dynamic content -->
                     </div>
                 </div>
@@ -598,7 +598,7 @@
                     </form>
                     
                     <!-- Installments List -->
-                    <div id="installments-list" class="space-y-3">
+                    <div id="installments-list" class="space-y-4">
                         <!-- Dynamic content -->
                     </div>
                 </div>
@@ -627,7 +627,7 @@
                     </form>
                     
                     <!-- Income List -->
-                    <div id="income-list" class="space-y-3">
+                    <div id="income-list" class="space-y-4">
                         <!-- Dynamic content -->
                     </div>
                 </div>
@@ -895,13 +895,13 @@
         // Firebase Configuration - SUBSTITUA COM A SUA PRÓPRIA CONFIGURAÇÃO DO FIREBASE
         // Pode encontrar isto nas definições do seu projeto Firebase -> Definições do projeto -> Os seus apps -> Aplicação web -> Config
          const firebaseConfig = {
-  apiKey: "AIzaSyA25uBTHV1fJA1LO1Ep2STr-wkAG9fiyLg",
-  authDomain: "financecontrol-af907.firebaseapp.com",
-  projectId: "financecontrol-af907",
-  storageBucket: "financecontrol-af907.firebaseapp.com",
-  messagingSenderId: "698736291231",
-  appId: "1:698736291231:web:0c5c7c8b24ef75049b61aa"
-};
+            apiKey: "AIzaSyA25uBTHV1fJA1LO1Ep2STr-wkAG9fiyLg",
+            authDomain: "financecontrol-af907.firebaseapp.com",
+            projectId: "financecontrol-af907",
+            storageBucket: "financecontrol-af907.appspot.com",
+            messagingSenderId: "698736291231",
+            appId: "1:698736291231:web:0c5c7c8b24ef75049b61aa"
+        };
 
         let app;
         let db;
@@ -1054,7 +1054,6 @@
                     <span class="text-red-500">Erro de Configuração do Firebase:</span>
                     <br>Por favor, atualize o objeto <code>firebaseConfig</code> no código
                     com as credenciais do seu projeto Firebase.
-                    <br>Consulte o guia "Como Encontrar a API Key no Firebase" para mais detalhes.
                 `;
                 return;
             }
@@ -1282,7 +1281,7 @@
             } catch (error) {
                 console.error("Erro de login:", error);
                 let errorMessage = "Erro ao iniciar sessão.";
-                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
                     errorMessage = "Email ou palavra-passe inválidos.";
                 } else if (error.code === 'auth/invalid-email') {
                     errorMessage = "Formato de email inválido.";
@@ -1583,23 +1582,20 @@
             }
 
             sortedExpenses.forEach(expense => {
-                // Normalize category name for CSS class
-                const categoryClass = expense.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s/g, '-').replace(/&/g, 'e');
-
                 const expenseItem = document.createElement('div');
-                expenseItem.className = `glass-effect card-shadow rounded-xl p-4 flex items-center justify-between fade-in`;
+                expenseItem.className = `glass-effect card-shadow rounded-xl p-4 flex items-center justify-between gap-4 fade-in`;
                 expenseItem.innerHTML = `
-                    <div>
-                        <p class="text-primary font-semibold">${expense.description}</p>
-                        <p class="text-sm text-secondary">${new Date(expense.date).toLocaleDateString('pt-BR')} - <span class="tag-${categoryClass} px-2 py-0.5 rounded-full text-xs">${expense.category}</span></p>
+                    <div class="flex-grow min-w-0">
+                        <p class="text-primary font-semibold text-sm">${expense.description}</p>
+                        <p class="text-xs text-secondary">${new Date(expense.date).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</p>
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <p class="text-primary font-bold">R$ ${expense.value.toFixed(2).replace('.', ',')}</p>
-                        <button class="btn-edit p-2 rounded-full" onclick="openEditModal('${expense.id}')">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    <div class="flex items-center space-x-2 flex-shrink-0">
+                        <p class="text-primary font-bold text-sm whitespace-nowrap">R$ ${expense.value.toFixed(2).replace('.', ',')}</p>
+                        <button class="btn-edit p-1.5 rounded-full" onclick="openEditModal('${expense.id}')">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                         </button>
-                        <button class="btn-danger p-2 rounded-full" onclick="confirmDeleteDailyExpense('${expense.id}')">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        <button class="btn-danger p-1.5 rounded-full" onclick="confirmDeleteDailyExpense('${expense.id}')">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
                     </div>
                 `;
@@ -1756,23 +1752,19 @@
             }
 
             fixedExpenses.forEach(expense => {
-                // Normalize category name for CSS class
-                const categoryClass = expense.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s/g, '-').replace(/&/g, 'e');
-
                 const expenseItem = document.createElement('div');
-                expenseItem.className = `glass-effect card-shadow rounded-xl p-4 flex items-center justify-between fade-in`;
+                expenseItem.className = `glass-effect card-shadow rounded-xl p-4 flex items-center justify-between gap-4 fade-in`;
                 expenseItem.innerHTML = `
-                    <div>
-                        <p class="text-primary font-semibold">${expense.name}</p>
-                        <p class="text-sm text-secondary"><span class="tag-${categoryClass} px-2 py-0.5 rounded-full text-xs">${expense.category}</span></p>
+                    <div class="flex-grow min-w-0">
+                        <p class="text-primary font-semibold text-sm">${expense.name}</p>
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <p class="text-primary font-bold">R$ ${expense.value.toFixed(2).replace('.', ',')}</p>
-                        <button class="btn-edit p-2 rounded-full" onclick="openEditFixedModal('${expense.id}')">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    <div class="flex items-center space-x-2 flex-shrink-0">
+                        <p class="text-primary font-bold text-sm whitespace-nowrap">R$ ${expense.value.toFixed(2).replace('.', ',')}</p>
+                        <button class="btn-edit p-1.5 rounded-full" onclick="openEditFixedModal('${expense.id}')">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                         </button>
-                        <button class="btn-danger p-2 rounded-full" onclick="confirmDeleteFixedExpense('${expense.id}')">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        <button class="btn-danger p-1.5 rounded-full" onclick="confirmDeleteFixedExpense('${expense.id}')">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
                     </div>
                 `;
@@ -1935,37 +1927,32 @@
             }
 
             installments.forEach(installment => {
-                const remaining = installment.total - installment.paid;
-                const totalValue = installment.value * installment.total;
                 const progress = (installment.paid / installment.total) * 100;
-                // Normalize category name for CSS class
-                const categoryClass = installment.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s/g, '-').replace(/&/g, 'e');
 
                 const installmentItem = document.createElement('div');
                 installmentItem.className = `glass-effect card-shadow rounded-xl p-4 fade-in`;
                 installmentItem.innerHTML = `
-                    <div class="flex items-center justify-between mb-2">
-                        <div>
-                            <p class="text-primary font-semibold">${installment.name}</p>
-                            <p class="text-sm text-secondary"><span class="tag-${categoryClass} px-2 py-0.5 rounded-full text-xs">${installment.category}</span></p>
+                    <div class="flex items-center justify-between gap-4 mb-2">
+                        <div class="flex-grow min-w-0">
+                            <p class="text-primary font-semibold text-sm">${installment.name}</p>
                         </div>
-                        <div class="text-right">
-                            <p class="text-primary font-bold">R$ ${installment.value.toFixed(2).replace('.', ',')} / parcela</p>
-                            <p class="text-sm text-muted">${installment.paid}/${installment.total} pagas (R$ ${totalValue.toFixed(2).replace('.', ',')})</p>
+                        <div class="text-right flex-shrink-0">
+                            <p class="text-primary font-bold text-sm whitespace-nowrap">R$ ${installment.value.toFixed(2).replace('.', ',')} / parcela</p>
+                            <p class="text-xs text-muted">${installment.paid}/${installment.total} pagas</p>
                         </div>
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
                         <div class="bg-green-500 h-2.5 rounded-full" style="width: ${progress}%"></div>
                     </div>
                     <div class="flex justify-end space-x-2">
-                        <button class="btn-edit p-2 rounded-full" onclick="openEditInstallmentModal('${installment.id}')">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        <button class="btn-edit p-1.5 rounded-full" onclick="openEditInstallmentModal('${installment.id}')">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                         </button>
-                        <button class="btn-success p-2 rounded-full" onclick="markInstallmentPaid('${installment.id}')">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <button class="btn-success p-1.5 rounded-full" onclick="markInstallmentPaid('${installment.id}')">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </button>
-                        <button class="btn-danger p-2 rounded-full" onclick="confirmDeleteInstallment('${installment.id}')">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        <button class="btn-danger p-1.5 rounded-full" onclick="confirmDeleteInstallment('${installment.id}')">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
                     </div>
                 `;
@@ -2138,18 +2125,18 @@
 
             monthlyIncomes.forEach(income => {
                 const incomeItem = document.createElement('div');
-                incomeItem.className = `glass-effect card-shadow rounded-xl p-4 flex items-center justify-between fade-in`;
+                incomeItem.className = `glass-effect card-shadow rounded-xl p-4 flex items-center justify-between gap-4 fade-in`;
                 incomeItem.innerHTML = `
-                    <div>
-                        <p class="text-primary font-semibold">${income.source}</p>
+                    <div class="flex-grow min-w-0">
+                        <p class="text-primary font-semibold text-sm">${income.source}</p>
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <p class="text-primary font-bold">R$ ${income.value.toFixed(2).replace('.', ',')}</p>
-                        <button class="btn-edit p-2 rounded-full" onclick="openEditMonthlyIncomeModal('${income.id}')">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    <div class="flex items-center space-x-2 flex-shrink-0">
+                        <p class="text-primary font-bold text-sm whitespace-nowrap">R$ ${income.value.toFixed(2).replace('.', ',')}</p>
+                        <button class="btn-edit p-1.5 rounded-full" onclick="openEditMonthlyIncomeModal('${income.id}')">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                         </button>
-                        <button class="btn-danger p-2 rounded-full" onclick="confirmDeleteMonthlyIncome('${income.id}')">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        <button class="btn-danger p-1.5 rounded-full" onclick="confirmDeleteMonthlyIncome('${income.id}')">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
                     </div>
                 `;
@@ -2239,7 +2226,7 @@
             let totalMonthlyExpenses = 0;
             dailyExpenses.forEach(expense => {
                 const expenseDate = new Date(expense.date);
-                if (expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear) {
+                if (expenseDate.getUTCMonth() === currentMonth && expenseDate.getUTCFullYear() === currentYear) {
                     totalMonthlyExpenses += expense.value;
                 }
             });
@@ -2270,13 +2257,14 @@
             document.getElementById('total-monthly-income').textContent = `R$ ${totalMonthlyIncome.toFixed(2).replace('.', ',')}`;
 
             const monthlyBalance = totalMonthlyIncome - totalMonthlyExpenses;
-            document.getElementById('monthly-balance').textContent = `R$ ${monthlyBalance.toFixed(2).replace('.', ',')}`;
+            const balanceEl = document.getElementById('monthly-balance');
+            balanceEl.textContent = `R$ ${monthlyBalance.toFixed(2).replace('.', ',')}`;
             if (monthlyBalance >= 0) {
-                document.getElementById('monthly-balance').classList.remove('text-red-500');
-                document.getElementById('monthly-balance').classList.add('text-green-600');
+                balanceEl.classList.remove('text-red-500');
+                balanceEl.classList.add('text-green-600');
             } else {
-                document.getElementById('monthly-balance').classList.remove('text-green-600');
-                document.getElementById('monthly-balance').classList.add('text-red-500');
+                balanceEl.classList.remove('text-green-600');
+                balanceEl.classList.add('text-red-500');
             }
         }
 
@@ -2305,10 +2293,10 @@
             const ctx = document.getElementById('incomeVsExpensesChart').getContext('2d');
             
             let totalMonthlyExpenses = 0;
+            const now = new Date();
             dailyExpenses.forEach(expense => {
                 const expenseDate = new Date(expense.date);
-                const now = new Date();
-                if (expenseDate.getMonth() === now.getMonth() && expenseDate.getFullYear() === now.getFullYear()) {
+                if (expenseDate.getUTCMonth() === now.getUTCMonth() && expenseDate.getUTCFullYear() === now.getUTCFullYear()) {
                     totalMonthlyExpenses += expense.value;
                 }
             });
@@ -2399,7 +2387,7 @@
             // Adiciona despesas diárias do mês atual
             dailyExpenses.forEach(expense => {
                 const expenseDate = new Date(expense.date);
-                if (expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear) {
+                if (expenseDate.getUTCMonth() === currentMonth && expenseDate.getUTCFullYear() === currentYear) {
                     categoryData[expense.category] = (categoryData[expense.category] || 0) + expense.value;
                 }
             });
@@ -2421,26 +2409,10 @@
             
             // Paleta de cores mais distintas e vibrantes
             const distinctColors = [
-                '#FF6384', // Vermelho
-                '#36A2EB', // Azul
-                '#FFCE56', // Amarelo
-                '#4BC0C0', // Ciano
-                '#9966FF', // Roxo
-                '#FF9F40', // Laranja
-                '#E7E9ED', // Cinza claro
-                '#A3E4D7', // Verde menta
-                '#FADBD8', // Rosa claro
-                '#D6EAF8', // Azul claro
-                '#F9E79F', // Amarelo claro
-                '#D2B4DE', // Lilás
-                '#A9CCE3', // Azul acinzentado
-                '#F5CBA7', // Pêssego
-                '#AED6F1', // Azul bebê
-                '#F1948A', // Salmão
-                '#82E0AA', // Verde esmeralda
-                '#BB8FCE', // Lavanda
-                '#F7DC6F', // Dourado
-                '#C0392B'  // Vermelho escuro
+                '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', 
+                '#E7E9ED', '#A3E4D7', '#FADBD8', '#D6EAF8', '#F9E79F', '#D2B4DE',
+                '#A9CCE3', '#F5CBA7', '#AED6F1', '#F1948A', '#82E0AA', '#BB8FCE',
+                '#F7DC6F', '#C0392B'
             ];
 
             const backgroundColors = labels.map((_, index) => distinctColors[index % distinctColors.length]);
@@ -2638,8 +2610,8 @@
             const dailySums = {};
             dailyExpenses.forEach(expense => {
                 const expenseDate = new Date(expense.date);
-                if (expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear) {
-                    const day = expenseDate.getDate();
+                if (expenseDate.getUTCMonth() === currentMonth && expenseDate.getUTCFullYear() === currentYear) {
+                    const day = expenseDate.getUTCDate();
                     dailySums[day] = (dailySums[day] || 0) + expense.value;
                 }
             });
@@ -2743,13 +2715,13 @@
          */
         window.togglePasswordVisibility = function(inputId) {
             const passwordInput = document.getElementById(inputId);
-            const toggleIcon = document.getElementById(`toggle-${inputId}-icon`);
+            const toggleIconContainer = passwordInput.nextElementSibling;
+            const toggleIcon = toggleIconContainer.querySelector('svg');
 
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
                 toggleIcon.innerHTML = `
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064-7 9.542-7 1.54 0 3.003.407 4.375 1.173M12 18V6"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064-7 9.542-7 1.54 0 3.003.407 4.375 1.173M12 18V6M1 1l22 22"></path>
                 `; // Ícone de olho riscado
             } else {
                 passwordInput.type = 'password';
@@ -2793,7 +2765,7 @@
                 let totalMonthlyExpenses = 0;
                 dailyExpenses.forEach(expense => {
                     const expenseDate = new Date(expense.date);
-                    if (expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear) {
+                    if (expenseDate.getUTCMonth() === currentMonth && expenseDate.getUTCFullYear() === currentYear) {
                         totalMonthlyExpenses += expense.value;
                     }
                 });
@@ -2847,7 +2819,7 @@
                 const categorizedExpenses = {};
                 dailyExpenses.forEach(expense => {
                     const expenseDate = new Date(expense.date);
-                    if (expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear) {
+                    if (expenseDate.getUTCMonth() === currentMonth && expenseDate.getUTCFullYear() === currentYear) {
                         categorizedExpenses[expense.category] = (categorizedExpenses[expense.category] || 0) + expense.value;
                     }
                 });
