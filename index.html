@@ -2757,7 +2757,87 @@
                 const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
                 const currentMonthName = monthNames[currentMonth];
 
-                // ... (rest of PDF generation logic is unchanged) ...
+                let yPos = 15;
+
+                doc.setFontSize(22);
+                doc.text(`Relatório Financeiro Mensal - ${currentMonthName}/${currentYear}`, 105, yPos, { align: 'center' });
+                yPos += 15;
+
+                const totalMonthlyIncome = monthlyIncomes.reduce((sum, income) => sum + income.value, 0);
+                let totalMonthlyExpenses = fixedExpenses.reduce((sum, exp) => sum + exp.value, 0);
+                dailyExpenses.forEach(expense => {
+                    const expenseDate = new Date(expense.date + 'T00:00:00');
+                    if (expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear) {
+                        totalMonthlyExpenses += expense.value;
+                    }
+                });
+                installments.forEach(installment => {
+                    if (installment.paid < installment.total) {
+                        totalMonthlyExpenses += installment.value;
+                    }
+                });
+                const monthlyBalance = totalMonthlyIncome - totalMonthlyExpenses;
+
+                doc.setFontSize(14);
+                doc.text("Resumo Financeiro:", 14, yPos);
+                yPos += 8;
+                doc.setFontSize(12);
+                doc.text(`Total Receita Mensal: R$ ${totalMonthlyIncome.toFixed(2).replace('.', ',')}`, 14, yPos);
+                yPos += 7;
+                doc.text(`Total Despesas Mensais: R$ ${totalMonthlyExpenses.toFixed(2).replace('.', ',')}`, 14, yPos);
+                yPos += 7;
+                doc.text(`Saldo Mensal: R$ ${monthlyBalance.toFixed(2).replace('.', ',')}`, 14, yPos);
+                
+                let lastY = yPos + 15;
+
+                const tableOptions = {
+                    theme: 'striped',
+                    styles: { font: 'helvetica', fontSize: 10, cellPadding: 2, textColor: '#5d4e37' },
+                    headStyles: { fillColor: '#a8956b', textColor: '#ffffff', fontStyle: 'bold' },
+                    alternateRowStyles: { fillColor: '#f4f1ec' },
+                    margin: { left: 14, right: 14 },
+                };
+
+                if (monthlyIncomes.length > 0) {
+                    doc.autoTable({
+                        ...tableOptions,
+                        startY: lastY,
+                        head: [['Fonte', 'Valor']],
+                        body: monthlyIncomes.map(income => [income.source, `R$ ${income.value.toFixed(2).replace('.', ',')}`]),
+                    });
+                    lastY = doc.lastAutoTable.finalY + 10;
+                }
+                
+                if (fixedExpenses.length > 0) {
+                    doc.autoTable({
+                        ...tableOptions,
+                        startY: lastY,
+                        head: [['Nome', 'Categoria', 'Valor Mensal']],
+                        body: fixedExpenses.map(expense => [expense.name, expense.category, `R$ ${expense.value.toFixed(2).replace('.', ',')}`]),
+                    });
+                    lastY = doc.lastAutoTable.finalY + 10;
+                }
+
+                const activeInstallments = installments.filter(inst => inst.paid < inst.total);
+                if (activeInstallments.length > 0) {
+                    doc.autoTable({
+                        ...tableOptions,
+                        startY: lastY,
+                        head: [['Nome', 'Categoria', 'Valor Parcela', 'Pagas/Total']],
+                        body: activeInstallments.map(inst => [inst.name, inst.category, `R$ ${inst.value.toFixed(2).replace('.', ',')}`, `${inst.paid}/${inst.total}`]),
+                    });
+                    lastY = doc.lastAutoTable.finalY + 10;
+                }
+
+                const currentMonthDailyExpenses = dailyExpenses.filter(e => new Date(e.date + 'T00:00:00').getMonth() === now.getMonth() && new Date(e.date + 'T00:00:00').getFullYear() === now.getFullYear());
+                if(currentMonthDailyExpenses.length > 0) {
+                     doc.autoTable({
+                        ...tableOptions,
+                        startY: lastY,
+                        head: [['Data', 'Descrição', 'Categoria', 'Valor']],
+                        body: currentMonthDailyExpenses.map(e => [new Date(e.date).toLocaleDateString('pt-BR', {timeZone: 'UTC'}), e.description, e.category, `R$ ${e.value.toFixed(2).replace('.', ',')}`]),
+                    });
+                }
 
                 doc.save(`Relatorio_Financeiro_${currentMonthName}_${currentYear}.pdf`);
                 showAppMessage('Relatório PDF gerado com sucesso!', 'success');
